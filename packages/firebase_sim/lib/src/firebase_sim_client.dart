@@ -12,11 +12,11 @@ import 'package:tekartik_firebase_sim/rpc_message.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_common.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
-class SimDocumentData extends DocumentDataMap {}
+class DocumentDataSim extends DocumentDataMap {}
 
 class SimDocumentSnapshot implements DocumentSnapshot {
   @override
-  final SimDocumentReference ref;
+  final DocumentReferenceSim ref;
 
   final bool exists;
 
@@ -28,17 +28,17 @@ class SimDocumentSnapshot implements DocumentSnapshot {
   DocumentData data() => documentData;
 }
 
-class SimDocumentReference implements DocumentReference {
-  final SimFirestore simFirestore;
+class DocumentReferenceSim implements DocumentReference {
+  final FirestoreSim simFirestore;
 
   @override
   final String path;
 
-  SimDocumentReference(this.simFirestore, this.path);
+  DocumentReferenceSim(this.simFirestore, this.path);
 
   @override
   CollectionReference collection(String path) =>
-      new SimCollectionReference(simFirestore, url.join(this.path, path));
+      new CollectionReferenceSim(simFirestore, url.join(this.path, path));
 
   @override
   Future delete() async {
@@ -66,7 +66,7 @@ class SimDocumentReference implements DocumentReference {
     var documentSnapshotData = new FirestoreDocumentSnapshotDataImpl()
       ..fromMap((response as Response).result as Map<String, dynamic>);
     return new SimDocumentSnapshot(
-        new SimDocumentReference(simFirestore, documentSnapshotData.path),
+        new DocumentReferenceSim(simFirestore, documentSnapshotData.path),
         documentSnapshotData.data != null,
         documentDataFromJsonMap(simFirestore, documentSnapshotData.data));
   }
@@ -76,7 +76,7 @@ class SimDocumentReference implements DocumentReference {
 
   @override
   CollectionReference get parent =>
-      new SimCollectionReference(simFirestore, url.dirname(path));
+      new CollectionReferenceSim(simFirestore, url.dirname(path));
 
   @override
   Future set(DocumentData documentData, [SetOptions options]) async {
@@ -115,8 +115,8 @@ class SimDocumentReference implements DocumentReference {
 
   @override
   Stream<DocumentSnapshot> onSnapshot() {
-    SimServerSubscription<SimDocumentSnapshot> subscription;
-    subscription = new SimServerSubscription(new StreamController(
+    ServerSubscriptionSim<SimDocumentSnapshot> subscription;
+    subscription = new ServerSubscriptionSim(new StreamController(
         onCancel: () => simFirestore.removeSubscription(subscription)));
 
     () async {
@@ -156,13 +156,13 @@ class SimDocumentReference implements DocumentReference {
   }
 }
 
-abstract class SimQueryMixin implements Query {
+abstract class QueryMixinSim implements Query {
   QueryInfo get queryInfo;
 
-  SimCollectionReference get simCollectionReference;
+  CollectionReferenceSim get simCollectionReference;
 
-  SimQuery clone() {
-    return new SimQuery(simCollectionReference)..queryInfo = queryInfo?.clone();
+  QuerySim clone() {
+    return new QuerySim(simCollectionReference)..queryInfo = queryInfo?.clone();
   }
 
   @override
@@ -245,20 +245,20 @@ abstract class SimQueryMixin implements Query {
 
     var querySnapshotData = new FirestoreQuerySnapshotData()
       ..fromMap((response as Response).result as Map<String, dynamic>);
-    return new SimQuerySnapshot(
+    return new QuerySnapshotSim(
         querySnapshotData.list
             .map((DocumentSnapshotData documentSnapshotData) =>
                 documentSnapshotFromData(documentSnapshotData))
             .toList(),
-        <SimDocumentChange>[]);
+        <DocumentChangeSim>[]);
   }
 
   @override
   Stream<QuerySnapshot> onSnapshot() {
     var simFirestore = simCollectionReference.simFirestore;
 
-    SimServerSubscription<QuerySnapshot> subscription;
-    subscription = new SimServerSubscription(new StreamController(
+    ServerSubscriptionSim<QuerySnapshot> subscription;
+    subscription = new ServerSubscriptionSim(new StreamController(
         onCancel: () => simFirestore.removeSubscription(subscription)));
 
     () async {
@@ -279,7 +279,7 @@ abstract class SimQueryMixin implements Query {
                     documentSnapshotFromData(documentSnapshotData))
                 .toList();
 
-            var changes = <SimDocumentChange>[];
+            var changes = <DocumentChangeSim>[];
             for (var changeData in querySnapshotData.changes) {
               // snapshot present?
               SimDocumentSnapshot snapshot;
@@ -291,14 +291,14 @@ abstract class SimQueryMixin implements Query {
                 // find in doc
                 snapshot = snapshotsFindById(docs, changeData.id);
               }
-              SimDocumentChange change = new SimDocumentChange(
+              DocumentChangeSim change = new DocumentChangeSim(
                   documentChangeTypeFromString(changeData.type),
                   snapshot,
                   changeData.newIndex,
                   changeData.oldIndex);
               changes.add(change);
             }
-            var snapshot = new SimQuerySnapshot(docs, changes);
+            var snapshot = new QuerySnapshotSim(docs, changes);
             subscription.add(snapshot);
           }
         }
@@ -322,7 +322,7 @@ abstract class SimQueryMixin implements Query {
   }
 }
 
-class SimServerSubscription<T> {
+class ServerSubscriptionSim<T> {
   // the streamId;
   int streamId;
   final StreamController<T> _controller;
@@ -330,7 +330,7 @@ class SimServerSubscription<T> {
   // register for notification during the query
   StreamSubscription<Notification> notificationSubscription;
 
-  SimServerSubscription(this._controller);
+  ServerSubscriptionSim(this._controller);
 
   Stream<T> get stream => _controller.stream;
 
@@ -344,7 +344,7 @@ class SimServerSubscription<T> {
   }
 }
 
-class SimDocumentChange implements DocumentChange {
+class DocumentChangeSim implements DocumentChange {
   @override
   final DocumentChangeType type;
 
@@ -357,14 +357,14 @@ class SimDocumentChange implements DocumentChange {
   @override
   final int oldIndex;
 
-  SimDocumentChange(this.type, this.document, this.newIndex, this.oldIndex);
+  DocumentChangeSim(this.type, this.document, this.newIndex, this.oldIndex);
 }
 
-class SimQuerySnapshot implements QuerySnapshot {
+class QuerySnapshotSim implements QuerySnapshot {
   final List<SimDocumentSnapshot> simDocs;
-  final List<SimDocumentChange> simDocChanges;
+  final List<DocumentChangeSim> simDocChanges;
 
-  SimQuerySnapshot(this.simDocs, this.simDocChanges);
+  QuerySnapshotSim(this.simDocs, this.simDocChanges);
 
   @override
   List<DocumentSnapshot> get docs => simDocs;
@@ -374,28 +374,28 @@ class SimQuerySnapshot implements QuerySnapshot {
   List<DocumentChange> get documentChanges => simDocChanges;
 }
 
-class SimQuery extends Object with SimQueryMixin implements Query {
-  final SimCollectionReference simCollectionReference;
+class QuerySim extends Object with QueryMixinSim implements Query {
+  final CollectionReferenceSim simCollectionReference;
 
-  SimFirestore get simFirestore => simCollectionReference.simFirestore;
+  FirestoreSim get simFirestore => simCollectionReference.simFirestore;
   QueryInfo queryInfo;
 
-  SimQuery(this.simCollectionReference);
+  QuerySim(this.simCollectionReference);
 }
 
-class SimCollectionReference extends Object
-    with SimQueryMixin
+class CollectionReferenceSim extends Object
+    with QueryMixinSim
     implements CollectionReference {
   @override
   QueryInfo queryInfo = new QueryInfo();
 
-  SimCollectionReference get simCollectionReference => this;
-  final SimFirestore simFirestore;
+  CollectionReferenceSim get simCollectionReference => this;
+  final FirestoreSim simFirestore;
 
   @override
   final String path;
 
-  SimCollectionReference(this.simFirestore, this.path);
+  CollectionReferenceSim(this.simFirestore, this.path);
 
   @override
   Future<DocumentReference> add(DocumentData documentData) async {
@@ -412,46 +412,48 @@ class SimCollectionReference extends Object
     }
     var firestorePathData = new FirestorePathData()
       ..fromMap((response as Response).result as Map<String, dynamic>);
-    return new SimDocumentReference(simFirestore, firestorePathData.path);
+    return new DocumentReferenceSim(simFirestore, firestorePathData.path);
   }
 
   @override
   DocumentReference doc([String path]) =>
-      new SimDocumentReference(simFirestore, url.join(this.path, path));
+      new DocumentReferenceSim(simFirestore, url.join(this.path, path));
 
   @override
   String get id => url.basename(path);
 
   @override
   DocumentReference get parent =>
-      new SimDocumentReference(simFirestore, url.dirname(path));
+      new DocumentReferenceSim(simFirestore, url.dirname(path));
 }
 
-class SimFirestoreService implements FirestoreService {
+class FirestoreServiceSim implements FirestoreService {
+  FirestoreServiceSim();
+
   @override
   bool get supportsQuerySelect => true;
 }
 
-class SimFirestore implements Firestore {
+class FirestoreSim implements Firestore {
   // The key is the streamId from the server
-  final Map<int, SimServerSubscription> _subscriptions = {};
+  final Map<int, ServerSubscriptionSim> _subscriptions = {};
 
-  addSubscription(SimServerSubscription subscription) {
+  addSubscription(ServerSubscriptionSim subscription) {
     _subscriptions[subscription.streamId] = subscription;
   }
 
-  final SimApp app;
+  final AppSim app;
 
-  SimFirestore(this.app);
+  FirestoreSim(this.app);
 
   @override
   CollectionReference collection(String path) =>
-      new SimCollectionReference(this, path);
+      new CollectionReferenceSim(this, path);
 
   @override
-  DocumentReference doc(String path) => new SimDocumentReference(this, path);
+  DocumentReference doc(String path) => new DocumentReferenceSim(this, path);
 
-  Future removeSubscription(SimServerSubscription subscription) async {
+  Future removeSubscription(ServerSubscriptionSim subscription) async {
     _subscriptions.remove(subscription.streamId);
     await subscription.close();
   }
@@ -471,12 +473,12 @@ class SimFirestore implements Firestore {
 
   SimDocumentSnapshot documentSnapshotFromDataMap(
       String path, Map<String, dynamic> map) {
-    return new SimDocumentSnapshot(new SimDocumentReference(this, path),
+    return new SimDocumentSnapshot(new DocumentReferenceSim(this, path),
         map != null, documentDataFromJsonMap(this, map));
   }
 
   @override
-  WriteBatch batch() => new SimWriteBatch(this);
+  WriteBatch batch() => new WriteBatchSim(this);
 
   @override
   Future runTransaction(
@@ -513,10 +515,10 @@ class TransactionSim implements Transaction {
   }
 }
 */
-class SimWriteBatch extends WriteBatchBase {
-  final SimFirestore firestore;
+class WriteBatchSim extends WriteBatchBase {
+  final FirestoreSim firestore;
 
-  SimWriteBatch(this.firestore);
+  WriteBatchSim(this.firestore);
 
   @override
   Future commit() async {
@@ -550,8 +552,8 @@ class SimWriteBatch extends WriteBatchBase {
   }
 }
 
-class SimApp implements App {
-  final FirebaseSimClientAdmin admin;
+class AppSim implements App {
+  final FirebaseSim admin;
   bool deleted = false;
   String _name;
 
@@ -578,7 +580,7 @@ class SimApp implements App {
     return readyCompleter.future;
   }
 
-  SimApp(this.admin, this.options, this._name) {
+  AppSim(this.admin, this.options, this._name) {
     _name ??= firebaseAppNameDefault;
   }
 
@@ -593,10 +595,10 @@ class SimApp implements App {
   @override
   String get name => _name;
 
-  SimFirestore _firestore;
+  FirestoreSim _firestore;
 
   @override
-  Firestore firestore() => _firestore ??= new SimFirestore(this);
+  Firestore firestore() => _firestore ??= new FirestoreSim(this);
 
   @override
   final AppOptions options;
@@ -617,17 +619,17 @@ class SimApp implements App {
   }
 }
 
-class FirebaseSimClientAdmin implements Firebase {
+class FirebaseSim implements Firebase {
   final WebSocketChannelClientFactory clientFactory;
   final String url;
 
-  FirebaseSimClientAdmin({this.clientFactory, this.url});
+  FirebaseSim({this.clientFactory, this.url});
 
   @override
   App initializeApp({AppOptions options, String name}) {
-    return new SimApp(this, options, name);
+    return new AppSim(this, options, name);
   }
 
   @override
-  FirestoreService firestore = new SimFirestoreService();
+  FirestoreService firestore = new FirestoreServiceSim();
 }

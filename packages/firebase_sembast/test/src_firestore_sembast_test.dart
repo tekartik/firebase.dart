@@ -17,15 +17,15 @@ void main() {
   group('firestore_io', () {
     test('db_name', () async {
       var app = firebaseAdmin.initializeApp(name: 'test');
-      var ioFirestore = app.firestore() as FirestoreIo;
+      var ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
 
       app = firebaseAdmin.initializeApp(name: 'test.db');
-      ioFirestore = app.firestore() as FirestoreIo;
+      ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
 
       app = firebaseAdmin.initializeApp(name: 'test/test.db');
-      ioFirestore = app.firestore() as FirestoreIo;
+      ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, 'test/test.db');
     });
 

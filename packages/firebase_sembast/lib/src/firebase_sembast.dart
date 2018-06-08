@@ -6,14 +6,14 @@ import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_sembast/src/firestore_sembast.dart';
 import 'package:tekartik_firebase_sembast/src/storage_sembast.dart';
 
-class FirestoreServiceIo implements FirestoreService {
+class FirestoreServiceSembast implements FirestoreService {
   @override
   bool get supportsQuerySelect => true;
 }
 
 class FirebaseSembast implements Firebase {
   @override
-  FirestoreService firestore = new FirestoreServiceIo();
+  FirestoreService firestore = new FirestoreServiceSembast();
   @override
   App initializeApp({AppOptions options, String name}) {
     return new AppSembast(options, name ?? '[DEFAULT]');
@@ -23,7 +23,7 @@ class FirebaseSembast implements Firebase {
 class AppSembast implements App {
   String get localPath => join(".dart_tool", "firebase_admin_shim");
 
-  FirestoreIo _firestore;
+  FirestoreSembast _firestore;
   StorageIo _storage;
 
   @override
@@ -38,7 +38,7 @@ class AppSembast implements App {
   @override
   Firestore firestore() {
     assert(!deleted);
-    _firestore ??= new FirestoreIo(this);
+    _firestore ??= new FirestoreSembast(this);
     return _firestore;
   }
 

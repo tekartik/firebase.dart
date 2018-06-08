@@ -21,7 +21,7 @@ Future<TestContext> initTestContextSimIo() async {
   var testContext = new TestContext();
   testContext.simServer =
       await serve(firebaseSembast, webSocketChannelFactoryIo);
-  testContext.firebase = sim.getSimFirebaseAdmin(
+  testContext.firebase = sim.getFirebaseSim(
       clientFactory: webSocketChannelClientFactoryIo,
       url: testContext.simServer.webSocketChannelServer.url);
   return testContext;
@@ -33,7 +33,7 @@ Future<TestContext> initTestContextSim() async {
   // The server use firebase io
   testContext.simServer =
       await serve(firebaseSembast, webSocketChannelFactoryMemory);
-  testContext.firebase = sim.getSimFirebaseAdmin(
+  testContext.firebase = sim.getFirebaseSim(
       clientFactory: webSocketChannelClientFactoryMemory,
       url: testContext.simServer.webSocketChannelServer.url);
   return testContext;
