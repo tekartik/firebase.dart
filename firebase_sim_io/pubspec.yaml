@@ -8,7 +8,10 @@ environment:
   sdk: '>=2.0.0-dev.54 <2.0.0'
 
 dependencies:
-  tekartik_firebase: any
+  tekartik_firebase_sim:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_sim
   tekartik_web_socket_io:
     git:
       url: git://github.com/tekartik/web_socket.dart
