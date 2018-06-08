@@ -12,6 +12,10 @@ dependencies:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase_sim
+  tekartik_firebase_sembast:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_sembast
   tekartik_web_socket_io:
     git:
       url: git://github.com/tekartik/web_socket.dart
