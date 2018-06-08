@@ -9,55 +9,55 @@ jobs:
   include:
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_sim_io"
+      env: PKG="firebase_sim_io"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_sembast"
+      env: PKG="firebase_sembast"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase"
+      env: PKG="firebase"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_browser"
+      env: PKG="firebase_browser"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_node"
+      env: PKG="firebase_node"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_sim"
+      env: PKG="firebase_sim"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_sim_io"
+      env: PKG="firebase_sim_io"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="packages/firebase_sim_browser"
+      env: PKG="firebase_sim_browser"
       dart: dev
     - stage: test_vm
       script: ./tool/travis.sh test_vm
-      env: PKG="packages/web_socket_io"
+      env: PKG="firebase"
       dart: dev
     - stage: test_vm
       script: ./tool/travis.sh test_vm
-      env: PKG="packages/firebase_sembast"
+      env: PKG="firebase_sembast"
       dart: dev
     - stage: test_vm
       script: ./tool/travis.sh test_vm
-      env: PKG="packages/firebase_sim"
+      env: PKG="firebase_sim"
       dart: dev
     - stage: test_vm
       script: ./tool/travis.sh test_vm
-      env: PKG="packages/firebase_sim_io"
+      env: PKG="firebase_sim_io"
       dart: dev
     - stage: test_browser
       script: ./tool/travis.sh test_browser
-      env: PKG="packages/firebase_sim"
+      env: PKG="firebase_sim"
       dart: dev
 stages:
   - analyzer_and_format

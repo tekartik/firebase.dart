@@ -6,7 +6,7 @@ import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/storage.dart';
-import 'package:tekartik_firebase_client_browser/src/firestore_browser.dart';
+import 'package:tekartik_firebase_browser/src/firestore_browser.dart';
 
 String firebaseJsVersion = "4.13.0";
 
