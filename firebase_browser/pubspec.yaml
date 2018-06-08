@@ -19,9 +19,9 @@ dependencies:
 dev_dependencies:
   test: ">=0.12.37"
   dev_test: any
-  tekartik_firebase_test:
-    path: ../firebase_test
 
 dependency_overrides:
   tekartik_firebase:
     path: ../firebase
+  tekartik_firebase_test:
+    path: ../firebase_test

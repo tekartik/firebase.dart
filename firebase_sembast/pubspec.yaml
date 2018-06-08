@@ -11,8 +11,9 @@ dependencies:
   sembast: '>=1.9.0-dev.1'
   uuid: '>=1.0.0'
   tekartik_firebase:
-    path: ../firebase
-  shelf: any
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase
 
 dev_dependencies:
   test: ">=0.12.37"
@@ -22,3 +23,5 @@ dev_dependencies:
 dependency_overrides:
   tekartik_firebase_test:
     path: ../firebase_test
+  tekartik_firebase:
+    path: ../firebase

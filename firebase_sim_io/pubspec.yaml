@@ -24,6 +24,6 @@ dependency_overrides:
   tekartik_firebase_sim:
     path: ../firebase_sim
   tekartik_firebase:
-      path: ../firebase
+    path: ../firebase
   tekartik_firebase_sembast:
     path: ../firebase_sembast

@@ -9,11 +9,13 @@ environment:
 
 dependencies:
   tekartik_firebase:
-    path: ../firebase
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase
   tekartik_web_socket:
     git:
       url: git://github.com/tekartik/web_socket.dart
-      path: packages/web_socket
+      path: web_socket
   tekartik_common_utils:
     git: git://github.com/tekartik/common_utils.dart
   meta: any
@@ -24,3 +26,7 @@ dependencies:
 dev_dependencies:
   test: ">=0.12.37"
   dev_test: any
+
+dependency_overrides:
+  tekartik_firebase:
+    path: ../firebase
