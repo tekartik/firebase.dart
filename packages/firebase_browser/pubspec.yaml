@@ -1,0 +1,21 @@
+name: tekartik_firebase_client_browser
+description: Firebase server io
+version: 0.0.1
+#homepage: https://www.example.com
+#author: alex <email@example.com>
+
+environment:
+  sdk: '>=2.0.0-dev.54 <2.0.0'
+
+dependencies:
+  tekartik_firebase:
+    path: ../firebase
+  firebase: any
+  tekartik_browser_utils:
+    git: git://github.com/tekartik/browser_utils.dart
+
+dev_dependencies:
+  test: ">=0.12.37"
+  dev_test: any
+  tekartik_firebase_test:
+    path: ../firebase_test
