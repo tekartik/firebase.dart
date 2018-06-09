@@ -26,11 +26,6 @@ runApp(App app) {
         expect(bucket, isNotNull);
         expect(bucket.name, "test");
       });
-
-      test('tekartik-free-dev.appspot.com', () async {
-        var bucket = storage.bucket(defaultBucketName);
-        expect(await bucket.exists(), isTrue);
-      });
     });
 
     group('file', () {

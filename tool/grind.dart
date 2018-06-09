@@ -21,10 +21,20 @@ pub run test
 ''', verbose: true);
 }
 
+@Task()
+test_firebase_node() async {
+  await bash('''
+set -xe
+pushd firebase_node
+pub run test -p node
+''', verbose: true);
+}
+
 @DefaultTask()
 test() async {
   await test_firebase_sembast();
   await test_firebase_browser();
+  await test_firebase_node();
 }
 
 @Task()
