@@ -52,7 +52,8 @@ abstract class DocumentReference {
 }
 
 abstract class DocumentData {
-  factory DocumentData() => new DocumentDataMap();
+  factory DocumentData([Map<String, dynamic> map]) =>
+      new DocumentDataMap(map: map);
 
   void setString(String key, String value);
 

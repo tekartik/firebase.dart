@@ -53,10 +53,8 @@ class DocumentDataMap implements DocumentData {
   Map<String, dynamic> _map;
 
   // use the given map as the data holder (so will be modified)
-  DocumentDataMap.withMap(this._map);
-
-  DocumentDataMap() {
-    _map = {};
+  DocumentDataMap({Map<String, dynamic> map}) {
+    _map = map ?? {};
   }
 
   @override

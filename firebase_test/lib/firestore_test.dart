@@ -6,8 +6,8 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:test/test.dart';
 
-void run(Firebase firebase) {
-  App app = firebase.initializeApp();
+void run(Firebase firebase, {AppOptions options}) {
+  App app = firebase.initializeApp(options: options);
 
   tearDownAll(() {
     return app.delete();

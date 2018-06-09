@@ -202,7 +202,7 @@ Map<String, dynamic> documentDataToNativeMap(DocumentData documentData) {
 DocumentData documentDataFromNativeMap(Map<String, dynamic> nativeMap) {
   if (nativeMap != null) {
     var map = fromNativeValue(nativeMap) as Map<String, dynamic>;
-    return new DocumentDataMap.withMap(map);
+    return new DocumentData(map);
   }
   return null;
 }

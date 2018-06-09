@@ -40,4 +40,13 @@ class AppOptions {
       this.projectId,
       this.storageBucket,
       this.messagingSenderId});
+
+  AppOptions.fromMap(Map<String, dynamic> map) {
+    apiKey = map['apiKey']?.toString();
+    authDomain = map['authDomain']?.toString();
+    databaseURL = map['databaseURL']?.toString();
+    projectId = map['projectId']?.toString();
+    storageBucket = map['storageBucket']?.toString();
+    messagingSenderId = map['messagingSenderId']?.toString();
+  }
 }

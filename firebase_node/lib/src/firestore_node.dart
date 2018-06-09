@@ -254,7 +254,7 @@ DocumentData documentDataFromNativeDocumentData(
   if (nativeInstance != null) {
     var nativeMap = nativeInstance.toMap();
     var map = documentValueFromNativeValue(nativeMap) as Map<String, dynamic>;
-    var documentData = new DocumentDataMap.withMap(map);
+    var documentData = new DocumentData(map);
     return documentData;
   }
   return null;

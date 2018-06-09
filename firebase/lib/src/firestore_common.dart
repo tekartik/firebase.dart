@@ -172,8 +172,8 @@ DocumentData documentDataFromJsonMap(
   if (map == null) {
     return null;
   }
-  return new DocumentDataMap.withMap(
-      jsonToDocumentDataValue(firestore, map) as Map<String, dynamic>);
+  return new DocumentDataMap(
+      map: jsonToDocumentDataValue(firestore, map) as Map<String, dynamic>);
 }
 
 Map<String, dynamic> documentDataToJsonMap(DocumentData documentData) {

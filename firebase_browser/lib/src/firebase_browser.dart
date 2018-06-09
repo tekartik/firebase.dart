@@ -8,7 +8,7 @@ import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_browser/src/firestore_browser.dart';
 
-String firebaseJsVersion = "4.13.0";
+String firebaseJsVersion = "4.11.0";
 
 JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader(
     "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase.js");
@@ -35,7 +35,7 @@ class FirebaseBrowser implements Firebase {
 
   @override
   App initializeApp({AppOptions options, String name}) {
-    options ??= defaultAppOptions ?? new AppOptions();
+    options ??= new AppOptions();
     native.App nativeApp = native.initializeApp(
         projectId: options.projectId,
         storageBucket: options.storageBucket,
@@ -96,15 +96,7 @@ class AppBrowser implements App {
   }
 }
 
-FirebaseBrowser _firebaseAdminBrowser;
+FirebaseBrowser _firebaseBrowser;
 
-FirebaseBrowser get firebaseAdminBrowser =>
-    _firebaseAdminBrowser ??= new FirebaseBrowser();
-
-AppOptions defaultAppOptions;
-
-Firebase initFirebaseAdminBrowser(AppOptions appOptions) {
-  defaultAppOptions = appOptions;
-  var firebaseAdmin = firebaseAdminBrowser;
-  return firebaseAdmin;
-}
+FirebaseBrowser get firebaseBrowser =>
+    _firebaseBrowser ??= new FirebaseBrowser();

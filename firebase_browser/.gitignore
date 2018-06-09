@@ -8,3 +8,5 @@ pubspec.lock
 # Intellij
 .idea/
 *.iml
+
+local.*
