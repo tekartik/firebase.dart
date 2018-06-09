@@ -25,7 +25,7 @@ class SimDocumentSnapshot implements DocumentSnapshot {
   SimDocumentSnapshot(this.ref, this.exists, this.documentData);
 
   @override
-  DocumentData data() => documentData;
+  Map<String, dynamic> get data => documentData?.asMap();
 }
 
 class DocumentReferenceSim implements DocumentReference {
@@ -79,8 +79,8 @@ class DocumentReferenceSim implements DocumentReference {
       new CollectionReferenceSim(simFirestore, url.dirname(path));
 
   @override
-  Future set(DocumentData documentData, [SetOptions options]) async {
-    var jsonMap = documentDataToJsonMap(documentData);
+  Future set(Map<String, dynamic> data, [SetOptions options]) async {
+    var jsonMap = documentDataToJsonMap(new DocumentData(data));
     var simClient = await simFirestore.app.simClient;
     var firestoreSetData = new FirestoreSetData()
       ..path = path
@@ -95,8 +95,8 @@ class DocumentReferenceSim implements DocumentReference {
   }
 
   @override
-  Future update(DocumentData documentData) async {
-    var jsonMap = documentDataToJsonMap(documentData);
+  Future update(Map<String, dynamic> data) async {
+    var jsonMap = documentDataToJsonMap(new DocumentData(data));
     var simClient = await simFirestore.app.simClient;
     var firestoreSetData = new FirestoreSetData()
       ..path = path
@@ -398,8 +398,8 @@ class CollectionReferenceSim extends Object
   CollectionReferenceSim(this.simFirestore, this.path);
 
   @override
-  Future<DocumentReference> add(DocumentData documentData) async {
-    var jsonMap = documentDataToJsonMap(documentData);
+  Future<DocumentReference> add(Map<String, dynamic> data) async {
+    var jsonMap = documentDataToJsonMap(new DocumentData(data));
     var simClient = await simFirestore.app.simClient;
     var firestoreSetData = new FirestoreSetData()
       ..path = path

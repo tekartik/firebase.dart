@@ -145,7 +145,7 @@ dynamic jsonToDocumentDataValue(Firestore firestore, dynamic value) {
     if (type != null) {
       switch (type) {
         case typeDateTime:
-          return anyToDateTime(value[jsonValueField]);
+          return anyToDateTime(value[jsonValueField])?.toLocal();
         case typeFieldValue:
           return fieldValueFromJsonValue(value[jsonValueField]);
         case typeDocumentReference:
@@ -175,6 +175,17 @@ DocumentData documentDataFromJsonMap(
   return new DocumentDataMap(
       map: jsonToDocumentDataValue(firestore, map) as Map<String, dynamic>);
 }
+
+// will return null if map is null
+DocumentData documentDataFromMap(Map<String, dynamic> map) {
+  if (map != null) {
+    return null;
+  }
+  return new DocumentData(map);
+}
+
+DocumentData documentDataFromSnapshot(DocumentSnapshot snapshot) =>
+    snapshot?.exists == true ? new DocumentData(snapshot.data) : null;
 
 Map<String, dynamic> documentDataToJsonMap(DocumentData documentData) {
   if (documentData == null) {
@@ -487,14 +498,15 @@ abstract class WriteBatchBase implements WriteBatch {
       operations.add(new WriteBatchOperationDelete(ref));
 
   @override
-  void set(DocumentReference ref, DocumentData documentData,
+  void set(DocumentReference ref, Map<String, dynamic> data,
       [SetOptions options]) {
-    operations.add(new WriteBatchOperationSet(ref, documentData, options));
+    operations
+        .add(new WriteBatchOperationSet(ref, new DocumentData(data), options));
   }
 
   @override
-  void update(DocumentReference ref, DocumentData documentData) {
-    operations.add(new WriteBatchOperationUpdate(ref, documentData));
+  void update(DocumentReference ref, Map<String, dynamic> data) {
+    operations.add(new WriteBatchOperationUpdate(ref, new DocumentData(data)));
   }
 }
 

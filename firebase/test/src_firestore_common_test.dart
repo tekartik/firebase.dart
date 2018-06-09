@@ -27,7 +27,7 @@ class DocumentSnapshotMock implements DocumentSnapshot {
   DocumentSnapshotMock(this.ref);
 
   @override
-  DocumentData data() => null;
+  Map<String, dynamic> get data => null;
 
   @override
   bool get exists => null;
@@ -54,10 +54,10 @@ class DocumentReferenceMock implements DocumentReference {
   @override
   final String path;
 
-  Future set(DocumentData documentData, [SetOptions options]) => null;
+  Future set(Map<String, dynamic> data, [SetOptions options]) => null;
 
   @override
-  Future update(DocumentData documentData) => null;
+  Future update(Map<String, dynamic> data) => null;
 
   @override
   Stream<DocumentSnapshot> onSnapshot() => null;

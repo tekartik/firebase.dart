@@ -464,7 +464,7 @@ class DocumentSnapshotSembast implements DocumentSnapshot {
       this.documentReference, this.documentData, this.exists);
 
   @override
-  DocumentData data() => documentData;
+  Map<String, dynamic> get data => documentData?.asMap();
 
   @override
   DocumentReference get ref => documentReference;
@@ -508,11 +508,12 @@ class DocumentReferenceIo extends BaseReferenceSembast
   }
 
   @override
-  Future set(DocumentData documentData, [SetOptions options]) async {
+  Future set(Map<String, dynamic> data, [SetOptions options]) async {
     WriteResultSembast result;
     var db = await firestore.ready;
     await db.transaction((txn) async {
-      result = await firestore.txnSet(txn, path, documentData, options);
+      result =
+          await firestore.txnSet(txn, path, new DocumentData(data), options);
     });
     if (result != null) {
       firestore.notify(result);
@@ -522,7 +523,7 @@ class DocumentReferenceIo extends BaseReferenceSembast
   String get _key => path;
 
   @override
-  Future update(DocumentData documentData) async {
+  Future update(Map<String, dynamic> data) async {
     WriteResultSembast result;
 
     var db = await firestore.ready;
@@ -532,7 +533,7 @@ class DocumentReferenceIo extends BaseReferenceSembast
         throw new Exception("update failed, record $path does not exit");
       }
       result = await firestore.txnSet(
-          txn, path, documentData, new SetOptions(merge: true));
+          txn, path, new DocumentData(data), new SetOptions(merge: true));
     });
     if (result != null) {
       firestore.notify(result);
@@ -591,7 +592,7 @@ class CollectionReferenceSembast extends BaseReferenceSembast
   String _generateId() => new Uuid().v4().toString();
 
   @override
-  Future<DocumentReference> add(DocumentData documentData) async {
+  Future<DocumentReference> add(Map<String, dynamic> data) async {
     String id = _generateId();
     String path = url.join(this.path, id);
 
@@ -599,7 +600,7 @@ class CollectionReferenceSembast extends BaseReferenceSembast
 
     var db = await firestore.ready;
     await db.transaction((txn) async {
-      result = await firestore.txnSet(txn, path, documentData);
+      result = await firestore.txnSet(txn, path, new DocumentData(data));
     });
     if (result != null) {
       firestore.notify(result);

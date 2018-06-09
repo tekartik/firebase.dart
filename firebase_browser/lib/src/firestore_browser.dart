@@ -51,16 +51,18 @@ class WriteBatchBrowser implements WriteBatch {
       nativeInstance.delete(_unwrapDocumentReference(ref));
 
   @override
-  void set(DocumentReference ref, DocumentData documentData,
+  void set(DocumentReference ref, Map<String, dynamic> data,
       [SetOptions options]) {
-    nativeInstance.set(_unwrapDocumentReference(ref),
-        documentDataToNativeMap(documentData), _unwrapOptions(options));
+    nativeInstance.set(
+        _unwrapDocumentReference(ref),
+        documentDataToNativeMap(new DocumentData(data)),
+        _unwrapOptions(options));
   }
 
   @override
-  void update(DocumentReference ref, DocumentData documentData) {
+  void update(DocumentReference ref, Map<String, dynamic> data) {
     nativeInstance.update(_unwrapDocumentReference(ref),
-        data: documentDataToNativeMap(documentData));
+        data: documentDataToNativeMap(new DocumentData(data)));
   }
 }
 
@@ -79,16 +81,18 @@ class TransactionBrowser implements Transaction {
           await nativeInstance.get(_unwrapDocumentReference(documentRef)));
 
   @override
-  void set(DocumentReference documentRef, DocumentData data,
+  void set(DocumentReference documentRef, Map<String, dynamic> data,
       [SetOptions options]) {
-    nativeInstance.set(_unwrapDocumentReference(documentRef),
-        documentDataToNativeMap(data), _unwrapOptions(options));
+    nativeInstance.set(
+        _unwrapDocumentReference(documentRef),
+        documentDataToNativeMap(new DocumentData(data)),
+        _unwrapOptions(options));
   }
 
   @override
-  void update(DocumentReference documentRef, DocumentData data) {
+  void update(DocumentReference documentRef, Map<String, dynamic> data) {
     nativeInstance.update(_unwrapDocumentReference(documentRef),
-        data: documentDataToNativeMap(data));
+        data: documentDataToNativeMap(new DocumentData(data)));
   }
 }
 
@@ -213,7 +217,8 @@ class DocumentSnapshotBrowser implements DocumentSnapshot {
   DocumentSnapshotBrowser(this._native);
 
   @override
-  DocumentData data() => documentDataFromNativeMap(_native.data());
+  Map<String, dynamic> get data =>
+      documentDataFromNativeMap(_native.data())?.asMap();
 
   @override
   bool get exists => _native.exists;
@@ -261,14 +266,14 @@ class DocumentReferenceBrowser implements DocumentReference {
   String get path => nativeInstance.path;
 
   @override
-  Future set(DocumentData documentData, [SetOptions options]) async {
-    await nativeInstance.set(
-        documentDataToNativeMap(documentData), _unwrapOptions(options));
+  Future set(Map<String, dynamic> data, [SetOptions options]) async {
+    await nativeInstance.set(documentDataToNativeMap(new DocumentData(data)),
+        _unwrapOptions(options));
   }
 
   @override
-  Future update(DocumentData documentData) =>
-      nativeInstance.update(data: documentDataToNativeMap(documentData));
+  Future update(Map<String, dynamic> data) => nativeInstance.update(
+      data: documentDataToNativeMap(new DocumentData(data)));
 
   @override
   Stream<DocumentSnapshot> onSnapshot() {
@@ -454,9 +459,9 @@ class CollectionReferenceBrowser extends QueryBrowser
       : super(nativeCollectionReference);
 
   @override
-  Future<DocumentReference> add(DocumentData documentData) async =>
+  Future<DocumentReference> add(Map<String, dynamic> data) async =>
       _wrapDocumentReference(await _nativeCollectionReference
-          .add(documentDataToNativeMap(documentData)));
+          .add(documentDataToNativeMap(new DocumentData(data))));
 
   @override
   DocumentReference doc([String path]) =>

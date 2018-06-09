@@ -133,5 +133,36 @@ main() {
       expect(
           documentDataToJsonMap(documentDataFromJsonMap(firestore, map)), map);
     });
+
+    group('DocumentData', () {
+      test('sub_empty', () async {
+        var documentData = new DocumentData();
+        var subData = new DocumentData();
+        documentData.setData("sub", subData);
+        subData = documentData.getData("sub");
+        expect(subData, isNotNull);
+      });
+
+      test('sub_one', () async {
+        var documentData = new DocumentData();
+        var subData = new DocumentData();
+        documentData.setData("sub", subData);
+        subData.setString("test", "test_value");
+        subData = documentData.getData("sub");
+        expect(subData.getString("test"), "test_value");
+      });
+
+      test('sub_sub_one', () async {
+        var documentData = new DocumentData();
+        var subData = new DocumentData();
+        documentData.setData("sub", subData);
+        var subSubData = new DocumentData();
+        subData.setData("inner", subSubData);
+        subSubData.setString("test", "test_value");
+        subData = documentData.getData("sub");
+        subSubData = subData.getData("inner");
+        expect(subSubData.getString("test"), "test_value");
+      });
+    });
   });
 }

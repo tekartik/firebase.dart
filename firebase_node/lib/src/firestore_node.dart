@@ -59,17 +59,17 @@ class WriteBatchNode implements WriteBatch {
       nativeInstance.delete(_unwrapDocumentReference(ref));
 
   @override
-  void set(DocumentReference ref, DocumentData documentData,
+  void set(DocumentReference ref, Map<String, dynamic> data,
           [SetOptions options]) =>
       nativeInstance.setData(
           _unwrapDocumentReference(ref),
-          documentDataToNativeDocumentData(documentData),
+          documentDataToNativeDocumentData(new DocumentData(data)),
           _unwrapSetOptions(options));
 
   @override
-  void update(DocumentReference ref, DocumentData documentData) =>
+  void update(DocumentReference ref, Map<String, dynamic> data) =>
       nativeInstance.updateData(_unwrapDocumentReference(ref),
-          documentDataToNativeUpdateData(documentData));
+          documentDataToNativeUpdateData(new DocumentData(data)));
 }
 
 class QueryNode extends Object with QueryMixin {
@@ -161,9 +161,9 @@ class CollectionReferenceNode extends QueryNode implements CollectionReference {
       _wrapDocumentReference(nativeInstance.document(path));
 
   @override
-  Future<DocumentReference> add(DocumentData documentData) async =>
+  Future<DocumentReference> add(Map<String, dynamic> data) async =>
       _wrapDocumentReference(await nativeInstance
-          .add(documentDataToNativeDocumentData(documentData)));
+          .add(documentDataToNativeDocumentData(new DocumentData(data))));
 
   //@TODO immplement in firebase admin
   @override
@@ -284,8 +284,9 @@ class DocumentReferenceNode implements DocumentReference {
       _collectionReference(nativeInstance.collection(path));
 
   @override
-  Future set(DocumentData documentData, [SetOptions options]) async {
-    await nativeInstance.setData(documentDataToNativeDocumentData(documentData),
+  Future set(Map<String, dynamic> data, [SetOptions options]) async {
+    await nativeInstance.setData(
+        documentDataToNativeDocumentData(new DocumentData(data)),
         _unwrapSetOptions(options));
   }
 
@@ -299,9 +300,9 @@ class DocumentReferenceNode implements DocumentReference {
   }
 
   @override
-  Future update(DocumentData documentData) async {
+  Future update(Map<String, dynamic> data) async {
     await nativeInstance
-        .updateData(documentDataToNativeUpdateData(documentData));
+        .updateData(documentDataToNativeUpdateData(new DocumentData(data)));
   }
 
   @override
@@ -334,7 +335,8 @@ class DocumentSnapshotNode implements DocumentSnapshot {
   DocumentSnapshotNode._(this._impl);
 
   @override
-  DocumentData data() => documentDataFromNativeDocumentData(_impl.data);
+  Map<String, dynamic> get data =>
+      documentDataFromNativeDocumentData(_impl.data)?.asMap();
 
   @override
   DocumentReference get ref => _wrapDocumentReference(_impl.reference);

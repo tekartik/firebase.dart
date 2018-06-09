@@ -89,7 +89,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
         await app
             .firestore()
             .doc(firestoreSetData.path)
-            .set(documentData, options);
+            .set(documentData.asMap(), options);
 
         var response = new Response(request.id, null);
         sendMessage(response);
@@ -98,7 +98,10 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
           ..fromMap(requestParams(request));
         var documentData =
             documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
-        await app.firestore().doc(firestoreSetData.path).update(documentData);
+        await app
+            .firestore()
+            .doc(firestoreSetData.path)
+            .update(documentData.asMap());
 
         var response = new Response(request.id, null);
         sendMessage(response);
@@ -110,7 +113,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
         var docRef = await app
             .firestore()
             .collection(firestoreSetData.path)
-            .add(documentData);
+            .add(documentData.asMap());
 
         var response = new Response(
             request.id, (new FirestorePathData()..path = docRef.path).toMap());
@@ -165,7 +168,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
     var ref = requestDocumentReference(request);
     var documentSnapshot = await ref.get();
 
-    var data = documentSnapshot.exists ? documentSnapshot.data() : null;
+    var data = documentDataFromSnapshot(documentSnapshot);
     var snapshotData = new DocumentGetSnapshotData()
       ..path = documentSnapshot.ref.path
       ..data = documentDataToJsonMap(data);
@@ -190,7 +193,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
         data.streamId = streamId;
         data.path = ref.path;
 
-        var docData = snapshot.exists ? snapshot.data() : null;
+        var docData = documentDataFromSnapshot(snapshot);
         data.data = documentDataToJsonMap(docData);
 
         var notification =
@@ -252,7 +255,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
         data.streamId = streamId;
         data.list = <DocumentSnapshotData>[];
         for (DocumentSnapshot doc in querySnapshot.docs) {
-          var docData = doc.exists ? doc.data() : null;
+          var docData = documentDataFromSnapshot(doc);
           data.list.add(new DocumentSnapshotData()
             ..path = doc.ref.path
             ..data = documentDataToJsonMap(docData));
@@ -278,8 +281,8 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
           }
 
           if (!_find()) {
-            var docData = change.document.data();
-            documentChangeData.data = documentDataToJsonMap(docData);
+            documentChangeData.data = documentDataToJsonMap(
+                documentDataFromSnapshot(change.document));
           }
           data.changes.add(documentChangeData);
         }
@@ -311,11 +314,11 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
       } else if (item is BatchOperationSetData) {
         batch.set(
             app.firestore().doc(item.path),
-            documentDataFromJsonMap(app.firestore(), item.data),
+            documentDataFromJsonMap(app.firestore(), item.data)?.asMap(),
             item.merge != null ? new SetOptions(merge: item.merge) : null);
       } else if (item is BatchOperationUpdateData) {
         batch.update(app.firestore().doc(item.path),
-            documentDataFromJsonMap(app.firestore(), item.data));
+            documentDataFromJsonMap(app.firestore(), item.data)?.asMap());
       } else {
         throw 'not supported ${item}';
       }
@@ -337,7 +340,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
     var data = new FirestoreQuerySnapshotData();
     data.list = <DocumentSnapshotData>[];
     for (DocumentSnapshot doc in querySnapshot.docs) {
-      var docData = doc.exists ? doc.data() : null;
+      var docData = documentDataFromSnapshot(doc);
       data.list.add(new DocumentSnapshotData()
         ..path = doc.ref.path
         ..data = documentDataToJsonMap(docData));

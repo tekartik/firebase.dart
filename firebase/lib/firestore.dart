@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'src/firestore.dart';
+import 'package:collection/collection.dart';
 
 abstract class FirestoreService {
   bool get supportsQuerySelect;
@@ -26,7 +27,7 @@ abstract class CollectionReference extends Query {
 
   DocumentReference doc([String path]);
 
-  Future<DocumentReference> add(DocumentData documentData);
+  Future<DocumentReference> add(Map<String, dynamic> data);
 }
 
 abstract class DocumentReference {
@@ -40,13 +41,11 @@ abstract class DocumentReference {
 
   Future delete();
 
-  //Future<WriteResult> create(DocumentData documentData);
-
   Future<DocumentSnapshot> get();
 
-  Future set(DocumentData documentData, [SetOptions options]);
+  Future set(Map<String, dynamic> data, [SetOptions options]);
 
-  Future update(DocumentData documentData);
+  Future update(Map<String, dynamic> data);
 
   Stream<DocumentSnapshot> onSnapshot();
 }
@@ -99,7 +98,7 @@ abstract class DocumentData {
   // Return the key list
   Iterable<String> get keys;
 
-  Map<String, dynamic> toMap();
+  Map<String, dynamic> asMap();
 
   // use hasProperty
   @deprecated
@@ -124,7 +123,7 @@ abstract class DocumentData {
 abstract class DocumentSnapshot {
   DocumentReference get ref;
 
-  DocumentData data();
+  Map<String, dynamic> get data;
 
   bool get exists;
 }
@@ -141,9 +140,22 @@ class Blob {
   final Uint8List _data;
 
   Blob.fromList(List<int> data) : _data = new Uint8List.fromList(data);
+
   Uint8List get data => _data;
 
   Blob(this._data);
+
+  @override
+  int get hashCode =>
+      (_data != null && _data.length > 0) ? _data.first.hashCode : 0;
+
+  @override
+  bool operator ==(other) {
+    if (other is Blob) {
+      return const ListEquality().equals(other.data, _data);
+    }
+    return false;
+  }
 }
 
 class GeoPoint {
@@ -189,9 +201,12 @@ const orderByDescending = "desc";
 
 abstract class WriteBatch {
   void delete(DocumentReference ref);
-  void set(DocumentReference ref, DocumentData documentData,
+
+  void set(DocumentReference ref, Map<String, dynamic> data,
       [SetOptions options]);
-  void update(DocumentReference ref, DocumentData documentData);
+
+  void update(DocumentReference ref, Map<String, dynamic> data);
+
   Future commit();
 }
 
@@ -308,7 +323,7 @@ abstract class Transaction {
   /// Pass [: {merge: true} :] to only replace the values specified in the
   /// data argument. Fields omitted will remain untouched.
   /// Value must not be null.
-  void set(DocumentReference documentRef, DocumentData data,
+  void set(DocumentReference documentRef, Map<String, dynamic> data,
       [SetOptions options]);
 
   /// Updates fields in the document referred to by this [DocumentReference].
@@ -323,5 +338,5 @@ abstract class Transaction {
   ///
   /// The [fieldsAndValues] param is the List alternating between fields
   /// (as String or [FieldPath] objects) and values.
-  void update(DocumentReference documentRef, DocumentData data);
+  void update(DocumentReference documentRef, Map<String, dynamic> data);
 }

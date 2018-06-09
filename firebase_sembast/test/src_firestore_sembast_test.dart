@@ -31,19 +31,22 @@ void main() {
 
     group('DocumentData', () {
       test('dateTime', () {
-        var date =
+        var utcDate =
             new DateTime.fromMillisecondsSinceEpoch(12345657890123).toUtc();
+        var localDate =
+            new DateTime.fromMillisecondsSinceEpoch(123456578901234);
         DocumentData documentData = new DocumentData();
-        documentData.setDateTime('dateTime', date);
+        documentData.setDateTime('utcDateTime', utcDate);
+        documentData.setDateTime('dateTime', localDate);
         expect(documentDataToRecordMap(documentData), {
-          'dateTime': {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'}
+          'utcDateTime': {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'},
+          'dateTime': {r'$t': 'DateTime', r'$v': '5882-03-08T14:08:21.234Z'}
         });
 
-        documentData = documentDataFromRecordMap(firestore, {
-          'dateTime': {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'}
-        });
+        documentData = documentDataFromRecordMap(
+            firestore, documentDataToRecordMap(documentData));
         // this is local time
-        DateTime localDate = date.toLocal();
+        expect(documentData.getDateTime('utcDateTime'), utcDate.toLocal());
         expect(documentData.getDateTime('dateTime'), localDate);
       });
 
@@ -78,7 +81,7 @@ void main() {
             'subsub': {'test': 1234}
           }
         });
-        expect(documentData.toMap(), {
+        expect(documentData.asMap(), {
           'sub': {
             'subsub': {'test': 1234}
           }

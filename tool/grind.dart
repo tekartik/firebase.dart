@@ -26,3 +26,11 @@ test() async {
   await test_firebase_sembast();
   await test_firebase_browser();
 }
+
+@Task()
+fmt() async {
+  await bash('''
+set -xe
+dartfmt . -w
+''', verbose: true);
+}

@@ -59,7 +59,7 @@ class DocumentDataMap implements DocumentData {
 
   @override
   // Regular map
-  Map<String, dynamic> toMap() => map;
+  Map<String, dynamic> asMap() => map;
 
   @override
   String getString(String key) => getValue(key) as String;
