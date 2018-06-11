@@ -41,10 +41,10 @@ void main() {
 ### Usage on sembast (io simulation)
 
 ```dart
-import 'package:tekartik_firebase_sembast/firebase_sembast.dart';
+import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 
 void main() {
-  var firebase = firebaseSembast;
+  var firebase = firebaseSembastIo;
   // ...
 }
 ```  

@@ -1,30 +1,28 @@
 @TestOn('vm')
 library tekartik_firebase_sembast.firebase_io_src_test;
 
-import 'package:test/test.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
-import 'package:tekartik_firebase_sembast/firebase_sembast.dart';
+import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 import 'package:tekartik_firebase_sembast/src/firestore_sembast.dart';
+import 'package:test/test.dart';
 
 void main() {
-  // init();
-  //run(firebaseAdmin);
-  var firebaseAdmin = firebaseSembast;
-  var app = firebaseAdmin.initializeApp(name: 'test');
+  var firebase = firebaseSembastIo;
+  var app = firebase.initializeApp(name: 'test');
   var firestore = app.firestore();
 
   group('firestore_io', () {
     test('db_name', () async {
-      var app = firebaseAdmin.initializeApp(name: 'test');
+      var app = firebase.initializeApp(name: 'test');
       var ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
 
-      app = firebaseAdmin.initializeApp(name: 'test.db');
+      app = firebase.initializeApp(name: 'test.db');
       ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
 
-      app = firebaseAdmin.initializeApp(name: 'test/test.db');
+      app = firebase.initializeApp(name: 'test/test.db');
       ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, 'test/test.db');
     });

@@ -3,23 +3,22 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart' hide Transaction;
 import 'package:sembast/sembast.dart' as sembast;
-import 'package:sembast/sembast_io.dart';
+import 'package:sembast/sembast_memory.dart' as sembast;
 import 'package:synchronized/synchronized.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/src/firestore_common.dart';
-import 'package:tekartik_firebase_sembast/src/firebase_sembast.dart' as io;
+import 'package:tekartik_firebase_sembast/src/firebase_sembast.dart' as sembast;
 import 'package:uuid/uuid.dart';
 
-// can be changed during testing
-DatabaseFactory databaseFactory = ioDatabaseFactory;
+const revKey = r'$rev';
 
 Map<String, dynamic> dateTimeToRecordValue(DateTime dateTime) =>
     dateTimeToJsonValue(dateTime);
 
 Map<String, dynamic> documentReferenceToRecordValue(
-        DocumentReferenceIo documentReference) =>
+        DocumentReferenceSembast documentReference) =>
     documentReferenceToJsonValue(documentReference);
 
 DateTime recordValueToDateTime(Map map) => jsonValueToDateTime(map)?.toLocal();
@@ -48,16 +47,6 @@ dynamic recordValueToValue(Firestore firestore, dynamic recordValue) {
   } else if (recordValue is Map) {
     if (recordValue.containsKey(jsonTypeField)) {
       return jsonToDocumentDataValue(firestore, recordValue);
-      /*
-      if (recordValue[jsonTypeField] == typeDateTime) {
-        return recordValueToDateTime(recordValue);
-      } else if (recordValue[jsonTypeField] == typeDocumentReference) {
-        return recordValueToDocumentReference(firestore, recordValue);
-      } else if (recordValue[jsonTypeField] == typeBlob) {
-        return recordValueToDocumentReference(firestore, recordValue);
-      }
-      throw 'recordValueToValue custom object not supported $recordValue ${recordValue.runtimeType}';
-      */
     } else {
       return recordValue
           .map((key, recordValue) =>
@@ -89,7 +78,7 @@ dynamic valueToRecordValue(dynamic value) {
     // this happens when it is a list item
     return value.map
         .map((key, value) => new MapEntry(key, valueToRecordValue(value)));
-  } else if (value is DocumentReferenceIo) {
+  } else if (value is DocumentReferenceSembast) {
     return documentReferenceToRecordValue(value);
   } else if (value is Blob) {
     return blobToJsonValue(value);
@@ -101,6 +90,18 @@ dynamic valueToRecordValue(dynamic value) {
 
 DocumentDataMap _documentDataMap(DocumentData documentData) =>
     documentData as DocumentDataMap;
+
+int recordMapRev(Map<String, dynamic> recordMap) =>
+    recordMap != null ? recordMap[revKey] as int : null;
+
+DocumentSnapshotSembast documentSnapshotFromRecordMap(
+    FirestoreSembast firestore, String path, Map<String, dynamic> recordMap) {
+  return new DocumentSnapshotSembast(
+      new DocumentReferenceSembast(
+          new ReferenceContextSembast(firestore, path)),
+      recordMapRev(recordMap),
+      documentDataFromRecordMap(firestore, recordMap));
+}
 
 // merge with existing record map if any
 Map<String, dynamic> documentDataToRecordMap(DocumentData documentData,
@@ -135,6 +136,10 @@ DocumentDataMap documentDataFromRecordMap(
   documentData ??= new DocumentData();
   if (recordMap != null) {
     recordMap.forEach((String key, value) {
+      // ignore rev
+      if (key == revKey) {
+        return;
+      }
       // call setValue to prevent checking type again
       (documentData as DocumentDataMap)
           .setValue(key, recordValueToValue(firestore, value));
@@ -169,7 +174,7 @@ bool mapWhere(DocumentData documentData, WhereInfo where) {
 }
 
 // new format
-int ioFirestoreDatabaseVersion = 2;
+int firestoreSembastDatabaseVersion = 1;
 
 class CollectionSubscription
     extends FirestoreSubscription<DocumentChangeSembast> {}
@@ -190,17 +195,22 @@ class WriteResultSembast {
 
   WriteResultSembast(this.path);
 
-  bool get added => previousData == null && newData != null;
+  bool get added =>
+      previousSnapshot?.exists != true && newSnashot?.exists == true;
 
-  bool get removed => previousData != null && newData == null;
-  DocumentDataMap previousData;
-  DocumentDataMap newData;
+  bool get removed =>
+      previousSnapshot?.exists == true && newSnashot?.exists != true;
+
+  bool get exists => newSnashot?.exists == true;
+
+  DocumentSnapshotSembast previousSnapshot;
+  DocumentSnapshotSembast newSnashot;
 }
 
 class FirestoreSembast implements Firestore {
   var dbLock = new Lock();
   Database db;
-  final io.AppSembast app;
+  final sembast.AppSembast app;
 
   FirestoreSembast(this.app);
 
@@ -231,7 +241,7 @@ class FirestoreSembast implements Firestore {
 
   @override
   DocumentReference doc(String path) {
-    return new DocumentReferenceIo(_context(this, path));
+    return new DocumentReferenceSembast(_context(this, path));
   }
 
   Future<Database> get ready async {
@@ -244,13 +254,13 @@ class FirestoreSembast implements Firestore {
 
         String name = dbPath;
         print('opening database ${name}');
-        var db = await databaseFactory
-            .openDatabase(name, version: ioFirestoreDatabaseVersion,
+        var db = await app.firebase.databaseFactory
+            .openDatabase(name, version: firestoreSembastDatabaseVersion,
                 onVersionChanged: (db, oldVersion, newVersion) async {
           if (oldVersion == null) {
             // creating ok
           } else {
-            if (newVersion < ioFirestoreDatabaseVersion) {
+            if (newVersion < firestoreSembastDatabaseVersion) {
               // clear store
               await db.findStore(docStoreName)?.clear();
             }
@@ -311,10 +321,23 @@ class FirestoreSembast implements Firestore {
     return recordMap;
   }
 
-  Future<DocumentDataMap> txnGetDocumentData(
+  Future<DocumentSnapshotSembast> txnGetDocumentSnapshot(
       sembast.Transaction txn, String path) async {
     Map<String, dynamic> recordMap = await txnGetRecordMap(txn, path);
-    return documentDataFromRecordMap(this, recordMap);
+    return documentFromRecordMap(path, recordMap);
+  }
+
+  DocumentSnapshotSembast documentFromRecordMap(
+      String path, Map<String, dynamic> recordMap) {
+    int rev;
+    if (recordMap != null) {
+      rev = recordMap[r'$rev'] as int;
+      recordMap.remove(r'$rev');
+    }
+    return new DocumentSnapshotSembast(
+        new DocumentReferenceSembast(new ReferenceContextSembast(this, path)),
+        rev,
+        documentDataFromRecordMap(this, recordMap));
   }
 
   // return previous data
@@ -322,7 +345,7 @@ class FirestoreSembast implements Firestore {
       sembast.Transaction txn, String path) async {
     var result = new WriteResultSembast(path);
     var docStore = txn.getStore(docStoreName);
-    result.previousData = await txnGetDocumentData(txn, path);
+    result.previousSnapshot = await txnGetDocumentSnapshot(txn, path);
     await docStore.delete(path);
     return result;
   }
@@ -333,16 +356,25 @@ class FirestoreSembast implements Firestore {
     var result = new WriteResultSembast(path);
     var docStore = txn.getStore(docStoreName);
     var existingRecordMap = await txnGetRecordMap(txn, path);
-    result.previousData = documentDataFromRecordMap(this, existingRecordMap);
-    Map<String, dynamic> map;
+    result.previousSnapshot = documentFromRecordMap(path, existingRecordMap);
+    Map<String, dynamic> recordMap;
+
+    // Update rev
+    int rev = (result.previousSnapshot?.rev ?? 0) + 1;
     // merging?
     if (options?.merge == true) {
-      map = documentDataToRecordMap(documentData, existingRecordMap);
+      recordMap = documentDataToRecordMap(documentData, existingRecordMap);
     } else {
-      map = documentDataToRecordMap(documentData);
+      recordMap = documentDataToRecordMap(documentData);
     }
-    result.newData = documentDataFromRecordMap(this, map);
-    Record record = new Record(docStore.store, map, path);
+
+    rev++;
+    if (recordMap != null) {
+      recordMap[revKey] = rev;
+    }
+
+    result.newSnashot = documentSnapshotFromRecordMap(this, path, recordMap);
+    Record record = new Record(docStore.store, recordMap, path);
     await txn.putRecord(record);
     return result;
   }
@@ -360,9 +392,9 @@ class FirestoreSembast implements Firestore {
     var documentSubscription = findSubscription(path);
     if (documentSubscription != null) {
       documentSubscription.streamController.add(new DocumentSnapshotSembast(
-          new DocumentReferenceIo(new ReferenceContextSembast(this, path)),
-          result.newData,
-          !result.removed));
+          new DocumentReferenceSembast(new ReferenceContextSembast(this, path)),
+          result.newSnashot?.rev,
+          result.newSnashot?.documentData));
     }
     // notify collection listeners
     var collectionSubscription = findSubscription(url.dirname(path));
@@ -373,9 +405,8 @@ class FirestoreSembast implements Firestore {
               : (result.removed
                   ? DocumentChangeType.removed
                   : DocumentChangeType.modified),
-          new DocumentSnapshotSembast(
-              new DocumentReferenceIo(new ReferenceContextSembast(this, path)),
-              result.removed ? result.previousData : result.newData,
+          new DocumentSnapshotSembast.fromSnapshot(
+              result.removed ? result.previousSnapshot : result.newSnashot,
               true),
           null,
           null));
@@ -388,9 +419,16 @@ class FirestoreSembast implements Firestore {
   @override
   Future runTransaction(
       Function(Transaction transaction) updateFunction) async {
+    var db = await ready;
     var transaction = new TransactionSembast(this);
-    await updateFunction(transaction);
-    await transaction.commit();
+    List<WriteResultSembast> results = await db.transaction((txn) async {
+      // Initialize the transaction
+      transaction.nativeTransaction = txn;
+
+      await updateFunction(transaction);
+      return await transaction.txnCommit(txn);
+    });
+    transaction.notify(results);
   }
 }
 
@@ -399,32 +437,42 @@ class WriteBatchSembast extends WriteBatchBase implements WriteBatch {
 
   WriteBatchSembast(this.firestore);
 
+  Future<List<WriteResultSembast>> txnCommit(sembast.Transaction txn) async {
+    List<WriteResultSembast> results = [];
+    for (var operation in operations) {
+      if (operation is WriteBatchOperationDelete) {
+        results.add(await firestore.txnDelete(txn, operation.docRef.path));
+      } else if (operation is WriteBatchOperationSet) {
+        results.add(await firestore.txnSet(txn, operation.docRef.path,
+            operation.documentData, operation.options));
+      } else if (operation is WriteBatchOperationUpdate) {
+        var path = operation.docRef.path;
+        var record = await txn.getStore(docStoreName).getRecord(path);
+        if (record == null) {
+          throw new Exception("update failed, record $path does not exit");
+        }
+        results.add(await firestore.txnSet(
+            txn, path, operation.documentData, new SetOptions(merge: true)));
+      } else {
+        throw 'not supported $operation';
+      }
+    }
+    return results;
+  }
+
   @override
   Future commit() async {
     var db = await firestore.ready;
 
-    List<WriteResultSembast> results = [];
-    await db.transaction((txn) async {
-      for (var operation in operations) {
-        if (operation is WriteBatchOperationDelete) {
-          results.add(await firestore.txnDelete(txn, operation.docRef.path));
-        } else if (operation is WriteBatchOperationSet) {
-          results.add(await firestore.txnSet(txn, operation.docRef.path,
-              operation.documentData, operation.options));
-        } else if (operation is WriteBatchOperationUpdate) {
-          var path = operation.docRef.path;
-          var record = await txn.getStore(docStoreName).getRecord(path);
-          if (record == null) {
-            throw new Exception("update failed, record $path does not exit");
-          }
-          results.add(await firestore.txnSet(
-              txn, path, operation.documentData, new SetOptions(merge: true)));
-        } else {
-          throw 'not supported $operation';
-        }
-      }
+    List<WriteResultSembast> results = await db.transaction((txn) async {
+      return txnCommit(txn);
     });
 
+    notify(results);
+  }
+
+  // To use after txtCommit
+  void notify(List<WriteResultSembast> results) {
     for (var result in results) {
       firestore.notify(result);
     }
@@ -434,14 +482,16 @@ class WriteBatchSembast extends WriteBatchBase implements WriteBatch {
 // It is basically a batch with gets before in a transaction
 class TransactionSembast extends WriteBatchSembast implements Transaction {
   var completer = new Completer();
-
-  List<WriteBatchOperation> operations;
+  sembast.Transaction nativeTransaction;
 
   TransactionSembast(FirestoreSembast firestore) : super(firestore);
 
   @override
-  Future<DocumentSnapshot> get(DocumentReference documentRef) =>
-      documentRef.get();
+  Future<DocumentSnapshot> get(DocumentReference documentRef) async {
+    var snapshot = await firestore.txnGetDocumentSnapshot(
+        nativeTransaction, _wrapDocumentReference(documentRef).path);
+    return snapshot;
+  }
 }
 
 class BaseReferenceSembast extends Object with AttributesMixin {
@@ -454,14 +504,24 @@ class BaseReferenceSembast extends Object with AttributesMixin {
 }
 
 class DocumentSnapshotSembast implements DocumentSnapshot {
-  final DocumentReferenceIo documentReference;
+  final DocumentReferenceSembast documentReference;
+  final int rev;
   final DocumentDataMap documentData;
 
-  @override
-  final bool exists;
+  bool _exists;
 
-  DocumentSnapshotSembast(
-      this.documentReference, this.documentData, this.exists);
+  @override
+  bool get exists => _exists;
+
+  DocumentSnapshotSembast(this.documentReference, this.rev, this.documentData,
+      [bool exists]) {
+    _exists = exists ??= documentData != null;
+  }
+
+  DocumentSnapshotSembast.fromSnapshot(
+      DocumentSnapshotSembast snapshot, bool exists)
+      : this(snapshot.documentReference, snapshot.rev, snapshot.documentData,
+            exists);
 
   @override
   Map<String, dynamic> get data => documentData?.asMap();
@@ -473,10 +533,10 @@ class DocumentSnapshotSembast implements DocumentSnapshot {
 ReferenceContextSembast _context(FirestoreSembast firestore, String path) =>
     new ReferenceContextSembast(firestore, path);
 
-class DocumentReferenceIo extends BaseReferenceSembast
+class DocumentReferenceSembast extends BaseReferenceSembast
     with AttributesMixin
     implements DocumentReference {
-  DocumentReferenceIo(ReferenceContextSembast context) : super(context);
+  DocumentReferenceSembast(ReferenceContextSembast context) : super(context);
 
   @override
   CollectionReference collection(String path) =>
@@ -499,12 +559,8 @@ class DocumentReferenceIo extends BaseReferenceSembast
     var db = await firestore.ready;
     Map<String, dynamic> recordMap =
         await db.getStore(docStoreName).get(path) as Map<String, dynamic>;
-    var exists = recordMap != null;
     // always create a snapshot even if it doest not exist
-    return new DocumentSnapshotSembast(
-        this,
-        exists ? documentDataFromRecordMap(firestore, recordMap) : null,
-        exists);
+    return documentSnapshotFromRecordMap(firestore, path, recordMap);
   }
 
   @override
@@ -568,8 +624,8 @@ class DocumentReferenceIo extends BaseReferenceSembast
 
     // Get the first batch
     get().then((DocumentSnapshot snapshot) {
-      var snapshotIo = snapshot as DocumentSnapshotSembast;
-      controller.add(snapshotIo);
+      var snapshotSembast = _wrapDocumentSnapshot(snapshot);
+      controller.add(snapshotSembast);
     });
     return controller.stream;
   }
@@ -586,7 +642,7 @@ class CollectionReferenceSembast extends BaseReferenceSembast
   @override
   DocumentReference doc([String path]) {
     path ??= _generateId();
-    return new DocumentReferenceIo(pathContext(getChildPath(path)));
+    return new DocumentReferenceSembast(pathContext(getChildPath(path)));
   }
 
   String _generateId() => new Uuid().v4().toString();
@@ -606,8 +662,8 @@ class CollectionReferenceSembast extends BaseReferenceSembast
       firestore.notify(result);
     }
 
-    DocumentReferenceIo documentReference =
-        new DocumentReferenceIo(pathContext(path));
+    DocumentReferenceSembast documentReference =
+        new DocumentReferenceSembast(pathContext(path));
     return documentReference;
   }
 
@@ -617,7 +673,7 @@ class CollectionReferenceSembast extends BaseReferenceSembast
     if (parentPath == null) {
       return null;
     } else {
-      return new DocumentReferenceIo(pathContext(parentPath));
+      return new DocumentReferenceSembast(pathContext(parentPath));
     }
   }
 }
@@ -725,12 +781,14 @@ abstract class QueryMixin implements Query, AttributesMixin {
       String recordPath = record.key;
       String parentPath = url.dirname(recordPath);
       if (parentPath == path) {
-        var docRef = new DocumentReferenceIo(pathContext(record.key as String));
+        var docRef =
+            new DocumentReferenceSembast(pathContext(record.key as String));
         var documentData = documentDataFromRecordMap(
             firestore, record.value as Map<String, dynamic>);
 
         if (mapQueryInfo(documentData, queryInfo)) {
-          docs.add(new DocumentSnapshotSembast(docRef, documentData, true));
+          docs.add(documentSnapshotFromRecordMap(
+              firestore, docRef.path, record.value as Map<String, dynamic>));
         }
       }
     }
@@ -842,7 +900,8 @@ abstract class QueryMixin implements Query, AttributesMixin {
       for (var snapshot in docs) {
         var data = snapshot.documentData.map;
         selectedDocs.add(new DocumentSnapshotSembast(
-            snapshot.ref as DocumentReferenceIo,
+            _wrapDocumentReference(snapshot.ref),
+            snapshot.rev,
             documentDataFromRecordMap(
                 firestore, toSelectedMap(data, queryInfo.selectKeyPaths)),
             true));
@@ -949,10 +1008,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
       int index = 0;
       for (var doc in querySnaphost.docs) {
         querySnapshotIo.documentChanges.add(new DocumentChangeSembast(
-            DocumentChangeType.added,
-            doc as DocumentSnapshotSembast,
-            index++,
-            -1));
+            DocumentChangeType.added, _wrapDocumentSnapshot(doc), index++, -1));
       }
       controller.add(querySnapshotIo);
     });
@@ -1035,3 +1091,9 @@ class QuerySnapshotSembast implements QuerySnapshot {
     return false;
   }
 }
+
+DocumentSnapshotSembast _wrapDocumentSnapshot(DocumentSnapshot snapshot) =>
+    snapshot as DocumentSnapshotSembast;
+
+DocumentReferenceSembast _wrapDocumentReference(DocumentReference ref) =>
+    ref as DocumentReferenceSembast;

@@ -53,7 +53,7 @@ class FileIo implements File {
 }
 
 class BucketIo implements Bucket {
-  final StorageIo storage;
+  final StorageSembast storage;
   final String name;
 
   String get localPath => join(storage.ioApp.localPath, name);
@@ -70,10 +70,10 @@ class BucketIo implements Bucket {
   }
 }
 
-class StorageIo implements Storage {
+class StorageSembast implements Storage {
   final io.AppSembast ioApp;
 
-  StorageIo(this.ioApp);
+  StorageSembast(this.ioApp);
 
   @override
   Bucket bucket([String name]) => new BucketIo(this, name);

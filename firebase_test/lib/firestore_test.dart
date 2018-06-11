@@ -1,10 +1,12 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:test/test.dart';
+
+bool skipConcurrentTransactionTests = false;
 
 void run(Firebase firebase, {AppOptions options}) {
   App app = firebase.initializeApp(options: options);
@@ -589,6 +591,31 @@ runApp(Firebase firebase, App app) {
       });
 
       group('Transaction', () {
+        test('concurrent_get_update', () async {
+          var testsRef = getTestsRef();
+          var collRef =
+              testsRef.doc('transaction_test').collection('get_update');
+          var ref = collRef.doc("item");
+          await ref.set({"value": 1});
+
+          int modifiedCount = 0;
+          await app.firestore().runTransaction((txn) async {
+            var data = (await txn.get(ref)).data;
+            // devPrint('get ${data}');
+            if (modifiedCount++ == 0) {
+              await ref.set({"value": 10});
+            }
+
+            data["value"] = (data["value"] as int) + 1;
+            txn.update(ref, data);
+          });
+
+          // we should run the transaction twice...
+          expect(modifiedCount, 2);
+
+          expect((await ref.get()).data, {"value": 11});
+        }, skip: skipConcurrentTransactionTests);
+
         test('get_update', () async {
           var testsRef = getTestsRef();
           var collRef =
@@ -598,13 +625,14 @@ runApp(Firebase firebase, App app) {
 
           await app.firestore().runTransaction((txn) async {
             var data = (await txn.get(ref)).data;
+
             data["value"] = (data["value"] as int) + 1;
-            txn.update(ref, data);
+            txn.set(ref, data);
           });
 
           expect((await ref.get()).data, {"value": 2});
         });
-      }, skip: true);
+      });
       // TODO implement
     });
     test('bug_limit', () async {

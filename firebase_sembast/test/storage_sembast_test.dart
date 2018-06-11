@@ -4,13 +4,13 @@ library tekartik_firebase_sembast.storage_io_test;
 import 'dart:io' as io;
 
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:test/test.dart';
-import 'package:tekartik_firebase_sembast/firebase_sembast.dart';
+import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 import 'package:tekartik_firebase_sembast/src/storage_sembast.dart';
 import 'package:tekartik_firebase_test/storage_test.dart';
+import 'package:test/test.dart';
 
 void main() {
-  App app = firebaseSembast.initializeApp();
+  App app = firebaseSembastIo.initializeApp();
 
   tearDownAll(() {
     return app.delete();

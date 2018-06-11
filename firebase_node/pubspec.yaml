@@ -34,3 +34,5 @@ dependency_overrides:
     path: ../firebase_test
   tekartik_firebase:
     path: ../firebase
+  firebase_admin_interop:
+    git: git://github.com/asaarnak/firebase-admin-interop

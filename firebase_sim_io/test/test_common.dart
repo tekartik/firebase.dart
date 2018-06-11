@@ -5,6 +5,7 @@ import 'dart:async';
 
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sembast/firebase_sembast.dart';
+import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
 import 'package:tekartik_firebase_sim_io/firebase_sim_client_io.dart' as sim;
 import 'package:tekartik_web_socket/web_socket.dart';
@@ -20,7 +21,7 @@ class TestContext {
 Future<TestContext> initTestContextSimIo() async {
   var testContext = new TestContext();
   testContext.simServer =
-      await serve(firebaseSembast, webSocketChannelFactoryIo);
+      await serve(firebaseSembastIo, webSocketChannelFactoryIo);
   testContext.firebase = sim.getFirebaseSim(
       clientFactory: webSocketChannelClientFactoryIo,
       url: testContext.simServer.webSocketChannelServer.url);
@@ -32,7 +33,7 @@ Future<TestContext> initTestContextSim() async {
   var testContext = new TestContext();
   // The server use firebase io
   testContext.simServer =
-      await serve(firebaseSembast, webSocketChannelFactoryMemory);
+      await serve(firebaseSembastMemory, webSocketChannelFactoryMemory);
   testContext.firebase = sim.getFirebaseSim(
       clientFactory: webSocketChannelClientFactoryMemory,
       url: testContext.simServer.webSocketChannelServer.url);
