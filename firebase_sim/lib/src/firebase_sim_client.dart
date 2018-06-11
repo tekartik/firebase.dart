@@ -53,22 +53,9 @@ class DocumentReferenceSim implements DocumentReference {
   }
 
   @override
-  Future<DocumentSnapshot> get() async {
-    var simClient = await simFirestore.app.simClient;
-    var firestorePathData = new FirestorePathData()..path = path;
-    var request =
-        simClient.newRequest(methodFirestoreGet, firestorePathData.toMap());
-    var response = await simClient.sendRequest(request);
-    if (response is ErrorResponse) {
-      throw response.error;
-    }
-
-    var documentSnapshotData = new FirestoreDocumentSnapshotDataImpl()
-      ..fromMap((response as Response).result as Map<String, dynamic>);
-    return new SimDocumentSnapshot(
-        new DocumentReferenceSim(simFirestore, documentSnapshotData.path),
-        documentSnapshotData.data != null,
-        documentDataFromJsonMap(simFirestore, documentSnapshotData.data));
+  Future<DocumentSnapshot> get() {
+    var requestData = new FirestoreGetRequestData()..path = path;
+    return simFirestore.get(requestData);
   }
 
   @override
@@ -483,38 +470,76 @@ class FirestoreSim implements Firestore {
   @override
   Future runTransaction(
       Function(Transaction transaction) updateFunction) async {
-    // TransactionSim transactionSim = new TransactionSim(this);
-    throw 'not implemented yet';
+    var simClient = await app.simClient;
+    var request = simClient.newRequest(methodFirestoreTransaction, {});
+    var response = await simClient.sendRequest(request);
+    if (response is ErrorResponse) {
+      throw response.error;
+    }
+
+    var responseData = new FirestoreTransactionResponseData()
+      ..fromMap((response as Response).result as Map<String, dynamic>);
+    TransactionSim transactionSim =
+        new TransactionSim(this, responseData.transactionId);
+    try {
+      await updateFunction(transactionSim);
+      await transactionSim.commit();
+    } catch (_) {
+      // Make sure to clean up on cancel
+      await transactionSim.cancel();
+      rethrow;
+    }
+  }
+
+  Future<DocumentSnapshot> get(FirestoreGetRequestData requestData) async {
+    var simClient = await app.simClient;
+    var request = simClient.newRequest(methodFirestoreGet, requestData.toMap());
+    var response = await simClient.sendRequest(request);
+    if (response is ErrorResponse) {
+      throw response.error;
+    }
+
+    var documentSnapshotData = new FirestoreDocumentSnapshotDataImpl()
+      ..fromMap((response as Response).result as Map<String, dynamic>);
+    return new SimDocumentSnapshot(
+        new DocumentReferenceSim(this, documentSnapshotData.path),
+        documentSnapshotData.data != null,
+        documentDataFromJsonMap(this, documentSnapshotData.data));
   }
 }
 
-/*
-class TransactionSim implements Transaction {
-  final SimFirestore firestore;
+class TransactionSim extends WriteBatchSim implements Transaction {
+  final int transactionId;
 
-  TransactionSim(this.firestore);
-
-  @override
-  void delete(DocumentReference documentRef) {
-    // TODO: implement delete
-  }
+  TransactionSim(FirestoreSim firestore, this.transactionId) : super(firestore);
 
   @override
   Future<DocumentSnapshot> get(DocumentReference documentRef) {
-    // TODO: implement get
+    var requestData = new FirestoreGetRequestData()
+      ..path = documentRef.path
+      ..transactionId = transactionId;
+    return firestore.get(requestData);
   }
 
   @override
-  void set(DocumentReference documentRef, DocumentData data, [SetOptions options]) {
-    // TODO: implement set
+  Future commit() async {
+    var batchData = new FirestoreBatchData()..transactionId = transactionId;
+    await batchCommit(methodFirestoreTransactionCommit, batchData);
   }
 
-  @override
-  void update(DocumentReference documentRef, DocumentData data) {
-    // TODO: implement update
+  Future cancel() async {
+    var requestData = new FirestoreTransactionCancelRequestData()
+      ..transactionId = transactionId;
+    var simClient = await firestore.app.simClient;
+    var request = simClient.newRequest(
+        methodFirestoreTransactionCancel, requestData.toMap());
+    var response = await simClient.sendRequest(request);
+    if (response is ErrorResponse) {
+      throw response.error;
+    }
   }
 }
-*/
+
 class WriteBatchSim extends WriteBatchBase {
   final FirestoreSim firestore;
 
@@ -523,6 +548,10 @@ class WriteBatchSim extends WriteBatchBase {
   @override
   Future commit() async {
     var batchData = new FirestoreBatchData();
+    await batchCommit(methodFirestoreBatch, batchData);
+  }
+
+  Future batchCommit(String method, FirestoreBatchData batchData) async {
     for (var operation in operations) {
       if (operation is WriteBatchOperationDelete) {
         batchData.operations.add(new BatchOperationDeleteData()
@@ -544,7 +573,7 @@ class WriteBatchSim extends WriteBatchBase {
       }
     }
     var simClient = await firestore.app.simClient;
-    var request = simClient.newRequest(methodFirestoreBatch, batchData.toMap());
+    var request = simClient.newRequest(method, batchData.toMap());
     var response = await simClient.sendRequest(request);
     if (response is ErrorResponse) {
       throw response.error;

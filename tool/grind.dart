@@ -46,8 +46,18 @@ pub run test -p node $extraOptions
 }
 
 @Task()
+test_firebase_sim() async {
+  await bash('''
+set -xe
+pushd firebase_sim
+pub run test -p node,vm $extraOptions
+''', verbose: true);
+}
+
+@Task()
 test() async {
   await test_firebase_sembast();
+  await test_firebase_sim();
   await test_firebase_browser();
   await test_firebase_node();
 }

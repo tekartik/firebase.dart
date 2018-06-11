@@ -379,14 +379,6 @@ class FirestoreSembast implements Firestore {
     return result;
   }
 
-  /*
-  setDocumentData(Transaction txn, String path, DocumentData documentData,
-      [SetOptions options]) async {
-    WriteResultIo result = await txnSet(txn, path, documentData, options);
-    notify(result);
-  }
-  */
-
   void notify(WriteResultSembast result) {
     var path = result.path;
     var documentSubscription = findSubscription(path);

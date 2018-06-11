@@ -7,6 +7,7 @@ import 'package:test/test.dart';
 import 'test_common.dart';
 
 main() async {
+  skipConcurrentTransactionTests = true;
   var testContext = await initTestContextSimIo();
   run(testContext.firebase);
 

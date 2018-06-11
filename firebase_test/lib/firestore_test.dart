@@ -632,6 +632,15 @@ runApp(Firebase firebase, App app) {
 
           expect((await ref.get()).data, {"value": 2});
         });
+
+        // make sure that after the transaction we're still fine
+        test('post_transaction_set', () async {
+          var testsRef = getTestsRef();
+          var collRef =
+              testsRef.doc('transaction_test').collection('get_update');
+          var ref = collRef.doc("item");
+          await ref.set({"value": 1});
+        });
       });
       // TODO implement
     });

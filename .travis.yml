@@ -59,6 +59,10 @@ jobs:
       script: ./tool/travis.sh test_browser
       env: PKG="firebase_sim"
       dart: dev
+    - stage: test_browser
+      script: ./tool/travis.sh test_browser
+      env: PKG="firebase_sim_io"
+      dart: dev
 stages:
   - analyzer_and_format
   - test_vm

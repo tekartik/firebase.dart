@@ -19,6 +19,7 @@ dependencies:
   tekartik_common_utils:
     git: git://github.com/tekartik/common_utils.dart
   meta: any
+  synchronized: '>=1.5.0-dev.2'
   logging: any
   build_runner: ^0.8.7
   build_web_compilers: ^0.4.0

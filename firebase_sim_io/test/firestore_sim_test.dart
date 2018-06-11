@@ -1,5 +1,4 @@
-@TestOn('vm')
-library tekartik_firebase_server_io.firebase_io_test;
+library tekartik_firebase_server_sim_io.firebase_sim_o_test;
 
 import 'package:tekartik_firebase_test/firestore_test.dart';
 import 'package:test/test.dart';
@@ -7,6 +6,7 @@ import 'package:test/test.dart';
 import 'test_common.dart';
 
 main() async {
+  skipConcurrentTransactionTests = true;
   var testContext = await initTestContextSim();
   run(testContext.firebase);
 

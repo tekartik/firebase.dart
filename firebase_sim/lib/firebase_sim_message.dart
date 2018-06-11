@@ -13,6 +13,11 @@ const methodFirestoreGetStream =
 const methodFirestoreDelete = 'firestore/delete';
 const methodFirestoreQuery = 'firestore/query';
 const methodFirestoreBatch = 'firestore/batch';
+const methodFirestoreTransaction = 'firestore/transaction';
+const methodFirestoreTransactionCommit =
+    'firestore/transaction/commit'; // batch data
+const methodFirestoreTransactionCancel =
+    'firestore/transaction/cancel'; // transactionId
 const methodFirestoreQueryStream =
     'firestore/query/stream'; // query from client and notification from server
 const methodFirestoreQueryStreamCancel = 'firestore/query/stream/cancel';
@@ -195,6 +200,23 @@ class FirestoreSetData extends FirestorePathData {
   }
 }
 
+class FirestoreGetRequestData extends FirestorePathData {
+  int transactionId;
+
+  fromMap(Map<String, dynamic> map) {
+    super.fromMap(map);
+    transactionId = map['transactionId'] as int;
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = super.toMap();
+    if (transactionId != null) {
+      map['transactionId'] = transactionId;
+    }
+    return map;
+  }
+}
+
 class AdminInitializeAppData extends BaseData {
   String projectId;
   String name;
@@ -210,7 +232,7 @@ class AdminInitializeAppData extends BaseData {
   }
 }
 
-class AdminInitializeAppDataResponse extends BaseData {
+class FirebaseInitializeAppResponseData extends BaseData {
   int appId;
 
   fromMap(Map<String, dynamic> map) {
@@ -220,6 +242,21 @@ class AdminInitializeAppDataResponse extends BaseData {
   Map<String, dynamic> toMap() {
     var map = {
       'appId': appId,
+    };
+    return map;
+  }
+}
+
+class FirestoreTransactionResponseData extends BaseData {
+  int transactionId;
+
+  fromMap(Map<String, dynamic> map) {
+    transactionId = map['transactionId'] as int;
+  }
+
+  Map<String, dynamic> toMap() {
+    var map = {
+      'transactionId': transactionId,
     };
     return map;
   }
@@ -317,12 +354,15 @@ abstract class BatchOperationData extends RawData {
   }
 }
 
+// for batch and transaction commit
 class FirestoreBatchData extends BaseData {
+  int transactionId;
   List<BatchOperationData> operations = [];
 
   firestoreFromMap(Firestore firestore, Map<String, dynamic> map) {
     super.fromMap(map);
     var list = map['list'] as List;
+    transactionId = map['transactionId'] as int;
 
     for (var item in list) {
       var itemMap = (item as Map).cast<String, dynamic>();
@@ -361,6 +401,28 @@ class FirestoreBatchData extends BaseData {
       list.add(operation.toMap());
     }
     map['list'] = list;
+    if (transactionId != null) {
+      map['transactionId'] = transactionId;
+    }
+    return map;
+  }
+}
+
+// for batch and transaction commit
+class FirestoreTransactionCancelRequestData extends BaseData {
+  int transactionId;
+
+  firestoreFromMap(Map<String, dynamic> map) {
+    super.fromMap(map);
+    transactionId = map['transactionId'] as int;
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    var map = super.toMap();
+    if (transactionId != null) {
+      map['transactionId'] = transactionId;
+    }
     return map;
   }
 }

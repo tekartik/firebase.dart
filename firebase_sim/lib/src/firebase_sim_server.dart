@@ -3,14 +3,51 @@ import 'dart:convert';
 import 'dart:core' hide Error;
 
 import 'package:meta/meta.dart';
+import 'package:synchronized/synchronized.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore_common.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
 import 'package:tekartik_firebase_sim/rpc_message.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_common.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
+
+Future<FirebaseSimServer> serve(
+    Firebase firebase, WebSocketChannelFactory channelFactory,
+    {int port}) async {
+  var server = await channelFactory.server.serve<String>(port: port);
+  var simServer = new FirebaseSimServer(firebase, server);
+  return simServer;
+}
+
+class FirebaseSimServer {
+  int lastAppId = 0;
+  final Firebase firebase;
+  int lastSubscriptionId = 0;
+  int lastTransactionId = 0;
+  final transactionLock = new Lock();
+
+  final List<FirebaseSimServerClient> clients = [];
+  final WebSocketChannelServer<String> webSocketChannelServer;
+
+  String get url => webSocketChannelServer.url;
+
+  FirebaseSimServer(this.firebase, this.webSocketChannelServer) {
+    webSocketChannelServer.stream.listen((clientChannel) {
+      var client = new FirebaseSimServerClient(this, clientChannel);
+      clients.add(client);
+    });
+  }
+
+  Future close() async {
+    // stop allowing clients
+    await webSocketChannelServer.close();
+    // Close existing clients
+    for (var client in clients) {
+      await client.close();
+    }
+  }
+}
 
 abstract class FirebaseSimMixin {
   WebSocketChannel<String> get webSocketChannel;
@@ -49,20 +86,26 @@ class SimSubscription<T> {
 }
 
 class FirebaseSimServerClient extends Object with FirebaseSimMixin {
-  final FirebaseSimServer simServer;
+  final FirebaseSimServer server;
   final WebSocketChannel<String> webSocketChannel;
   App app;
   int appId;
-  int lastSubscriptionId = 0;
+  Completer transactionCompleter;
 
   final Map<int, SimSubscription> subscriptions = {};
 
-  FirebaseSimServerClient(this.simServer, this.webSocketChannel) {
+  FirebaseSimServerClient(this.server, this.webSocketChannel) {
     init();
   }
 
   @override
   Future close() async {
+    // Close any pending transaction
+    if (transactionCompleter != null) {
+      if (!transactionCompleter.isCompleted) {
+        transactionCompleter.completeError('database closed');
+      }
+    }
     await closeMixin();
     List<SimSubscription> subscriptions = this.subscriptions.values.toList();
     for (var subscription in subscriptions) {
@@ -78,46 +121,11 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
       } else if (request.method == methodAdminInitializeApp) {
         await handleAdminInitializeApp(request);
       } else if (request.method == methodFirestoreSet) {
-        var firestoreSetData = new FirestoreSetData()
-          ..fromMap(requestParams(request));
-        var documentData =
-            documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
-        SetOptions options;
-        if (firestoreSetData.merge != null) {
-          options = new SetOptions(merge: firestoreSetData.merge);
-        }
-        await app
-            .firestore()
-            .doc(firestoreSetData.path)
-            .set(documentData.asMap(), options);
-
-        var response = new Response(request.id, null);
-        sendMessage(response);
+        await handleFirestoreSetRequest(request);
       } else if (request.method == methodFirestoreUpdate) {
-        var firestoreSetData = new FirestoreSetData()
-          ..fromMap(requestParams(request));
-        var documentData =
-            documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
-        await app
-            .firestore()
-            .doc(firestoreSetData.path)
-            .update(documentData.asMap());
-
-        var response = new Response(request.id, null);
-        sendMessage(response);
+        await handleFirestoreUpdateRequest(request);
       } else if (request.method == methodFirestoreAdd) {
-        var firestoreSetData = new FirestoreSetData()
-          ..fromMap(requestParams(request));
-        var documentData =
-            documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
-        var docRef = await app
-            .firestore()
-            .collection(firestoreSetData.path)
-            .add(documentData.asMap());
-
-        var response = new Response(
-            request.id, (new FirestorePathData()..path = docRef.path).toMap());
-        sendMessage(response);
+        await handleFirestoreAddRequest(request);
       } else if (request.method == methodFirestoreGet) {
         await handleFirestoreGet(request);
       } else if (request.method == methodFirestoreGetStream) {
@@ -130,15 +138,14 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
         await handleFirestoreQueryStreamCancel(request);
       } else if (request.method == methodFirestoreBatch) {
         await handleFirestoreBatch(request);
+      } else if (request.method == methodFirestoreTransaction) {
+        await handleFirestoreTransaction(request);
+      } else if (request.method == methodFirestoreTransactionCommit) {
+        await handleFirestoreTransactionCommit(request);
+      } else if (request.method == methodFirestoreTransactionCancel) {
+        await handleFirestoreTransactionCancel(request);
       } else if (request.method == methodFirestoreDelete) {
-        // Delete
-        var response = new Response(request.id, null);
-
-        var firestoreDeleteData = new FirestorePathData()
-          ..fromMap(requestParams(request));
-        await app.firestore().doc(firestoreDeleteData.path).delete();
-
-        sendMessage(response);
+        await handleFirestoreDeleteRequest(request);
       } else {
         var errorResponse = new ErrorResponse(
             request.id,
@@ -157,6 +164,75 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
     }
   }
 
+  Future handleFirestoreDeleteRequest(Request request) async {
+    var response = new Response(request.id, null);
+
+    var firestoreDeleteData = new FirestorePathData()
+      ..fromMap(requestParams(request));
+
+    await server.transactionLock.synchronized(() async {
+      await app.firestore().doc(firestoreDeleteData.path).delete();
+    });
+
+    sendMessage(response);
+  }
+
+  Future handleFirestoreAddRequest(Request request) async {
+    var firestoreSetData = new FirestoreSetData()
+      ..fromMap(requestParams(request));
+    var documentData =
+        documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
+
+    await server.transactionLock.synchronized(() async {
+      var docRef = await app
+          .firestore()
+          .collection(firestoreSetData.path)
+          .add(documentData.asMap());
+
+      var response = new Response(
+          request.id, (new FirestorePathData()..path = docRef.path).toMap());
+      sendMessage(response);
+    });
+  }
+
+  Future handleFirestoreUpdateRequest(Request request) async {
+    var firestoreSetData = new FirestoreSetData()
+      ..fromMap(requestParams(request));
+    var documentData =
+        documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
+
+    await server.transactionLock.synchronized(() async {
+      await app
+          .firestore()
+          .doc(firestoreSetData.path)
+          .update(documentData.asMap());
+    });
+
+    var response = new Response(request.id, null);
+    sendMessage(response);
+  }
+
+  Future handleFirestoreSetRequest(Request request) async {
+    var firestoreSetData = new FirestoreSetData()
+      ..fromMap(requestParams(request));
+    var documentData =
+        documentDataFromJsonMap(app.firestore(), firestoreSetData.data);
+    SetOptions options;
+    if (firestoreSetData.merge != null) {
+      options = new SetOptions(merge: firestoreSetData.merge);
+    }
+
+    await server.transactionLock.synchronized(() async {
+      await app
+          .firestore()
+          .doc(firestoreSetData.path)
+          .set(documentData.asMap(), options);
+    });
+
+    var response = new Response(request.id, null);
+    sendMessage(response);
+  }
+
   DocumentReference requestDocumentReference(Request request) {
     var firestorePathData = new FirestorePathData()
       ..fromMap(requestParams(request));
@@ -165,8 +241,21 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
   }
 
   Future handleFirestoreGet(Request request) async {
+    var firestoreGetRequesthData = new FirestoreGetRequestData()
+      ..fromMap(requestParams(request));
     var ref = requestDocumentReference(request);
-    var documentSnapshot = await ref.get();
+    var transactionId = firestoreGetRequesthData.transactionId;
+
+    // Current transaction, read as is
+    DocumentSnapshot documentSnapshot;
+    if (transactionId == server.lastTransactionId) {
+      documentSnapshot = await ref.get();
+    } else {
+      // otherwise lock
+      await server.transactionLock.synchronized(() async {
+        documentSnapshot = await ref.get();
+      });
+    }
 
     var data = documentDataFromSnapshot(documentSnapshot);
     var snapshotData = new DocumentGetSnapshotData()
@@ -182,34 +271,37 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
   Future handleFirestoreGetStream(Request request) async {
     var pathData = new FirestorePathData()..fromMap(requestParams(request));
     var ref = app.firestore().doc(pathData.path);
-    int streamId = ++lastSubscriptionId;
+    int streamId = ++server.lastSubscriptionId;
 
-    // ignore: cancel_subscriptions
-    StreamSubscription<DocumentSnapshot> streamSubscription =
-        ref.onSnapshot().listen((DocumentSnapshot snapshot) {
-      // delayed to make sure the response was send already
-      new Future.value().then((_) async {
-        var data = new DocumentGetSnapshotData();
-        data.streamId = streamId;
-        data.path = ref.path;
+    await server.transactionLock.synchronized(() async {
+      // ignore: cancel_subscriptions
+      StreamSubscription<DocumentSnapshot> streamSubscription =
+          ref.onSnapshot().listen((DocumentSnapshot snapshot) {
+        // delayed to make sure the response was send already
+        new Future.value().then((_) async {
+          var data = new DocumentGetSnapshotData();
+          data.streamId = streamId;
+          data.path = ref.path;
 
-        var docData = documentDataFromSnapshot(snapshot);
-        data.data = documentDataToJsonMap(docData);
+          var docData = documentDataFromSnapshot(snapshot);
+          data.data = documentDataToJsonMap(docData);
 
-        var notification =
-            new Notification(methodFirestoreGetStream, data.toMap());
-        sendMessage(notification);
+          var notification =
+              new Notification(methodFirestoreGetStream, data.toMap());
+          sendMessage(notification);
+        });
       });
+
+      var data = new FirestoreQueryStreamResponse();
+      subscriptions[streamId] =
+          new SimSubscription(streamId, streamSubscription);
+      data.streamId = streamId;
+
+      // Get
+      var response = new Response(request.id, data.toMap());
+
+      sendMessage(response);
     });
-
-    var data = new FirestoreQueryStreamResponse();
-    subscriptions[streamId] = new SimSubscription(streamId, streamSubscription);
-    data.streamId = streamId;
-
-    // Get
-    var response = new Response(request.id, data.toMap());
-
-    sendMessage(response);
   }
 
   Future cancelSubscription(SimSubscription simSubscription) async {
@@ -243,70 +335,81 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
   Future handleFirestoreQueryStream(Request request) async {
     var queryData = new FirestoreQueryData()
       ..firestoreFromMap(app.firestore(), requestParams(request));
-    Query query = await getQuery(queryData);
-    int streamId = ++lastSubscriptionId;
 
-    // ignore: cancel_subscriptions
-    StreamSubscription<QuerySnapshot> streamSubscription =
-        query.onSnapshot().listen((QuerySnapshot querySnapshot) {
-      // delayed to make sure the response was send already
-      new Future.value().then((_) async {
-        var data = new FirestoreQuerySnapshotData();
-        data.streamId = streamId;
-        data.list = <DocumentSnapshotData>[];
-        for (DocumentSnapshot doc in querySnapshot.docs) {
-          var docData = documentDataFromSnapshot(doc);
-          data.list.add(new DocumentSnapshotData()
-            ..path = doc.ref.path
-            ..data = documentDataToJsonMap(docData));
-        }
-        // Changes
-        data.changes = <DocumentChangeData>[];
-        for (var change in querySnapshot.documentChanges) {
-          var documentChangeData = new DocumentChangeData()
-            ..id = change.document.ref.id
-            ..type = documentChangeTypeToString(change.type)
-            ..newIndex = change.newIndex
-            ..oldIndex = change.oldIndex;
-          // need data?
-          var path = change.document.ref.path;
+    await server.transactionLock.synchronized(() async {
+      Query query = await getQuery(queryData);
+      int streamId = ++server.lastSubscriptionId;
 
-          _find() {
-            for (var doc in querySnapshot.docs) {
-              if (doc.ref.path == path) {
-                return true;
+      // ignore: cancel_subscriptions
+      StreamSubscription<QuerySnapshot> streamSubscription =
+          query.onSnapshot().listen((QuerySnapshot querySnapshot) {
+        // delayed to make sure the response was send already
+        new Future.value().then((_) async {
+          var data = new FirestoreQuerySnapshotData();
+          data.streamId = streamId;
+          data.list = <DocumentSnapshotData>[];
+          for (DocumentSnapshot doc in querySnapshot.docs) {
+            var docData = documentDataFromSnapshot(doc);
+            data.list.add(new DocumentSnapshotData()
+              ..path = doc.ref.path
+              ..data = documentDataToJsonMap(docData));
+          }
+          // Changes
+          data.changes = <DocumentChangeData>[];
+          for (var change in querySnapshot.documentChanges) {
+            var documentChangeData = new DocumentChangeData()
+              ..id = change.document.ref.id
+              ..type = documentChangeTypeToString(change.type)
+              ..newIndex = change.newIndex
+              ..oldIndex = change.oldIndex;
+            // need data?
+            var path = change.document.ref.path;
+
+            _find() {
+              for (var doc in querySnapshot.docs) {
+                if (doc.ref.path == path) {
+                  return true;
+                }
               }
+              return false;
             }
-            return false;
-          }
 
-          if (!_find()) {
-            documentChangeData.data = documentDataToJsonMap(
-                documentDataFromSnapshot(change.document));
+            if (!_find()) {
+              documentChangeData.data = documentDataToJsonMap(
+                  documentDataFromSnapshot(change.document));
+            }
+            data.changes.add(documentChangeData);
           }
-          data.changes.add(documentChangeData);
-        }
-        var notification =
-            new Notification(methodFirestoreQueryStream, data.toMap());
-        sendMessage(notification);
+          var notification =
+              new Notification(methodFirestoreQueryStream, data.toMap());
+          sendMessage(notification);
+        });
       });
+
+      var data = new FirestoreQueryStreamResponse();
+      subscriptions[streamId] =
+          new SimSubscription(streamId, streamSubscription);
+      data.streamId = streamId;
+
+      // Get
+      var response = new Response(request.id, data.toMap());
+
+      sendMessage(response);
     });
-
-    var data = new FirestoreQueryStreamResponse();
-    subscriptions[streamId] = new SimSubscription(streamId, streamSubscription);
-    data.streamId = streamId;
-
-    // Get
-    var response = new Response(request.id, data.toMap());
-
-    sendMessage(response);
   }
 
-  // Cancel subscription
+  // Batch
   Future handleFirestoreBatch(Request request) async {
     var batchData = new FirestoreBatchData()
       ..firestoreFromMap(app.firestore(), requestParams(request));
 
+    await server.transactionLock.synchronized(() async {
+      await _handleFirestoreBatch(batchData, request);
+    });
+  }
+
+  Future _handleFirestoreBatch(
+      FirestoreBatchData batchData, Request request) async {
     var batch = app.firestore().batch();
     for (var item in batchData.operations) {
       if (item is BatchOperationDeleteData) {
@@ -330,26 +433,75 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
     sendMessage(response);
   }
 
+  // Transaction
+  Future handleFirestoreTransaction(Request request) async {
+    var responseData = new FirestoreTransactionResponseData()
+      ..transactionId = ++server.lastTransactionId;
+
+    // start locking but don't wait
+    server.transactionLock.synchronized(() async {
+      transactionCompleter = new Completer();
+      await transactionCompleter.future;
+      transactionCompleter = null;
+    });
+    var response = new Response(request.id, responseData.toMap());
+
+    sendMessage(response);
+  }
+
+  Future handleFirestoreTransactionCommit(Request request) async {
+    var batchData = new FirestoreBatchData()
+      ..firestoreFromMap(app.firestore(), requestParams(request));
+
+    if (batchData.transactionId == server.lastTransactionId) {
+      try {
+        await _handleFirestoreBatch(batchData, request);
+      } finally {
+        // terminate transaction
+        transactionCompleter.complete();
+      }
+    } else {
+      await server.transactionLock.synchronized(() async {
+        await _handleFirestoreBatch(batchData, request);
+      });
+    }
+  }
+
+  Future handleFirestoreTransactionCancel(Request request) async {
+    var requestData = new FirestoreTransactionCancelRequestData()
+      ..fromMap(requestParams(request));
+
+    if (requestData.transactionId == server.lastTransactionId) {
+      // terminate transaction
+      transactionCompleter.complete();
+    }
+    var response = new Response(request.id, {});
+
+    sendMessage(response);
+  }
+
   Future handleFirestoreQuery(Request request) async {
     var queryData = new FirestoreQueryData()
       ..firestoreFromMap(app.firestore(), requestParams(request));
     Query query = await getQuery(queryData);
 
-    var querySnapshot = await query.get();
+    await server.transactionLock.synchronized(() async {
+      var querySnapshot = await query.get();
 
-    var data = new FirestoreQuerySnapshotData();
-    data.list = <DocumentSnapshotData>[];
-    for (DocumentSnapshot doc in querySnapshot.docs) {
-      var docData = documentDataFromSnapshot(doc);
-      data.list.add(new DocumentSnapshotData()
-        ..path = doc.ref.path
-        ..data = documentDataToJsonMap(docData));
-    }
+      var data = new FirestoreQuerySnapshotData();
+      data.list = <DocumentSnapshotData>[];
+      for (DocumentSnapshot doc in querySnapshot.docs) {
+        var docData = documentDataFromSnapshot(doc);
+        data.list.add(new DocumentSnapshotData()
+          ..path = doc.ref.path
+          ..data = documentDataToJsonMap(docData));
+      }
 
-    // Get
-    var response = new Response(request.id, data.toMap());
+      // Get
+      var response = new Response(request.id, data.toMap());
 
-    sendMessage(response);
+      sendMessage(response);
+    });
   }
 
   Future<Query> getQuery(FirestoreQueryData queryData) async {
@@ -442,7 +594,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
     var options = new AppOptions(
       projectId: adminInitializeAppData.projectId,
     );
-    app = simServer.firebase
+    app = server.firebase
         .initializeApp(options: options, name: adminInitializeAppData.name);
     // var snapshot = app.firestore().doc(firestoreSetData.path).get();
 
