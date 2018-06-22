@@ -21,6 +21,13 @@ runApp(App app) {
     });
 
     group('bucket', () {
+      test('default_bucket', () {
+        var bucket = app.storage().bucket();
+        expect(bucket, isNotNull);
+        print(bucket.name);
+        expect(bucket.name, isNotNull);
+      });
+
       test('bucket', () {
         var bucket = app.storage().bucket("test");
         expect(bucket, isNotNull);

@@ -10,7 +10,15 @@ class StorageNode implements Storage {
   StorageNode(this.nativeInstance);
 
   @override
-  Bucket bucket([String name]) => _wrapBucket(nativeInstance.bucket(name));
+  Bucket bucket([String name]) {
+    native.Bucket nativeBucket;
+    if (name == null) {
+      nativeBucket = nativeInstance.bucket();
+    } else {
+      nativeBucket = nativeInstance.bucket(name);
+    }
+    return _wrapBucket(nativeBucket);
+  }
 }
 
 class FileNode implements File {

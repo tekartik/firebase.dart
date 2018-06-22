@@ -1,7 +1,7 @@
 import 'dart:async';
 
 abstract class Storage {
-  Bucket bucket(String name);
+  Bucket bucket([String name]);
 }
 
 abstract class Bucket {

@@ -1,6 +1,6 @@
 name: tekartik_firebase_sim
 description: Firebase simulation
-version: 0.0.2
+version: 0.0.3
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -21,12 +21,12 @@ dependencies:
   meta: any
   synchronized: '>=1.5.0-dev.2'
   logging: any
-  build_runner: ^0.8.7
-  build_web_compilers: ^0.4.0
 
 dev_dependencies:
   test: ">=0.12.37"
   dev_test: any
+  build_runner: ^0.8.7
+  build_web_compilers: ^0.4.0
 
 dependency_overrides:
   tekartik_firebase:

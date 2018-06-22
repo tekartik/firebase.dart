@@ -3,6 +3,7 @@ library tekartik_firebase_sembast.storage_io_test;
 
 import 'dart:io' as io;
 
+import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 import 'package:tekartik_firebase_sembast/src/storage_sembast.dart';
@@ -19,6 +20,22 @@ void main() {
   runApp(app);
 
   group('storage_io', () {
+    test('bucket_no_name', () async {
+      var bucketIo = app.storage().bucket() as BucketIo;
+      expect(bucketIo.localPath, url.join(".dart_tool", "firebase_admin_shim"));
+    });
+    test('default_bucket_local_path', () async {
+      var old = firebaseSembastIoDefaultBucketLocalPath;
+      try {
+        firebaseSembastIoDefaultBucketLocalPath = "some_dir";
+        var bucketIo = app.storage().bucket() as BucketIo;
+        expect(bucketIo.localPath, "some_dir");
+      } finally {
+        // restore
+        firebaseSembastIoDefaultBucketLocalPath = old;
+      }
+    });
+
     test('create_no_tree', () async {
       var fileIo = app.storage().bucket("test").file("test") as FileIo;
 

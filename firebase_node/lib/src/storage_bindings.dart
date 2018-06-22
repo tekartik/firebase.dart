@@ -17,6 +17,7 @@ abstract class File {
 @anonymous
 abstract class Bucket {
   external String get name;
+  external set(String name);
   external File file(String path);
   external Promise exists();
 }

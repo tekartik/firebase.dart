@@ -56,9 +56,11 @@ class BucketIo implements Bucket {
   final StorageSembast storage;
   final String name;
 
-  String get localPath => join(storage.ioApp.localPath, name);
+  String localPath;
 
-  BucketIo(this.storage, this.name);
+  BucketIo(this.storage, this.name) {
+    localPath = join(storage.ioApp.localPath, name);
+  }
 
   @override
   File file(String path) => new FileIo(this, path);
@@ -76,5 +78,14 @@ class StorageSembast implements Storage {
   StorageSembast(this.ioApp);
 
   @override
-  Bucket bucket([String name]) => new BucketIo(this, name);
+  Bucket bucket([String name]) {
+    var bucket = new BucketIo(this, name);
+    if (name == null && firebaseSembastIoDefaultBucketLocalPath != null) {
+      bucket.localPath = firebaseSembastIoDefaultBucketLocalPath;
+    }
+    return bucket;
+  }
 }
+
+// Allow overriding the default bucket location
+String firebaseSembastIoDefaultBucketLocalPath;

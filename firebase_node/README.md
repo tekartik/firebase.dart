@@ -6,5 +6,11 @@
     
 ## Test
 
+    pub run build_runner test -- -p node
     pub run test -p node
 
+### Single test
+
+    pbr test -- -p -node test/storage_node_test.dart
+    pbr test -- -p -node test/firestore_node_test.dart
+    pbr test -- -p -node test/admin_node_test.dart

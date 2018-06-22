@@ -412,10 +412,9 @@ class TransactionNode implements Transaction {
   @override
   void set(DocumentReference documentRef, Map<String, dynamic> data,
       [SetOptions options]) {
-    nativeInstance.set(
-        _unwrapDocumentReference(documentRef),
+    nativeInstance.set(_unwrapDocumentReference(documentRef),
         documentDataToNativeDocumentData(new DocumentData(data)),
-        _unwrapSetOptions(options));
+        merge: options?.merge ?? false);
   }
 
   @override
