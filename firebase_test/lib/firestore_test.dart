@@ -250,7 +250,7 @@ runApp(Firebase firebase, App app) {
         var docRef = testsRef.doc('document_test_attributes');
         expect(docRef.id, "document_test_attributes");
         expect(docRef.path, "${testsRef.path}/document_test_attributes");
-        expect(docRef.parent, new isInstanceOf<CollectionReference>());
+        expect(docRef.parent, const TypeMatcher<CollectionReference>());
         expect(docRef.parent.id, "tests");
       });
 
@@ -322,7 +322,7 @@ runApp(Firebase firebase, App app) {
         var collRef = testsRef.doc('collection_test').collection('attributes');
         expect(collRef.id, "attributes");
         expect(collRef.path, "${testsRef.path}/collection_test/attributes");
-        expect(collRef.parent, new isInstanceOf<DocumentReference>());
+        expect(collRef.parent, const TypeMatcher<DocumentReference>());
         expect(collRef.parent.id, "collection_test");
 
         // it seems the parent is not null as expected here...
