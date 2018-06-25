@@ -13,9 +13,9 @@ dependencies:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
+  test: ">=1.0.0"
 
 dev_dependencies:
-  test: ">=1.0.0"
   dev_test: any
 
 dependency_overrides:

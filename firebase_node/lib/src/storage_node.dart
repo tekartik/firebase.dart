@@ -1,6 +1,7 @@
 import 'dart:async';
-
+import 'package:js/js_util.dart';
 import 'package:node_interop/util.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_node/src/storage_bindings.dart' as native;
 
@@ -13,7 +14,7 @@ class StorageNode implements Storage {
   Bucket bucket([String name]) {
     native.Bucket nativeBucket;
     if (name == null) {
-      nativeBucket = nativeInstance.bucket();
+      nativeBucket = callMethod(nativeInstance, "bucket", []) as native.Bucket;
     } else {
       nativeBucket = nativeInstance.bucket(name);
     }

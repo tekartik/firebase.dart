@@ -54,7 +54,7 @@ void main() {
         subData.setInt('test', 1234);
         documentData.setData('sub', subData);
         // store as a map
-        expect(documentData.map['sub'], new isInstanceOf<Map>());
+        expect(documentData.map['sub'], const TypeMatcher<Map>());
         expect(documentDataToRecordMap(documentData), {
           'sub': {'test': 1234}
         });
@@ -73,7 +73,7 @@ void main() {
         subSubData.setInt('test', 1234);
         documentData.setData('sub', subData);
         subData.setData('subsub', subSubData);
-        expect(documentData.map['sub'], new isInstanceOf<Map>());
+        expect(documentData.map['sub'], const TypeMatcher<Map>());
         expect(documentDataToRecordMap(documentData), {
           'sub': {
             'subsub': {'test': 1234}

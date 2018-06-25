@@ -4,6 +4,7 @@ library tekartik_firebase_server_node.node_test;
 import 'package:test/test.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_node/firebase_node.dart';
+import 'package:tekartik_firebase_test/firebase_test.dart';
 
 void main() {
   group('node', () {
@@ -14,6 +15,6 @@ void main() {
     });
 
     // there is no name on node
-    // runApp(firebaseNode, app);
+    runApp(firebaseNode, app);
   });
 }
