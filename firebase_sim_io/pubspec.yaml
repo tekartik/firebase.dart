@@ -20,10 +20,13 @@ dependencies:
     git:
       url: git://github.com/tekartik/web_socket.dart
       path: web_socket_io
+    version: '>=0.0.2'
 
 dev_dependencies:
-  test: ">=0.12.37"
+  test: "^1.0.0"
   dev_test: any
+  build_runner: ^0.9.0
+  build_test: '>=0.10.2+5'
 
 dependency_overrides:
   tekartik_firebase_test:

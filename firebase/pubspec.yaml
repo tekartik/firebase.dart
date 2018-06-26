@@ -1,6 +1,6 @@
 name: tekartik_firebase
 description: Firebase core
-version: 0.0.1
+version: 0.0.2
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -11,7 +11,8 @@ dependencies:
   tekartik_common_utils:
     git: git://github.com/tekartik/common_utils.dart
     version: '>=0.5.3'
-
+  path: '^1.6.1'
+  collection: '^1.14.10'
 dev_dependencies:
-  test: ">=0.12.37"
+  test: "^1.0.0"
   dev_test: any

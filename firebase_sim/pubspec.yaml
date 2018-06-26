@@ -12,10 +12,12 @@ dependencies:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
+    version: '>=0.0.3'
   tekartik_web_socket:
     git:
       url: git://github.com/tekartik/web_socket.dart
       path: web_socket
+    version: '>=0.0.3'
   tekartik_common_utils:
     git: git://github.com/tekartik/common_utils.dart
   meta: any
@@ -23,10 +25,11 @@ dependencies:
   logging: any
 
 dev_dependencies:
-  test: ">=0.12.37"
+  test: "^1.0.0"
   dev_test: any
-  build_runner: ^0.8.7
-  build_web_compilers: ^0.4.0
+  build_runner: ^0.9.0
+  build_web_compilers: ^0.4.0+4
+  build_test: any
 
 dependency_overrides:
   tekartik_firebase:

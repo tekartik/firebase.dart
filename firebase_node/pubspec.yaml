@@ -19,7 +19,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
   firebase_functions_interop: ">=1.0.0-dev.4"
-  firebase_admin_interop: ">=1.0.0-dev.14.0"
+  firebase_admin_interop: ">=1.0.0-dev.15.0"
 
 dev_dependencies:
   test: ">=0.12.37"
@@ -36,5 +36,5 @@ dev_dependencies:
 dependency_overrides:
   tekartik_firebase:
     path: ../firebase
-  firebase_admin_interop:
-    git: git://github.com/asaarnak/firebase-admin-interop
+#  firebase_admin_interop:
+#    git: git://github.com/asaarnak/firebase-admin-interop

@@ -1,4 +1,4 @@
-library tekartik_firebase_server_sim_io.firebase_sim_o_test;
+library tekartik_firebase_server_sim_io.firebase_sim_test;
 
 import 'package:tekartik_firebase_test/firestore_test.dart';
 import 'package:test/test.dart';
