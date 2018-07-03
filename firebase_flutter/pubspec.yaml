@@ -9,6 +9,7 @@ dependencies:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
+      ref: dart2
   cloud_firestore: any
 
   # The following adds the Cupertino Icons font to your application.

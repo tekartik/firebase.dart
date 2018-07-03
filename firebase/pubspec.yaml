@@ -9,7 +9,9 @@ environment:
 
 dependencies:
   tekartik_common_utils:
-    git: git://github.com/tekartik/common_utils.dart
+    git:
+      url: git://github.com/tekartik/common_utils.dart
+      ref: dart2
     version: '>=0.5.3'
   path: '^1.6.1'
   collection: '^1.14.10'

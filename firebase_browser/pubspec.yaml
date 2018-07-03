@@ -12,9 +12,12 @@ dependencies:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
+      ref: dart2
   firebase: any
   tekartik_browser_utils:
-    git: git://github.com/tekartik/browser_utils.dart
+    git:
+      url: git://github.com/tekartik/browser_utils.dart
+      ref: dart2
 
 dev_dependencies:
   test: ">=0.12.37"

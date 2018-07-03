@@ -14,6 +14,7 @@ dependencies:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
+      ref: dart2
 
 dev_dependencies:
   test: any
