@@ -20,38 +20,46 @@ main(List<String> args) {
 
 @Task()
 test_firebase_browser() async {
-  await bash('''
+  await bash(
+      '''
 set -xe
 pushd firebase_browser
 pub run build_runner test --fail-on-severe -- -p chrome -r expanded $extraOptions
-''', verbose: true);
+''',
+      verbose: true);
 }
 
 @Task()
 test_firebase_sembast() async {
-  await bash('''
+  await bash(
+      '''
 set -xe
 pushd firebase_sembast
 pub run test $extraOptions
-''', verbose: true);
+''',
+      verbose: true);
 }
 
 @Task()
 test_firebase_node() async {
-  await bash('''
+  await bash(
+      '''
 set -xe
 pushd firebase_node
 pub run test -p node $extraOptions
-''', verbose: true);
+''',
+      verbose: true);
 }
 
 @Task()
 test_firebase_sim() async {
-  await bash('''
+  await bash(
+      '''
 set -xe
 pushd firebase_sim
 pub run test -p node,vm $extraOptions
-''', verbose: true);
+''',
+      verbose: true);
 }
 
 @Task()
@@ -64,10 +72,12 @@ test() async {
 
 @Task()
 fmt() async {
-  await bash('''
+  await bash(
+      '''
 set -xe
 dartfmt . -w
-''', verbose: true);
+''',
+      verbose: true);
 }
 
 @DefaultTask()

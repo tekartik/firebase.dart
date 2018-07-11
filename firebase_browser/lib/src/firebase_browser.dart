@@ -57,7 +57,7 @@ class AppBrowser implements App {
   AppBrowser(this.nativeApp);
 
   @override
-  Future<void> delete() async {
+  Future delete() async {
     await nativeApp.delete();
   }
 

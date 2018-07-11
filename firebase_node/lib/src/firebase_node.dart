@@ -63,7 +63,7 @@ class AppNode implements App {
   String get name => nativeInstance.name;
 
   @override
-  Future<void> delete() => nativeInstance.delete();
+  Future delete() => nativeInstance.delete();
 
   @override
   Firestore firestore() => new FirestoreNode(nativeInstance.firestore());

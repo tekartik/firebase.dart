@@ -58,8 +58,7 @@ dynamic recordValueToValue(Firestore firestore, dynamic recordValue) {
         .map((recordValue) => recordValueToValue(firestore, recordValue))
         .toList();
   }
-  throw 'recordValueToValue not supported $recordValue ${recordValue
-      .runtimeType}';
+  throw 'recordValueToValue not supported $recordValue ${recordValue.runtimeType}';
 }
 
 dynamic valueToRecordValue(dynamic value) {
