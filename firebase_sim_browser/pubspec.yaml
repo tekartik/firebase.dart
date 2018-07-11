@@ -21,9 +21,9 @@ dependencies:
 
 dev_dependencies:
   test: ">=0.12.37"
-  dev_test: any
-  build_runner: ^0.8.7
-  build_web_compilers: ^0.4.0
+  dev_test: '>=0.12.0-dev.1'
+  build_runner: ">=0.9.1"
+  build_web_compilers: ">=0.4.0+4"
 
 dependency_overrides:
   tekartik_firebase_sim:

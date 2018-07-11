@@ -21,11 +21,11 @@ dependencies:
 
 dev_dependencies:
   test: ">=0.12.37"
-  dev_test: any
+  dev_test: '>=0.12.0-dev.1'
   http: any
   yaml: any
-  build_runner: ">=0.8.10"
-  build_test: any
+  build_runner: ">=0.9.1"
+  build_test: ">=0.10.3"
   build_web_compilers: ">=0.4.0+4"
 
 dependency_overrides:
