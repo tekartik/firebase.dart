@@ -11,7 +11,7 @@ import 'package:tekartik_firebase_browser/src/firestore_browser.dart';
 String firebaseJsVersion = "5.1.0";
 
 JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader(
-    "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase.js");
+    "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js");
 JavascriptScriptLoader firestoreJsLoader = new JavascriptScriptLoader(
     "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-firestore.js");
 
