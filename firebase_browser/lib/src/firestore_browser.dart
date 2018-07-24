@@ -314,7 +314,7 @@ class QuerySnapshotBrowser implements QuerySnapshot {
   List<DocumentChange> get documentChanges {
     var changes = <DocumentChange>[];
     if (_native.docChanges != null) {
-      for (var nativeChange in _native.docChanges) {
+      for (var nativeChange in _native.docChanges()) {
         changes.add(new DocumentChangeBrowser(nativeChange));
       }
     }
