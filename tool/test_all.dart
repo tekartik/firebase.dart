@@ -33,6 +33,16 @@ Future testFirebaseSimIo() async {
       pubCmd(pubRunTestArgs(platforms: ['vm']))..workingDirectory = dir);
 }
 
+Future testFirebaseBrowser() async {
+  var dir = 'firebase_browser';
+  await runCmd(pubCmd(pubGetArgs())..workingDirectory = dir);
+  await runCmd(dartanalyzerCmd(['lib', 'test'])..workingDirectory = dir);
+  /*
+  await runCmd(
+      pubCmd(pubRunTestArgs(platforms: ['chrome']))..workingDirectory = dir);
+      */
+}
+
 Future testFirebaseSimBrowser() async {
   var dir = 'firebase_sim_browser';
   await runCmd(pubCmd(pubGetArgs())..workingDirectory = dir);
@@ -65,6 +75,7 @@ Future testFirebaseTest() async {
 
 Future main() async {
   await testFirebase();
+  await testFirebaseBrowser();
   await testFirebaseSembast();
   await testFirebaseSim();
   await testFirebaseSimBrowser();
