@@ -1,6 +1,7 @@
 @TestOn('vm')
 library tekartik_firebase_sembast.firebase_io_src_test;
 
+import 'package:path/path.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
@@ -16,15 +17,17 @@ void main() {
     test('db_name', () async {
       var app = firebase.initializeApp(name: 'test');
       var ioFirestore = app.firestore() as FirestoreSembast;
-      expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
+      expect(ioFirestore.dbPath,
+          join('.dart_tool', 'firebase_admin_shim', 'test.db'));
 
       app = firebase.initializeApp(name: 'test.db');
       ioFirestore = app.firestore() as FirestoreSembast;
-      expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
+      expect(ioFirestore.dbPath,
+          join('.dart_tool', 'firebase_admin_shim', 'test.db'));
 
-      app = firebase.initializeApp(name: 'test/test.db');
+      app = firebase.initializeApp(name: join('test', 'test.db'));
       ioFirestore = app.firestore() as FirestoreSembast;
-      expect(ioFirestore.dbPath, 'test/test.db');
+      expect(ioFirestore.dbPath, join('test', 'test.db'));
     });
 
     group('DocumentData', () {

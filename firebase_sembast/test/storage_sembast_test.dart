@@ -22,7 +22,7 @@ void main() {
   group('storage_io', () {
     test('bucket_no_name', () async {
       var bucketIo = app.storage().bucket() as BucketIo;
-      expect(bucketIo.localPath, url.join(".dart_tool", "firebase_admin_shim"));
+      expect(bucketIo.localPath, join(".dart_tool", "firebase_admin_shim"));
     });
     test('default_bucket_local_path', () async {
       var old = firebaseSembastIoDefaultBucketLocalPath;
