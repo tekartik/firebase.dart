@@ -51,8 +51,7 @@ abstract class DocumentReference {
 }
 
 abstract class DocumentData {
-  factory DocumentData([Map<String, dynamic> map]) =>
-      new DocumentDataMap(map: map);
+  factory DocumentData([Map<String, dynamic> map]) => DocumentDataMap(map: map);
 
   void setString(String key, String value);
 
@@ -139,7 +138,7 @@ enum FieldValue {
 class Blob {
   final Uint8List _data;
 
-  Blob.fromList(List<int> data) : _data = new Uint8List.fromList(data);
+  Blob.fromList(List<int> data) : _data = Uint8List.fromList(data);
 
   Uint8List get data => _data;
 

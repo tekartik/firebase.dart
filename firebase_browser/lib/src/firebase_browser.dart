@@ -10,9 +10,9 @@ import 'package:tekartik_firebase_browser/src/firestore_browser.dart';
 
 String firebaseJsVersion = "5.1.0";
 
-JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader(
+JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(
     "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js");
-JavascriptScriptLoader firestoreJsLoader = new JavascriptScriptLoader(
+JavascriptScriptLoader firestoreJsLoader = JavascriptScriptLoader(
     "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-firestore.js");
 
 Future loadFirebaseCoreJs() async {
@@ -31,11 +31,11 @@ Future loadFirebaseJs() async {
 
 class FirebaseBrowser implements Firebase {
   @override
-  final FirestoreService firestore = new FirestoreServiceBrowser();
+  final FirestoreService firestore = FirestoreServiceBrowser();
 
   @override
   App initializeApp({AppOptions options, String name}) {
-    options ??= new AppOptions();
+    options ??= AppOptions();
     native.App nativeApp = native.initializeApp(
         projectId: options.projectId,
         storageBucket: options.storageBucket,
@@ -47,7 +47,7 @@ class FirebaseBrowser implements Firebase {
     if (nativeApp == null) {
       return null;
     }
-    return new AppBrowser(nativeApp);
+    return AppBrowser(nativeApp);
   }
 }
 
@@ -67,7 +67,7 @@ class AppBrowser implements App {
     if (nativeFirestore == null) {
       return null;
     }
-    return new FirestoreBrowser(nativeFirestore);
+    return FirestoreBrowser(nativeFirestore);
   }
 
   @override
@@ -83,7 +83,7 @@ class AppBrowser implements App {
     var nativeOptions = nativeApp.options;
 
     if (nativeOptions != null) {
-      return new AppOptions(
+      return AppOptions(
           apiKey: nativeOptions.apiKey,
           authDomain: nativeOptions.authDomain,
           messagingSenderId: nativeOptions.messagingSenderId,
@@ -98,5 +98,4 @@ class AppBrowser implements App {
 
 FirebaseBrowser _firebaseBrowser;
 
-FirebaseBrowser get firebaseBrowser =>
-    _firebaseBrowser ??= new FirebaseBrowser();
+FirebaseBrowser get firebaseBrowser => _firebaseBrowser ??= FirebaseBrowser();

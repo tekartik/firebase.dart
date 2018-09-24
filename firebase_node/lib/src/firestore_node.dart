@@ -23,24 +23,24 @@ class FirestoreNode implements Firestore {
       _wrapDocumentReference(nativeInstance.document(path));
 
   @override
-  WriteBatch batch() => new WriteBatchNode(nativeInstance.batch());
+  WriteBatch batch() => WriteBatchNode(nativeInstance.batch());
 
   @override
   Future runTransaction(Function(Transaction transaction) updateFunction) =>
       nativeInstance.runTransaction((nativeTransaction) async {
-        var transaction = new TransactionNode(nativeTransaction);
+        var transaction = TransactionNode(nativeTransaction);
         return await updateFunction(transaction);
       });
 }
 
 FirestoreNode firestore(node.Firestore _impl) =>
-    _impl != null ? new FirestoreNode(_impl) : null;
+    _impl != null ? FirestoreNode(_impl) : null;
 
 CollectionReferenceNode _collectionReference(node.CollectionReference _impl) =>
-    _impl != null ? new CollectionReferenceNode._(_impl) : null;
+    _impl != null ? CollectionReferenceNode._(_impl) : null;
 
 DocumentReferenceNode _wrapDocumentReference(node.DocumentReference _impl) =>
-    _impl != null ? new DocumentReferenceNode._(_impl) : null;
+    _impl != null ? DocumentReferenceNode._(_impl) : null;
 
 node.DocumentReference _unwrapDocumentReference(DocumentReference docRef) =>
     (docRef as DocumentReferenceNode)?.nativeInstance;
@@ -62,13 +62,13 @@ class WriteBatchNode implements WriteBatch {
           [SetOptions options]) =>
       nativeInstance.setData(
           _unwrapDocumentReference(ref),
-          documentDataToNativeDocumentData(new DocumentData(data)),
+          documentDataToNativeDocumentData(DocumentData(data)),
           _unwrapSetOptions(options));
 
   @override
   void update(DocumentReference ref, Map<String, dynamic> data) =>
       nativeInstance.updateData(_unwrapDocumentReference(ref),
-          documentDataToNativeUpdateData(new DocumentData(data)));
+          documentDataToNativeUpdateData(DocumentData(data)));
 }
 
 class QueryNode extends Object with QueryMixin {
@@ -159,7 +159,7 @@ class CollectionReferenceNode extends QueryNode implements CollectionReference {
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) async =>
       _wrapDocumentReference(await nativeInstance
-          .add(documentDataToNativeDocumentData(new DocumentData(data))));
+          .add(documentDataToNativeDocumentData(DocumentData(data))));
 
   @override
   // ignore: invalid_use_of_protected_member
@@ -190,16 +190,16 @@ documentValueToNativeValue(dynamic value) {
     return value.map((value) => documentValueToNativeValue(value)).toList();
   } else if (value is Map) {
     return value.map<String, dynamic>((key, value) =>
-        new MapEntry(key as String, documentValueToNativeValue(value)));
+        MapEntry(key as String, documentValueToNativeValue(value)));
   } else if (value is DocumentReferenceNode) {
     return value.nativeInstance;
   } else if (value is GeoPoint) {
-    return new node.GeoPoint(
+    return node.GeoPoint(
         value.latitude?.toDouble(), value.longitude?.toDouble());
   } else if (value is Blob) {
-    return new node.Blob.fromUint8List(value.data);
+    return node.Blob.fromUint8List(value.data);
   } else {
-    throw new ArgumentError.value(value, "${value.runtimeType}",
+    throw ArgumentError.value(value, "${value.runtimeType}",
         "Unsupported value for documentValueToNativeValue");
   }
 }
@@ -219,15 +219,15 @@ documentValueFromNativeValue(dynamic value) {
     return value.map((value) => documentValueFromNativeValue(value)).toList();
   } else if (value is Map) {
     return value.map<String, dynamic>((key, value) =>
-        new MapEntry(key as String, documentValueFromNativeValue(value)));
+        MapEntry(key as String, documentValueFromNativeValue(value)));
   } else if (value is node.GeoPoint) {
-    return new GeoPoint(value.latitude, value.longitude);
+    return GeoPoint(value.latitude, value.longitude);
   } else if (value is node.Blob) {
-    return new Blob(value.asUint8List());
+    return Blob(value.asUint8List());
   } else if (value is node.DocumentReference) {
-    return new DocumentReferenceNode._(value);
+    return DocumentReferenceNode._(value);
   } else {
-    throw new ArgumentError.value(value, "${value.runtimeType}",
+    throw ArgumentError.value(value, "${value.runtimeType}",
         "Unsupported value for documentValueFromNativeValue");
   }
 }
@@ -236,7 +236,7 @@ node.DocumentData documentDataToNativeDocumentData(DocumentData documentData) {
   if (documentData != null) {
     var map = (documentData as DocumentDataMap).map;
     var nativeMap = documentValueToNativeValue(map) as Map<String, dynamic>;
-    node.DocumentData nativeInstance = new node.DocumentData.fromMap(nativeMap);
+    node.DocumentData nativeInstance = node.DocumentData.fromMap(nativeMap);
     return nativeInstance;
   }
   return null;
@@ -247,7 +247,7 @@ DocumentData documentDataFromNativeDocumentData(
   if (nativeInstance != null) {
     var nativeMap = nativeInstance.toMap();
     var map = documentValueFromNativeValue(nativeMap) as Map<String, dynamic>;
-    var documentData = new DocumentData(map);
+    var documentData = DocumentData(map);
     return documentData;
   }
   return null;
@@ -257,7 +257,7 @@ node.UpdateData documentDataToNativeUpdateData(DocumentData documentData) {
   if (documentData != null) {
     var map = (documentData as DocumentDataMap).map;
     var nativeMap = documentValueToNativeValue(map) as Map<String, dynamic>;
-    node.UpdateData nativeInstance = new node.UpdateData.fromMap(nativeMap);
+    node.UpdateData nativeInstance = node.UpdateData.fromMap(nativeMap);
     return nativeInstance;
   }
   return null;
@@ -275,7 +275,7 @@ class DocumentReferenceNode implements DocumentReference {
   @override
   Future set(Map<String, dynamic> data, [SetOptions options]) async {
     await nativeInstance.setData(
-        documentDataToNativeDocumentData(new DocumentData(data)),
+        documentDataToNativeDocumentData(DocumentData(data)),
         _unwrapSetOptions(options));
   }
 
@@ -291,7 +291,7 @@ class DocumentReferenceNode implements DocumentReference {
   @override
   Future update(Map<String, dynamic> data) async {
     await nativeInstance
-        .updateData(documentDataToNativeUpdateData(new DocumentData(data)));
+        .updateData(documentDataToNativeUpdateData(DocumentData(data)));
   }
 
   @override
@@ -299,7 +299,7 @@ class DocumentReferenceNode implements DocumentReference {
 
   @override
   CollectionReference get parent =>
-      _collectionReference(new node.CollectionReference(
+      _collectionReference(node.CollectionReference(
           // ignore: invalid_use_of_protected_member
           nativeInstance.nativeInstance.parent,
           nativeInstance.firestore));
@@ -388,7 +388,7 @@ class QuerySnapshotNode implements QuerySnapshot {
     var changes = <DocumentChange>[];
     if (nativeInstance.documentChanges != null) {
       for (var nativeChange in nativeInstance.documentChanges) {
-        changes.add(new DocumentChangeNode(nativeChange));
+        changes.add(DocumentChangeNode(nativeChange));
       }
     }
     return changes;
@@ -413,29 +413,29 @@ class TransactionNode implements Transaction {
   void set(DocumentReference documentRef, Map<String, dynamic> data,
       [SetOptions options]) {
     nativeInstance.set(_unwrapDocumentReference(documentRef),
-        documentDataToNativeDocumentData(new DocumentData(data)),
+        documentDataToNativeDocumentData(DocumentData(data)),
         merge: options?.merge ?? false);
   }
 
   @override
   void update(DocumentReference documentRef, Map<String, dynamic> data) {
     nativeInstance.update(_unwrapDocumentReference(documentRef),
-        documentDataToNativeUpdateData(new DocumentData(data)));
+        documentDataToNativeUpdateData(DocumentData(data)));
   }
 }
 
 QueryNode _wrapQuery(node.DocumentQuery nativeInstance) =>
-    nativeInstance != null ? new QueryNode(nativeInstance) : null;
+    nativeInstance != null ? QueryNode(nativeInstance) : null;
 
 DocumentSnapshotNode _wrapDocumentSnapshot(
         node.DocumentSnapshot nativeInstance) =>
-    nativeInstance != null ? new DocumentSnapshotNode._(nativeInstance) : null;
+    nativeInstance != null ? DocumentSnapshotNode._(nativeInstance) : null;
 
 node.DocumentSnapshot _unwrapDocumentSnapshot(DocumentSnapshot snapshot) =>
     snapshot != null ? (snapshot as DocumentSnapshotNode).nativeInstance : null;
 
 QuerySnapshotNode _wrapQuerySnapshot(node.QuerySnapshot nativeInstance) =>
-    nativeInstance != null ? new QuerySnapshotNode._(nativeInstance) : null;
+    nativeInstance != null ? QuerySnapshotNode._(nativeInstance) : null;
 
 node.SetOptions _unwrapSetOptions(SetOptions options) =>
-    options != null ? new node.SetOptions(merge: options.merge == true) : null;
+    options != null ? node.SetOptions(merge: options.merge == true) : null;

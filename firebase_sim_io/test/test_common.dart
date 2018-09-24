@@ -15,7 +15,7 @@ class TestContext {
 
 // using real websocker
 Future<TestContext> initTestContextSimIo() async {
-  var testContext = new TestContext();
+  var testContext = TestContext();
   testContext.simServer =
       await serve(firebaseSembastIo, webSocketChannelFactoryIo);
   testContext.firebase = sim.getFirebaseSim(
@@ -26,7 +26,7 @@ Future<TestContext> initTestContextSimIo() async {
 
 // memory only
 Future<TestContext> initTestContextSim() async {
-  var testContext = new TestContext();
+  var testContext = TestContext();
   // The server use firebase io
   testContext.simServer =
       await serve(firebaseSembastMemory, webSocketChannelFactoryMemory);

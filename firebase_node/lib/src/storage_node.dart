@@ -67,7 +67,7 @@ class BucketNode implements Bucket {
 }
 
 BucketNode _wrapBucket(native.Bucket nativeInstance) =>
-    nativeInstance != null ? new BucketNode(nativeInstance) : null;
+    nativeInstance != null ? BucketNode(nativeInstance) : null;
 
 FileNode _wrapFile(native.File nativeInstance) =>
-    nativeInstance != null ? new FileNode(nativeInstance) : null;
+    nativeInstance != null ? FileNode(nativeInstance) : null;

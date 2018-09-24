@@ -40,10 +40,10 @@ dynamic valueToDocumentValue(dynamic value) {
     return value.map((item) => valueToDocumentValue(value)).toList();
   } else if (value is Map) {
     return value
-        .map((key, value) => new MapEntry(key, valueToDocumentValue(value)))
+        .map((key, value) => MapEntry(key, valueToDocumentValue(value)))
         .cast<String, dynamic>();
   } else {
-    throw new ArgumentError.value(value, "${value.runtimeType}",
+    throw ArgumentError.value(value, "${value.runtimeType}",
         "Unsupported value for fieldValueFromJsonValue");
   }
 }
@@ -126,7 +126,7 @@ class DocumentDataMap implements DocumentData {
   DocumentData getData(String key) {
     var value = getValue(key);
     if (value is Map) {
-      return new DocumentDataMap()..map.addAll(value.cast<String, dynamic>());
+      return DocumentDataMap()..map.addAll(value.cast<String, dynamic>());
     }
     return null;
   }

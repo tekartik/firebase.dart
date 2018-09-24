@@ -146,13 +146,13 @@ class FirestoreQuerySnapshotData extends BaseData {
     super.fromMap(map);
     list = [];
     for (var item in map['list'] as List) {
-      list.add(new DocumentSnapshotData()
+      list.add(DocumentSnapshotData()
         ..fromMap((item as Map).cast<String, dynamic>()));
     }
     changes = [];
     for (var item in map['changes'] as List) {
-      changes.add(new DocumentChangeData()
-        ..fromMap((item as Map).cast<String, dynamic>()));
+      changes.add(
+          DocumentChangeData()..fromMap((item as Map).cast<String, dynamic>()));
     }
     streamId = map['streamId'] as int;
   }
@@ -369,13 +369,13 @@ class FirestoreBatchData extends BaseData {
       var method = itemMap['method'] as String;
       switch (method) {
         case methodFirestoreDelete:
-          operations.add(new BatchOperationDeleteData()..fromMap(itemMap));
+          operations.add(BatchOperationDeleteData()..fromMap(itemMap));
           break;
         case methodFirestoreSet:
-          operations.add(new BatchOperationSetData()..fromMap(itemMap));
+          operations.add(BatchOperationSetData()..fromMap(itemMap));
           break;
         case methodFirestoreUpdate:
-          operations.add(new BatchOperationUpdateData()..fromMap(itemMap));
+          operations.add(BatchOperationUpdateData()..fromMap(itemMap));
           break;
         default:
           throw 'method $method not supported';

@@ -10,7 +10,7 @@ class FirestoreMock implements Firestore {
   CollectionReference collection(String path) => null;
 
   @override
-  DocumentReference doc(String path) => new DocumentReferenceMock(path);
+  DocumentReference doc(String path) => DocumentReferenceMock(path);
 
   @override
   WriteBatch batch() => null;
@@ -81,25 +81,25 @@ main() {
   });
   group('queryInfo', () {
     test('queryInfoToJsonMap', () {
-      var firestore = new FirestoreMock();
-      var queryInfo = new QueryInfo();
+      var firestore = FirestoreMock();
+      var queryInfo = QueryInfo();
       expect(queryInfoToJsonMap(queryInfo), {});
 
       queryInfo.limit = 1;
       queryInfo.offset = 2;
       queryInfo.orderBys = [
-        new OrderByInfo()
+        OrderByInfo()
           ..fieldPath = "field"
           ..ascending = true
       ];
       queryInfo.startAt(
-          values: [new DateTime.fromMillisecondsSinceEpoch(1234567890123)]);
+          values: [DateTime.fromMillisecondsSinceEpoch(1234567890123)]);
       queryInfo.endAt(
-          snapshot: new DocumentSnapshotMock(
-              new DocumentReferenceMock("path/to/dock")));
-      queryInfo.addWhere(new WhereInfo("whereField",
+          snapshot:
+              DocumentSnapshotMock(DocumentReferenceMock("path/to/dock")));
+      queryInfo.addWhere(WhereInfo("whereField",
           isLessThanOrEqualTo:
-              new DateTime.fromMillisecondsSinceEpoch(12345678901234)));
+              DateTime.fromMillisecondsSinceEpoch(12345678901234)));
 
       var expected = {
         'limit': 1,

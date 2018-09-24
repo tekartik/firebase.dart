@@ -10,7 +10,7 @@ import 'package:tekartik_firebase_node/src/storage_bindings.dart' as native;
 
 Firebase _firebaseNode;
 Firebase get firebaseNode =>
-    _firebaseNode ??= new FirebaseNode._(native.FirebaseAdmin.instance);
+    _firebaseNode ??= FirebaseNode._(native.FirebaseAdmin.instance);
 
 //import 'package:firebase_functions_interop/
 class FirebaseNode implements Firebase {
@@ -19,7 +19,7 @@ class FirebaseNode implements Firebase {
   final native.FirebaseAdmin nativeInstance;
 
   @override
-  var firestore = new FirestoreServiceNode();
+  var firestore = FirestoreServiceNode();
 
   @override
   App initializeApp({AppOptions options, String name}) {
@@ -29,14 +29,14 @@ class FirebaseNode implements Firebase {
     if (options == null) {
       name = null;
     }
-    return new AppNode(
+    return AppNode(
         nativeInstance.initializeApp(_unwrapAppOptions(options), name));
   }
 }
 
 native.AppOptions _unwrapAppOptions(AppOptions appOptions) {
   if (appOptions != null) {
-    return new native.AppOptions(
+    return native.AppOptions(
         databaseURL: appOptions.databaseURL,
         projectId: appOptions.projectId,
         storageBucket: appOptions.storageBucket);
@@ -46,7 +46,7 @@ native.AppOptions _unwrapAppOptions(AppOptions appOptions) {
 
 AppOptions _wrapAppOptions(native.AppOptions nativeInstance) {
   if (nativeInstance != null) {
-    return new AppOptions(
+    return AppOptions(
         databaseURL: nativeInstance.databaseURL,
         projectId: nativeInstance.projectId,
         storageBucket: nativeInstance.storageBucket);
@@ -66,7 +66,7 @@ class AppNode implements App {
   Future delete() => nativeInstance.delete();
 
   @override
-  Firestore firestore() => new FirestoreNode(nativeInstance.firestore());
+  Firestore firestore() => FirestoreNode(nativeInstance.firestore());
 
   @override
   Storage storage() {
@@ -74,7 +74,7 @@ class AppNode implements App {
         // ignore: invalid_use_of_protected_member
         (nativeInstance.nativeInstance as native.StorageApp).storage();
     if (nativeStorage != null) {
-      return new StorageNode(nativeStorage);
+      return StorageNode(nativeStorage);
     }
     return null;
   }

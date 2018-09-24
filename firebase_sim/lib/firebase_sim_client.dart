@@ -6,18 +6,18 @@ import 'package:tekartik_web_socket/web_socket.dart';
 
 export 'src/firebase_sim_client.dart' show FirebaseSim;
 
-const requestTimeoutDuration = const Duration(seconds: 15);
+const requestTimeoutDuration = Duration(seconds: 15);
 
 class _Request {
   final Request request;
   dynamic response;
-  final completer = new Completer();
+  final completer = Completer();
 
   _Request(this.request);
 }
 
 class FirebaseSimClient extends Object with FirebaseSimMixin {
-  var _notificationController = new StreamController<Notification>.broadcast();
+  var _notificationController = StreamController<Notification>.broadcast();
 
   Stream<Notification> get notificationStream => _notificationController.stream;
   int _lastRequestId = 0;
@@ -35,13 +35,13 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
   }
 
   Request newRequest(String method, [data]) {
-    return new Request(++_lastRequestId, method, data);
+    return Request(++_lastRequestId, method, data);
   }
 
   Future< /*Response | ErrorResponse*/ dynamic> sendRequest(
       Request request) async {
     int id = request.id as int;
-    _Request internalRequest = new _Request(request);
+    _Request internalRequest = _Request(request);
     try {
       _currentRequests[id] = internalRequest;
       sendMessage(request);

@@ -34,7 +34,7 @@ Map<String, dynamic> fieldValueToJsonValue(FieldValue fieldValue) {
   } else if (fieldValue == FieldValue.serverTimestamp) {
     return typeValueToJson(typeFieldValue, valueFieldValueServerTimestamp);
   }
-  throw new ArgumentError.value(fieldValue, "${fieldValue.runtimeType}",
+  throw ArgumentError.value(fieldValue, "${fieldValue.runtimeType}",
       "Unsupported value for fieldValueToJsonValue");
 }
 
@@ -44,7 +44,7 @@ FieldValue fieldValueFromJsonValue(dynamic value) {
   } else if (value == valueFieldValueServerTimestamp) {
     return FieldValue.serverTimestamp;
   }
-  throw new ArgumentError.value(value, "${value.runtimeType}",
+  throw ArgumentError.value(value, "${value.runtimeType}",
       "Unsupported value for fieldValueFromJsonValue");
 }
 
@@ -71,9 +71,9 @@ Blob jsonValueToBlob(Map map) {
   assert(map[jsonTypeField] == typeBlob);
   var base64value = map[jsonValueField] as String;
   if (base64value == null) {
-    return new Blob(null);
+    return Blob(null);
   } else {
-    return new Blob(base64.decode(base64value));
+    return Blob(base64.decode(base64value));
   }
 }
 
@@ -91,8 +91,7 @@ GeoPoint jsonValueToGeoPoint(Map map) {
   }
   assert(map[jsonTypeField] == typeGeoPoint);
   var valueMap = map[jsonValueField] as Map;
-  return new GeoPoint(
-      valueMap['latitude'] as num, valueMap['longitude'] as num);
+  return GeoPoint(valueMap['latitude'] as num, valueMap['longitude'] as num);
 }
 
 // utilities
@@ -112,7 +111,7 @@ dynamic documentDataValueToJson(dynamic value) {
     return value.map((value) => documentDataValueToJson(value)).toList();
   } else if (value is Map) {
     return value.map<String, dynamic>((key, value) =>
-        new MapEntry(key as String, documentDataValueToJson(value)));
+        MapEntry(key as String, documentDataValueToJson(value)));
   } else if (value is DocumentData) {
     // Handle this that could happen from a map
     return documentDataValueToJson((value as DocumentDataMap).map);
@@ -127,7 +126,7 @@ dynamic documentDataValueToJson(dynamic value) {
   } else if (value is GeoPoint) {
     return geoPointToJsonValue(value);
   } else {
-    throw new ArgumentError.value(value, "${value.runtimeType}",
+    throw ArgumentError.value(value, "${value.runtimeType}",
         "Unsupported value for documentDataValueToJson");
   }
 }
@@ -155,14 +154,14 @@ dynamic jsonToDocumentDataValue(Firestore firestore, dynamic value) {
         case typeGeoPoint:
           return jsonValueToGeoPoint(value);
         default:
-          throw new UnsupportedError("value $value");
+          throw UnsupportedError("value $value");
       }
     } else {
-      return value.map<String, dynamic>((key, value) => new MapEntry(
-          key as String, jsonToDocumentDataValue(firestore, value)));
+      return value.map<String, dynamic>((key, value) =>
+          MapEntry(key as String, jsonToDocumentDataValue(firestore, value)));
     }
   } else {
-    throw new ArgumentError.value(value, "${value.runtimeType}",
+    throw ArgumentError.value(value, "${value.runtimeType}",
         "Unsupported value for jsonToDocumentDataValue");
   }
 }
@@ -172,7 +171,7 @@ DocumentData documentDataFromJsonMap(
   if (map == null) {
     return null;
   }
-  return new DocumentDataMap(
+  return DocumentDataMap(
       map: jsonToDocumentDataValue(firestore, map) as Map<String, dynamic>);
 }
 
@@ -181,11 +180,11 @@ DocumentData documentDataFromMap(Map<String, dynamic> map) {
   if (map != null) {
     return null;
   }
-  return new DocumentData(map);
+  return DocumentData(map);
 }
 
 DocumentData documentDataFromSnapshot(DocumentSnapshot snapshot) =>
-    snapshot?.exists == true ? new DocumentData(snapshot.data) : null;
+    snapshot?.exists == true ? DocumentData(snapshot.data) : null;
 
 Map<String, dynamic> documentDataToJsonMap(DocumentData documentData) {
   if (documentData == null) {
@@ -206,7 +205,7 @@ class LimitInfo {
   bool inclusive; // true = At
 
   LimitInfo clone() {
-    return new LimitInfo()
+    return LimitInfo()
       ..documentId = documentId
       ..values = values
       ..inclusive = inclusive;
@@ -247,38 +246,36 @@ class QueryInfo {
   List<WhereInfo> wheres = [];
 
   QueryInfo clone() {
-    return new QueryInfo()
+    return QueryInfo()
       ..limit = limit
       ..offset = offset
       ..startLimit = startLimit?.clone()
       ..endLimit = endLimit?.clone()
-      ..wheres = new List.from(wheres)
+      ..wheres = List.from(wheres)
       ..selectKeyPaths = selectKeyPaths
-      ..orderBys = new List.from(orderBys);
+      ..orderBys = List.from(orderBys);
   }
 
-  startAt({DocumentSnapshot snapshot, List values}) =>
-      startLimit = (new LimitInfo()
-        ..documentId = snapshot?.ref?.id
-        ..values = values
-        ..inclusive = true);
-
-  startAfter({DocumentSnapshot snapshot, List values}) =>
-      startLimit = (new LimitInfo()
-        ..documentId = snapshot?.ref?.id
-        ..values = values
-        ..inclusive = false);
-
-  endAt({DocumentSnapshot snapshot, List values}) => endLimit = (new LimitInfo()
+  startAt({DocumentSnapshot snapshot, List values}) => startLimit = (LimitInfo()
     ..documentId = snapshot?.ref?.id
     ..values = values
     ..inclusive = true);
 
-  endBefore({DocumentSnapshot snapshot, List values}) =>
-      endLimit = (new LimitInfo()
+  startAfter({DocumentSnapshot snapshot, List values}) =>
+      startLimit = (LimitInfo()
         ..documentId = snapshot?.ref?.id
         ..values = values
         ..inclusive = false);
+
+  endAt({DocumentSnapshot snapshot, List values}) => endLimit = (LimitInfo()
+    ..documentId = snapshot?.ref?.id
+    ..values = values
+    ..inclusive = true);
+
+  endBefore({DocumentSnapshot snapshot, List values}) => endLimit = (LimitInfo()
+    ..documentId = snapshot?.ref?.id
+    ..values = values
+    ..inclusive = false);
 
   addWhere(WhereInfo where) {
     wheres.add(where);
@@ -297,7 +294,7 @@ WhereInfo whereInfoFromJsonMap(Firestore firestore, Map<String, dynamic> map) {
       isEqualTo = value;
     }
   } else if (operator == operatorLessThan) {}
-  var whereInfo = new WhereInfo(map['fieldPath'] as String,
+  var whereInfo = WhereInfo(map['fieldPath'] as String,
       isEqualTo: isEqualTo,
       isNull: isNull,
       isLessThan: (operator == operatorLessThan) ? value : null,
@@ -309,7 +306,7 @@ WhereInfo whereInfoFromJsonMap(Firestore firestore, Map<String, dynamic> map) {
 }
 
 OrderByInfo orderByInfoFromJsonMap(Map<String, dynamic> map) {
-  var orderByInfo = new OrderByInfo();
+  var orderByInfo = OrderByInfo();
   orderByInfo.fieldPath = map['fieldPath'] as String;
   orderByInfo.ascending = map['direction'] as String != orderByDescending;
   return orderByInfo;
@@ -365,7 +362,7 @@ Map<String, dynamic> limitInfoToJsonMap(LimitInfo limitInfo) {
 }
 
 LimitInfo limitInfoFromJsonMap(Firestore firestore, Map<String, dynamic> map) {
-  var limitInfo = new LimitInfo();
+  var limitInfo = LimitInfo();
   if (map.containsKey('inclusive')) {
     limitInfo.inclusive = map['inclusive'] == true;
   }
@@ -410,7 +407,7 @@ Map<String, dynamic> queryInfoToJsonMap(QueryInfo queryInfo) {
 }
 
 QueryInfo queryInfoFromJsonMap(Firestore firestore, Map<String, dynamic> map) {
-  QueryInfo queryInfo = new QueryInfo();
+  QueryInfo queryInfo = QueryInfo();
   if (map.containsKey('limit')) {
     queryInfo.limit = map['limit'] as int;
   }
@@ -495,18 +492,17 @@ abstract class WriteBatchBase implements WriteBatch {
   final List<WriteBatchOperation> operations = [];
 
   void delete(DocumentReference ref) =>
-      operations.add(new WriteBatchOperationDelete(ref));
+      operations.add(WriteBatchOperationDelete(ref));
 
   @override
   void set(DocumentReference ref, Map<String, dynamic> data,
       [SetOptions options]) {
-    operations
-        .add(new WriteBatchOperationSet(ref, new DocumentData(data), options));
+    operations.add(WriteBatchOperationSet(ref, DocumentData(data), options));
   }
 
   @override
   void update(DocumentReference ref, Map<String, dynamic> data) {
-    operations.add(new WriteBatchOperationUpdate(ref, new DocumentData(data)));
+    operations.add(WriteBatchOperationUpdate(ref, DocumentData(data)));
   }
 }
 

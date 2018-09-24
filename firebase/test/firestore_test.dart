@@ -8,18 +8,18 @@ import 'package:tekartik_firebase/src/firestore_common.dart';
 import 'src_firestore_common_test.dart';
 
 main() {
-  var firestore = new FirestoreMock();
+  var firestore = FirestoreMock();
   group('jsonMap', () {
     test('dateTime', () {
       expect(
           dateTimeToJsonValue(
-              new DateTime.fromMillisecondsSinceEpoch(123456578901234)),
+              DateTime.fromMillisecondsSinceEpoch(123456578901234)),
           {r'$t': 'DateTime', r'$v': '5882-03-08T14:08:21.234Z'});
 
       expect(
           jsonValueToDateTime(
               {r'$t': 'DateTime', r'$v': '5882-03-08T14:08:21.234Z'}),
-          new DateTime.fromMillisecondsSinceEpoch(123456578901234).toUtc());
+          DateTime.fromMillisecondsSinceEpoch(123456578901234).toUtc());
     });
 
     test('fieldValue', () {
@@ -30,7 +30,7 @@ main() {
     });
 
     test('list', () {
-      var data = new DocumentData();
+      var data = DocumentData();
       expect(data.getList('list'), isNull);
       data.setList('list', <dynamic>[1, 3]);
       List<int> list = data.getList('list');
@@ -38,8 +38,8 @@ main() {
     });
 
     test('blob', () {
-      var data = new DocumentData();
-      data.setBlob("blob", new Blob(null));
+      var data = DocumentData();
+      data.setBlob("blob", Blob(null));
       expect(documentDataToJsonMap(data), {
         'blob': {r'$t': 'Blob', r'$v': null}
       });
@@ -47,7 +47,7 @@ main() {
       data.setBlob("blob", null);
       expect(documentDataToJsonMap(data), {'blob': null});
 
-      data.setBlob("blob", new Blob(new Uint8List.fromList([1, 2, 3])));
+      data.setBlob("blob", Blob(Uint8List.fromList([1, 2, 3])));
       expect(documentDataToJsonMap(data), {
         'blob': {r'$t': 'Blob', r'$v': 'AQID'}
       });
@@ -57,8 +57,8 @@ main() {
     });
 
     test('geoPoint', () {
-      var data = new DocumentData();
-      data.setGeoPoint("geo", new GeoPoint(3.5, 4.0));
+      var data = DocumentData();
+      data.setGeoPoint("geo", GeoPoint(3.5, 4.0));
       expect(documentDataToJsonMap(data), {
         'geo': {
           r'$t': 'GeoPoint',
@@ -69,7 +69,7 @@ main() {
       data.setGeoPoint("geo", null);
       expect(documentDataToJsonMap(data), {'geo': null});
 
-      data.setGeoPoint("geo", new GeoPoint(3.5, 4.0));
+      data.setGeoPoint("geo", GeoPoint(3.5, 4.0));
 
       data = documentDataFromJsonMap(firestore, documentDataToJsonMap(data));
       var geoPoint = data.getGeoPoint('geo');
@@ -78,7 +78,7 @@ main() {
     });
 
     test('documentReference', () {
-      var data = new DocumentData();
+      var data = DocumentData();
       data.setDocumentReference("ref", firestore.doc('tests/doc'));
       expect(documentDataToJsonMap(data), {
         'ref': {r'$t': 'DocumentReference', r'$v': 'tests/doc'}
@@ -91,14 +91,14 @@ main() {
     });
 
     test('toJsonMap', () {
-      var documentData = new DocumentDataMap();
+      var documentData = DocumentDataMap();
       expect(documentDataToJsonMap(documentData), {});
       documentData.setInt('int', 1);
-      var nested = new DocumentData();
+      var nested = DocumentData();
       nested.setFieldValue('delete', FieldValue.delete);
       documentData.setList('list', [
         1,
-        new DateTime.fromMillisecondsSinceEpoch(1234567890123),
+        DateTime.fromMillisecondsSinceEpoch(1234567890123),
         FieldValue.serverTimestamp
       ]);
       documentData.setFieldValue('delete', FieldValue.delete);
@@ -136,16 +136,16 @@ main() {
 
     group('DocumentData', () {
       test('sub_empty', () async {
-        var documentData = new DocumentData();
-        var subData = new DocumentData();
+        var documentData = DocumentData();
+        var subData = DocumentData();
         documentData.setData("sub", subData);
         subData = documentData.getData("sub");
         expect(subData, isNotNull);
       });
 
       test('sub_one', () async {
-        var documentData = new DocumentData();
-        var subData = new DocumentData();
+        var documentData = DocumentData();
+        var subData = DocumentData();
         documentData.setData("sub", subData);
         subData.setString("test", "test_value");
         subData = documentData.getData("sub");
@@ -153,10 +153,10 @@ main() {
       });
 
       test('sub_sub_one', () async {
-        var documentData = new DocumentData();
-        var subData = new DocumentData();
+        var documentData = DocumentData();
+        var subData = DocumentData();
         documentData.setData("sub", subData);
-        var subSubData = new DocumentData();
+        var subSubData = DocumentData();
         subData.setData("inner", subSubData);
         subSubData.setString("test", "test_value");
         subData = documentData.getData("sub");

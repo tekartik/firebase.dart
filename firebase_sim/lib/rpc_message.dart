@@ -6,7 +6,7 @@ abstract class Message {
   // throw or return valid value
   static Message parseMap(Map<String, dynamic> map) {
     if (map['jsonrpc'] != "2.0") {
-      throw new FormatException("missing 'jsonrpc=2.0' in $map");
+      throw FormatException("missing 'jsonrpc=2.0' in $map");
     }
 
     if (map.containsKey('id')) {
@@ -14,27 +14,27 @@ abstract class Message {
       if (map['method'] == null) {
         // response
         if (map.containsKey('result')) {
-          return new Response(id, map['result']);
+          return Response(id, map['result']);
         } else {
           Map errorMap = map['error'];
           if (errorMap == null) {
-            throw new FormatException(
+            throw FormatException(
                 "missing 'method', 'result' or 'error' in $map");
           }
-          return new ErrorResponse(
+          return ErrorResponse(
               id,
-              new Error(errorMap['code'] as int, errorMap['message'] as String,
+              Error(errorMap['code'] as int, errorMap['message'] as String,
                   errorMap['data']));
         }
       } else {
-        return new Request(id, map['method'] as String, map['params']);
+        return Request(id, map['method'] as String, map['params']);
       }
     } else {
       // notification
       if (map['method'] == null) {
-        throw new FormatException("missing 'method' or 'id' in $map");
+        throw FormatException("missing 'method' or 'id' in $map");
       }
-      return new Notification(map['method'] as String, map['params']);
+      return Notification(map['method'] as String, map['params']);
     }
   }
 }
