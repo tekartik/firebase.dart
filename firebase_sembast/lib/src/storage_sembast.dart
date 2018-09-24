@@ -11,7 +11,7 @@ class FileIo implements File {
 
   String get localPath => join(bucket.localPath, path);
 
-  io.File get ioFile => new io.File(localPath);
+  io.File get ioFile => io.File(localPath);
 
   FileIo(this.bucket, this.path);
 
@@ -63,7 +63,7 @@ class BucketIo implements Bucket {
   }
 
   @override
-  File file(String path) => new FileIo(this, path);
+  File file(String path) => FileIo(this, path);
 
   @override
   Future<bool> exists() async {
@@ -79,7 +79,7 @@ class StorageSembast implements Storage {
 
   @override
   Bucket bucket([String name]) {
-    var bucket = new BucketIo(this, name);
+    var bucket = BucketIo(this, name);
     if (name == null && firebaseSembastIoDefaultBucketLocalPath != null) {
       bucket.localPath = firebaseSembastIoDefaultBucketLocalPath;
     }

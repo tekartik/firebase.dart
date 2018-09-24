@@ -17,12 +17,12 @@ class FirebaseSembast implements Firebase {
   final sembast.DatabaseFactory databaseFactory;
 
   @override
-  FirestoreService firestore = new FirestoreServiceSembast();
+  FirestoreService firestore = FirestoreServiceSembast();
 
   FirebaseSembast(this.databaseFactory);
   @override
   App initializeApp({AppOptions options, String name}) {
-    return new AppSembast(this, options, name ?? '[DEFAULT]');
+    return AppSembast(this, options, name ?? '[DEFAULT]');
   }
 }
 
@@ -45,7 +45,7 @@ class AppSembast implements App {
   @override
   Firestore firestore() {
     assert(!deleted);
-    _firestore ??= new FirestoreSembast(this);
+    _firestore ??= FirestoreSembast(this);
     return _firestore;
   }
 
@@ -59,13 +59,12 @@ class AppSembast implements App {
   @override
   Storage storage() {
     assert(!deleted);
-    _storage ??= new StorageSembast(this);
+    _storage ??= StorageSembast(this);
     return _storage;
   }
 }
 
 // For now only firestore
 FirebaseSembast _firebaseSembastMemory;
-FirebaseSembast get firebaseSembastMemory =>
-    _firebaseSembastMemory = _firebaseSembastMemory ??
-        new FirebaseSembast(sembast.memoryDatabaseFactory);
+FirebaseSembast get firebaseSembastMemory => _firebaseSembastMemory =
+    _firebaseSembastMemory ?? FirebaseSembast(sembast.memoryDatabaseFactory);

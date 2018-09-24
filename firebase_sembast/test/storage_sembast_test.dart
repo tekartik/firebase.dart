@@ -41,7 +41,7 @@ void main() {
 
       // delete a top folder to force creating the tree again
       try {
-        await new io.Directory(fileIo.bucket.localPath).delete(recursive: true);
+        await io.Directory(fileIo.bucket.localPath).delete(recursive: true);
       } catch (_) {}
       expect(await fileIo.exists(), isFalse);
       await fileIo.save("test");
