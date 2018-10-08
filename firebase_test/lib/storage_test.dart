@@ -45,8 +45,7 @@ runApp(App app) {
         var file = bucket.file("file.txt");
         await file.save("simple content");
         expect(await file.exists(), isTrue);
-        expect(
-            new String.fromCharCodes(await file.download()), "simple content");
+        expect(String.fromCharCodes(await file.download()), "simple content");
         await file.delete();
       });
     });

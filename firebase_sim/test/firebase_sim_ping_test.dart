@@ -17,7 +17,7 @@ firebase_sim_ping_test_main(WebSocketChannelFactory channelFactory) {
 
     setUpAll(() async {
       var server = await channelFactory.server.serve<String>();
-      simServer = new FirebaseSimServer(null, server);
+      simServer = FirebaseSimServer(null, server);
     });
 
     tearDownAll(() async {});
@@ -25,7 +25,7 @@ firebase_sim_ping_test_main(WebSocketChannelFactory channelFactory) {
     setUp(() {
       var client = channelFactory.client
           .connect<String>(simServer.webSocketChannelServer.url);
-      simClient = new FirebaseSimClient(client);
+      simClient = FirebaseSimClient(client);
     });
     test('ping', () async {
       var request = simClient.newRequest(methodPing);

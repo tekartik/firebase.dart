@@ -27,13 +27,13 @@ class FirestoreBrowser implements Firestore {
   @override
   WriteBatch batch() {
     var nativeBatch = nativeInstance.batch();
-    return nativeBatch != null ? new WriteBatchBrowser(nativeBatch) : null;
+    return nativeBatch != null ? WriteBatchBrowser(nativeBatch) : null;
   }
 
   @override
   Future runTransaction(Function(Transaction transaction) updateFunction) =>
       nativeInstance.runTransaction((nativeTransaction) {
-        var transaction = new TransactionBrowser(nativeTransaction);
+        var transaction = TransactionBrowser(nativeTransaction);
         return updateFunction(transaction);
       });
 }
@@ -53,16 +53,14 @@ class WriteBatchBrowser implements WriteBatch {
   @override
   void set(DocumentReference ref, Map<String, dynamic> data,
       [SetOptions options]) {
-    nativeInstance.set(
-        _unwrapDocumentReference(ref),
-        documentDataToNativeMap(new DocumentData(data)),
-        _unwrapOptions(options));
+    nativeInstance.set(_unwrapDocumentReference(ref),
+        documentDataToNativeMap(DocumentData(data)), _unwrapOptions(options));
   }
 
   @override
   void update(DocumentReference ref, Map<String, dynamic> data) {
     nativeInstance.update(_unwrapDocumentReference(ref),
-        data: documentDataToNativeMap(new DocumentData(data)));
+        data: documentDataToNativeMap(DocumentData(data)));
   }
 }
 
@@ -83,30 +81,28 @@ class TransactionBrowser implements Transaction {
   @override
   void set(DocumentReference documentRef, Map<String, dynamic> data,
       [SetOptions options]) {
-    nativeInstance.set(
-        _unwrapDocumentReference(documentRef),
-        documentDataToNativeMap(new DocumentData(data)),
-        _unwrapOptions(options));
+    nativeInstance.set(_unwrapDocumentReference(documentRef),
+        documentDataToNativeMap(DocumentData(data)), _unwrapOptions(options));
   }
 
   @override
   void update(DocumentReference documentRef, Map<String, dynamic> data) {
     nativeInstance.update(_unwrapDocumentReference(documentRef),
-        data: documentDataToNativeMap(new DocumentData(data)));
+        data: documentDataToNativeMap(DocumentData(data)));
   }
 }
 
 CollectionReferenceBrowser _wrapCollectionReference(
     native.CollectionReference nativeCollectionReference) {
   return nativeCollectionReference != null
-      ? new CollectionReferenceBrowser(nativeCollectionReference)
+      ? CollectionReferenceBrowser(nativeCollectionReference)
       : null;
 }
 
 DocumentReferenceBrowser _wrapDocumentReference(
     native.DocumentReference nativeDocumentReference) {
   return nativeDocumentReference != null
-      ? new DocumentReferenceBrowser(nativeDocumentReference)
+      ? DocumentReferenceBrowser(nativeDocumentReference)
       : null;
 }
 
@@ -129,19 +125,19 @@ dynamic fromNativeValue(nativeValue) {
         .toList();
   } else if (nativeValue is Map) {
     return nativeValue.map<String, dynamic>((key, nativeValue) =>
-        new MapEntry(key as String, fromNativeValue(nativeValue)));
+        MapEntry(key as String, fromNativeValue(nativeValue)));
   } else if (native.FieldValue.delete() == nativeValue) {
     return FieldValue.delete;
   } else if (native.FieldValue.serverTimestamp() == nativeValue) {
     return FieldValue.serverTimestamp;
   } else if (nativeValue is native.DocumentReference) {
-    return new DocumentReferenceBrowser(nativeValue);
+    return DocumentReferenceBrowser(nativeValue);
   } else if (_isNativeBlob(nativeValue)) {
     var nativeBlob = nativeValue as native.Blob;
-    return new Blob(nativeBlob.toUint8Array());
+    return Blob(nativeBlob.toUint8Array());
   } else if (_isNativeGeoPoint(nativeValue)) {
     var nativeGeoPoint = nativeValue as native.GeoPoint;
-    return new GeoPoint(nativeGeoPoint.latitude, nativeGeoPoint.longitude);
+    return GeoPoint(nativeGeoPoint.latitude, nativeGeoPoint.longitude);
   } else {
     throw 'not supported ${nativeValue} type ${nativeValue.runtimeType}';
   }
@@ -177,7 +173,7 @@ dynamic toNativeValue(value) {
     return value.map((nativeValue) => toNativeValue(nativeValue)).toList();
   } else if (value is Map) {
     return value.map<String, dynamic>(
-        (key, value) => new MapEntry(key as String, toNativeValue(value)));
+        (key, value) => MapEntry(key as String, toNativeValue(value)));
   } else if (value is FieldValue) {
     if (FieldValue.delete == value) {
       return native.FieldValue.delete();
@@ -189,7 +185,7 @@ dynamic toNativeValue(value) {
   } else if (value is Blob) {
     return native.Blob.fromUint8Array(value.data);
   } else if (value is GeoPoint) {
-    return new native.GeoPoint(value.latitude, value.longitude);
+    return native.GeoPoint(value.latitude, value.longitude);
   }
 
   throw 'not supported ${value} type ${value.runtimeType}';
@@ -206,7 +202,7 @@ Map<String, dynamic> documentDataToNativeMap(DocumentData documentData) {
 DocumentData documentDataFromNativeMap(Map<String, dynamic> nativeMap) {
   if (nativeMap != null) {
     var map = fromNativeValue(nativeMap) as Map<String, dynamic>;
-    return new DocumentData(map);
+    return DocumentData(map);
   }
   return null;
 }
@@ -230,7 +226,7 @@ class DocumentSnapshotBrowser implements DocumentSnapshot {
 native.SetOptions _unwrapOptions(SetOptions options) {
   native.SetOptions nativeOptions;
   if (options != null) {
-    nativeOptions = new native.SetOptions(merge: options.merge == true);
+    nativeOptions = native.SetOptions(merge: options.merge == true);
   }
   return nativeOptions;
 }
@@ -267,13 +263,13 @@ class DocumentReferenceBrowser implements DocumentReference {
 
   @override
   Future set(Map<String, dynamic> data, [SetOptions options]) async {
-    await nativeInstance.set(documentDataToNativeMap(new DocumentData(data)),
-        _unwrapOptions(options));
+    await nativeInstance.set(
+        documentDataToNativeMap(DocumentData(data)), _unwrapOptions(options));
   }
 
   @override
-  Future update(Map<String, dynamic> data) => nativeInstance.update(
-      data: documentDataToNativeMap(new DocumentData(data)));
+  Future update(Map<String, dynamic> data) =>
+      nativeInstance.update(data: documentDataToNativeMap(DocumentData(data)));
 
   @override
   Stream<DocumentSnapshot> onSnapshot() {
@@ -288,7 +284,7 @@ class DocumentReferenceBrowser implements DocumentReference {
 
 DocumentSnapshotBrowser _wrapDocumentSnapshot(
         native.DocumentSnapshot _native) =>
-    _native != null ? new DocumentSnapshotBrowser(_native) : null;
+    _native != null ? DocumentSnapshotBrowser(_native) : null;
 
 native.DocumentSnapshot _unwrapDocumentSnapshot(
         DocumentSnapshot documentSnapshot) =>
@@ -315,7 +311,7 @@ class QuerySnapshotBrowser implements QuerySnapshot {
     var changes = <DocumentChange>[];
     if (_native.docChanges != null) {
       for (var nativeChange in _native.docChanges()) {
-        changes.add(new DocumentChangeBrowser(nativeChange));
+        changes.add(DocumentChangeBrowser(nativeChange));
       }
     }
     return changes;
@@ -353,10 +349,10 @@ class DocumentChangeBrowser implements DocumentChange {
 }
 
 QuerySnapshotBrowser _wrapQuerySnapshot(native.QuerySnapshot _native) =>
-    _native != null ? new QuerySnapshotBrowser(_native) : null;
+    _native != null ? QuerySnapshotBrowser(_native) : null;
 
 QueryBrowser _wrapQuery(native.Query native) =>
-    native != null ? new QueryBrowser(native) : null;
+    native != null ? QueryBrowser(native) : null;
 
 class QueryBrowser implements Query {
   final native.Query _native;
@@ -461,7 +457,7 @@ class CollectionReferenceBrowser extends QueryBrowser
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) async =>
       _wrapDocumentReference(await _nativeCollectionReference
-          .add(documentDataToNativeMap(new DocumentData(data))));
+          .add(documentDataToNativeMap(DocumentData(data))));
 
   @override
   DocumentReference doc([String path]) =>

@@ -10,7 +10,7 @@ import 'package:test/test.dart';
 
 main() {
   test('admin', () async {
-    Firebase admin = new FirebaseSim(
+    Firebase admin = FirebaseSim(
         clientFactory: webSocketClientChannelFactoryBrowser, url: "ws://dummy");
 
     var app = admin.initializeApp();

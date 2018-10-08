@@ -78,14 +78,14 @@ runApp(Firebase firebase, App app) {
       test('property', () async {
         var testsRef = getTestsRef();
         var docRef = testsRef.doc('property');
-        var documentData = new DocumentData();
+        var documentData = DocumentData();
         expect(documentData.has("some_property"), isFalse);
         expect(documentData.keys, isEmpty);
         documentData.setProperty("some_property", "test_1");
         expect(documentData.keys, ["some_property"]);
         expect(documentData.has("some_property"), isTrue);
         await docRef.set(documentData.asMap());
-        documentData = new DocumentData((await docRef.get()).data);
+        documentData = DocumentData((await docRef.get()).data);
         expect(documentData.has("some_property"), isTrue);
         expect(documentData.keys, ["some_property"]);
         expect(documentData.has("other_property"), isFalse);
@@ -95,11 +95,11 @@ runApp(Firebase firebase, App app) {
       // All fields that we do not delete
       test('allFields', () async {
         var testsRef = getTestsRef();
-        var localDateTime = new DateTime.fromMillisecondsSinceEpoch(1234567890);
+        var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
         var utcDateTime =
-            new DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
+            DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
         var docRef = testsRef.doc('all_fields');
-        var documentData = new DocumentData();
+        var documentData = DocumentData();
         documentData.setString("string", "string_value");
 
         documentData.setInt("int", 12345678901);
@@ -110,22 +110,21 @@ runApp(Firebase firebase, App app) {
         documentData.setList('intList', <int>[4, 3]);
         documentData.setDocumentReference(
             'docRef', app.firestore().doc('tests/doc'));
-        documentData.setBlob(
-            'blob', new Blob(new Uint8List.fromList([1, 2, 3])));
-        documentData.setGeoPoint('geoPoint', new GeoPoint(1.2, 4));
+        documentData.setBlob('blob', Blob(Uint8List.fromList([1, 2, 3])));
+        documentData.setGeoPoint('geoPoint', GeoPoint(1.2, 4));
 
         documentData.setFieldValue(
             "serverTimestamp", FieldValue.serverTimestamp);
 
-        var subData = new DocumentData();
+        var subData = DocumentData();
         subData.setDateTime("localDateTime", localDateTime);
         documentData.setData("subData", subData);
 
-        var subSubData = new DocumentData();
+        var subSubData = DocumentData();
         subData.setData("inner", subSubData);
 
         await docRef.set(documentData.asMap());
-        documentData = new DocumentData((await docRef.get()).data);
+        documentData = DocumentData((await docRef.get()).data);
         expect(documentData.getString("string"), "string_value");
 
         expect(documentData.getInt("int"), 12345678901);
@@ -136,7 +135,7 @@ runApp(Firebase firebase, App app) {
         expect(documentData.getDateTime("utcDateTime"), utcDateTime.toLocal());
         expect(documentData.getDocumentReference('docRef').path, 'tests/doc');
         expect(documentData.getBlob('blob').data, [1, 2, 3]);
-        expect(documentData.getGeoPoint('geoPoint'), new GeoPoint(1.2, 4));
+        expect(documentData.getGeoPoint('geoPoint'), GeoPoint(1.2, 4));
         expect(
             documentData.getDateTime("serverTimestamp").millisecondsSinceEpoch >
                 0,
@@ -164,9 +163,9 @@ runApp(Firebase firebase, App app) {
         var testsRef = getTestsRef();
         var docRef = testsRef.doc('date');
         var localDateTime =
-            new DateTime.fromMillisecondsSinceEpoch(1234567890).toLocal();
+            DateTime.fromMillisecondsSinceEpoch(1234567890).toLocal();
         var utcDateTime =
-            new DateTime.fromMillisecondsSinceEpoch(12345678901).toUtc();
+            DateTime.fromMillisecondsSinceEpoch(12345678901).toUtc();
         await docRef
             .set({"some_date": localDateTime, "some_utc_date": utcDateTime});
         expect((await docRef.get()).data, {
@@ -179,9 +178,9 @@ runApp(Firebase firebase, App app) {
       // All fields that we do not delete
       test('allFields', () async {
         var testsRef = getTestsRef();
-        var localDateTime = new DateTime.fromMillisecondsSinceEpoch(1234567890);
+        var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
         var utcDateTime =
-            new DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
+            DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
         var docRef = testsRef.doc('all_fields');
         var data = {
           "string": "string_value",
@@ -192,8 +191,8 @@ runApp(Firebase firebase, App app) {
           "utcDateTime": utcDateTime,
           'intList': <int>[4, 3],
           'docRef': app.firestore().doc('tests/doc'),
-          'blob': new Blob(new Uint8List.fromList([1, 2, 3])),
-          'geoPoint': new GeoPoint(1.2, 4),
+          'blob': Blob(Uint8List.fromList([1, 2, 3])),
+          'geoPoint': GeoPoint(1.2, 4),
           "serverTimestamp": FieldValue.serverTimestamp,
           "subData": {
             "localDateTime": localDateTime,
@@ -215,8 +214,8 @@ runApp(Firebase firebase, App app) {
           "localDateTime": localDateTime,
           "utcDateTime": utcDateTime.toLocal(),
           'intList': <int>[4, 3],
-          'blob': new Blob(new Uint8List.fromList([1, 2, 3])),
-          'geoPoint': new GeoPoint(1.2, 4),
+          'blob': Blob(Uint8List.fromList([1, 2, 3])),
+          'geoPoint': GeoPoint(1.2, 4),
           "subData": {
             "localDateTime": localDateTime,
             "inner": {'int': 1234}
@@ -262,8 +261,8 @@ runApp(Firebase firebase, App app) {
         await docRef.delete();
 
         int stepCount = 4;
-        var completers = new List.generate(
-            stepCount, (_) => new Completer<DocumentSnapshot>());
+        var completers =
+            List.generate(stepCount, (_) => Completer<DocumentSnapshot>());
         int count = 0;
         var subscription =
             docRef.onSnapshot().listen((DocumentSnapshot documentSnapshot) {
@@ -305,7 +304,7 @@ runApp(Firebase firebase, App app) {
 
         await docRef.set({'value1': 1, 'value2': 2});
         // Set with merge, value1 should remain
-        await docRef.set({'value2': 3}, new SetOptions(merge: true));
+        await docRef.set({'value2': 3}, SetOptions(merge: true));
         var readData = (await docRef.get()).data;
         expect(readData, {'value1': 1, 'value2': 3});
 
@@ -383,13 +382,13 @@ runApp(Firebase firebase, App app) {
         List<DocumentSnapshot> list;
         await docRefOne.set({
           'value': 1,
-          'date': new DateTime.fromMillisecondsSinceEpoch(2),
+          'date': DateTime.fromMillisecondsSinceEpoch(2),
           'sub': {'value': 'b'}
         });
         var docRefTwo = collRef.doc('two');
         await docRefTwo.set({
           'value': 2,
-          'date': new DateTime.fromMillisecondsSinceEpoch(1),
+          'date': DateTime.fromMillisecondsSinceEpoch(1),
           'sub': {'value': 'a'}
         });
         // limit
@@ -479,10 +478,10 @@ runApp(Firebase firebase, App app) {
         // delete it
         await docRef.delete();
 
-        var completer1 = new Completer();
-        var completer2 = new Completer();
-        var completer3 = new Completer();
-        var completer4 = new Completer();
+        var completer1 = Completer();
+        var completer2 = Completer();
+        var completer3 = Completer();
+        var completer4 = Completer();
         int count = 0;
         var subscription =
             collRef.onSnapshot().listen((QuerySnapshot querySnapshot) {

@@ -63,6 +63,62 @@ jobs:
       script: ./tool/travis.sh test_browser
       env: PKG="firebase_sim_io"
       dart: dev
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_sim_io"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_sembast"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_browser"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_node"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_sim"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_sim_io"
+      dart: stable
+    - stage: analyzer_and_format
+      script: ./tool/travis.sh dartfmt dartanalyzer
+      env: PKG="firebase_sim_browser"
+      dart: stable
+    - stage: test_vm
+      script: ./tool/travis.sh test_vm
+      env: PKG="firebase"
+      dart: stable
+    - stage: test_vm
+      script: ./tool/travis.sh test_vm
+      env: PKG="firebase_sembast"
+      dart: stable
+    - stage: test_vm
+      script: ./tool/travis.sh test_vm
+      env: PKG="firebase_sim"
+      dart: stable
+    - stage: test_vm
+      script: ./tool/travis.sh test_vm
+      env: PKG="firebase_sim_io"
+      dart: stable
+    - stage: test_browser
+      script: ./tool/travis.sh test_browser
+      env: PKG="firebase_sim"
+      dart: stable
+    - stage: test_browser
+      script: ./tool/travis.sh test_browser
+      env: PKG="firebase_sim_io"
+      dart: stable
 stages:
   - analyzer_and_format
   - test_vm

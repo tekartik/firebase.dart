@@ -50,7 +50,7 @@ dynamic recordValueToValue(Firestore firestore, dynamic recordValue) {
     } else {
       return recordValue
           .map((key, recordValue) =>
-              new MapEntry(key, recordValueToValue(firestore, recordValue)))
+              MapEntry(key, recordValueToValue(firestore, recordValue)))
           .cast<String, dynamic>();
     }
   } else if (recordValue is Iterable) {
@@ -65,18 +65,17 @@ dynamic valueToRecordValue(dynamic value) {
   if (value == null || value is num || value is bool || value is String) {
     return value;
   } else if (value == FieldValue.serverTimestamp) {
-    return dateTimeToRecordValue(new DateTime.now());
+    return dateTimeToRecordValue(DateTime.now());
   } else if (value is DateTime) {
     return dateTimeToRecordValue(value);
   } else if (value is Map) {
-    return value
-        .map((key, value) => new MapEntry(key, valueToRecordValue(value)));
+    return value.map((key, value) => MapEntry(key, valueToRecordValue(value)));
   } else if (value is List) {
     return value.map((subValue) => valueToRecordValue(subValue)).toList();
   } else if (value is DocumentDataMap) {
     // this happens when it is a list item
     return value.map
-        .map((key, value) => new MapEntry(key, valueToRecordValue(value)));
+        .map((key, value) => MapEntry(key, valueToRecordValue(value)));
   } else if (value is DocumentReferenceSembast) {
     return documentReferenceToRecordValue(value);
   } else if (value is Blob) {
@@ -95,9 +94,8 @@ int recordMapRev(Map<String, dynamic> recordMap) =>
 
 DocumentSnapshotSembast documentSnapshotFromRecordMap(
     FirestoreSembast firestore, String path, Map<String, dynamic> recordMap) {
-  return new DocumentSnapshotSembast(
-      new DocumentReferenceSembast(
-          new ReferenceContextSembast(firestore, path)),
+  return DocumentSnapshotSembast(
+      DocumentReferenceSembast(ReferenceContextSembast(firestore, path)),
       recordMapRev(recordMap),
       documentDataFromRecordMap(firestore, recordMap));
 }
@@ -109,7 +107,7 @@ Map<String, dynamic> documentDataToRecordMap(DocumentData documentData,
     return null;
   }
   recordMap = recordMap != null
-      ? new Map<String, dynamic>.from(recordMap)
+      ? Map<String, dynamic>.from(recordMap)
       : <String, dynamic>{};
   if (documentData == null) {
     return recordMap;
@@ -132,7 +130,7 @@ DocumentDataMap documentDataFromRecordMap(
   if (documentData == null && recordMap == null) {
     return null;
   }
-  documentData ??= new DocumentData();
+  documentData ??= DocumentData();
   if (recordMap != null) {
     recordMap.forEach((String key, value) {
       // ignore rev
@@ -184,7 +182,7 @@ class DocumentSubscription
 abstract class FirestoreSubscription<T> {
   String path;
   int count = 0;
-  var streamController = new StreamController<T>.broadcast();
+  var streamController = StreamController<T>.broadcast();
 }
 
 const String docStoreName = 'doc';
@@ -207,7 +205,7 @@ class WriteResultSembast {
 }
 
 class FirestoreSembast implements Firestore {
-  var dbLock = new Lock();
+  var dbLock = Lock();
   Database db;
   final sembast.AppSembast app;
 
@@ -235,12 +233,12 @@ class FirestoreSembast implements Firestore {
 
   @override
   CollectionReference collection(String path) {
-    return new CollectionReferenceSembast(_context(this, path));
+    return CollectionReferenceSembast(_context(this, path));
   }
 
   @override
   DocumentReference doc(String path) {
-    return new DocumentReferenceSembast(_context(this, path));
+    return DocumentReferenceSembast(_context(this, path));
   }
 
   Future<Database> get ready async {
@@ -281,12 +279,12 @@ class FirestoreSembast implements Firestore {
   }
 
   CollectionSubscription addCollectionSubscription(String path) {
-    return _addSubscription(path, () => new CollectionSubscription())
+    return _addSubscription(path, () => CollectionSubscription())
         as CollectionSubscription;
   }
 
   DocumentSubscription addDocumentSubscription(String path) {
-    return _addSubscription(path, () => new DocumentSubscription())
+    return _addSubscription(path, () => DocumentSubscription())
         as DocumentSubscription;
   }
 
@@ -333,8 +331,8 @@ class FirestoreSembast implements Firestore {
       rev = recordMap[r'$rev'] as int;
       recordMap.remove(r'$rev');
     }
-    return new DocumentSnapshotSembast(
-        new DocumentReferenceSembast(new ReferenceContextSembast(this, path)),
+    return DocumentSnapshotSembast(
+        DocumentReferenceSembast(ReferenceContextSembast(this, path)),
         rev,
         documentDataFromRecordMap(this, recordMap));
   }
@@ -342,7 +340,7 @@ class FirestoreSembast implements Firestore {
   // return previous data
   Future<WriteResultSembast> txnDelete(
       sembast.Transaction txn, String path) async {
-    var result = new WriteResultSembast(path);
+    var result = WriteResultSembast(path);
     var docStore = txn.getStore(docStoreName);
     result.previousSnapshot = await txnGetDocumentSnapshot(txn, path);
     await docStore.delete(path);
@@ -352,7 +350,7 @@ class FirestoreSembast implements Firestore {
   Future<WriteResultSembast> txnSet(
       sembast.Transaction txn, String path, DocumentData documentData,
       [SetOptions options]) async {
-    var result = new WriteResultSembast(path);
+    var result = WriteResultSembast(path);
     var docStore = txn.getStore(docStoreName);
     var existingRecordMap = await txnGetRecordMap(txn, path);
     result.previousSnapshot = documentFromRecordMap(path, existingRecordMap);
@@ -373,7 +371,7 @@ class FirestoreSembast implements Firestore {
     }
 
     result.newSnashot = documentSnapshotFromRecordMap(this, path, recordMap);
-    Record record = new Record(docStore.store, recordMap, path);
+    Record record = Record(docStore.store, recordMap, path);
     await txn.putRecord(record);
     return result;
   }
@@ -382,21 +380,21 @@ class FirestoreSembast implements Firestore {
     var path = result.path;
     var documentSubscription = findSubscription(path);
     if (documentSubscription != null) {
-      documentSubscription.streamController.add(new DocumentSnapshotSembast(
-          new DocumentReferenceSembast(new ReferenceContextSembast(this, path)),
+      documentSubscription.streamController.add(DocumentSnapshotSembast(
+          DocumentReferenceSembast(ReferenceContextSembast(this, path)),
           result.newSnashot?.rev,
           result.newSnashot?.documentData));
     }
     // notify collection listeners
     var collectionSubscription = findSubscription(url.dirname(path));
     if (collectionSubscription != null) {
-      collectionSubscription.streamController.add(new DocumentChangeSembast(
+      collectionSubscription.streamController.add(DocumentChangeSembast(
           result.added
               ? DocumentChangeType.added
               : (result.removed
                   ? DocumentChangeType.removed
                   : DocumentChangeType.modified),
-          new DocumentSnapshotSembast.fromSnapshot(
+          DocumentSnapshotSembast.fromSnapshot(
               result.removed ? result.previousSnapshot : result.newSnashot,
               true),
           null,
@@ -405,13 +403,13 @@ class FirestoreSembast implements Firestore {
   }
 
   @override
-  WriteBatch batch() => new WriteBatchSembast(this);
+  WriteBatch batch() => WriteBatchSembast(this);
 
   @override
   Future runTransaction(
       Function(Transaction transaction) updateFunction) async {
     var db = await ready;
-    var transaction = new TransactionSembast(this);
+    var transaction = TransactionSembast(this);
     List<WriteResultSembast> results = await db.transaction((txn) async {
       // Initialize the transaction
       transaction.nativeTransaction = txn;
@@ -440,10 +438,10 @@ class WriteBatchSembast extends WriteBatchBase implements WriteBatch {
         var path = operation.docRef.path;
         var record = await txn.getStore(docStoreName).getRecord(path);
         if (record == null) {
-          throw new Exception("update failed, record $path does not exit");
+          throw Exception("update failed, record $path does not exit");
         }
         results.add(await firestore.txnSet(
-            txn, path, operation.documentData, new SetOptions(merge: true)));
+            txn, path, operation.documentData, SetOptions(merge: true)));
       } else {
         throw 'not supported $operation';
       }
@@ -472,7 +470,7 @@ class WriteBatchSembast extends WriteBatchBase implements WriteBatch {
 
 // It is basically a batch with gets before in a transaction
 class TransactionSembast extends WriteBatchSembast implements Transaction {
-  var completer = new Completer();
+  var completer = Completer();
   sembast.Transaction nativeTransaction;
 
   TransactionSembast(FirestoreSembast firestore) : super(firestore);
@@ -491,7 +489,7 @@ class BaseReferenceSembast extends Object with AttributesMixin {
   BaseReferenceSembast(this.context);
 
   ReferenceContextSembast pathContext(String path) =>
-      new ReferenceContextSembast(context.firestore, path);
+      ReferenceContextSembast(context.firestore, path);
 }
 
 class DocumentSnapshotSembast implements DocumentSnapshot {
@@ -522,7 +520,7 @@ class DocumentSnapshotSembast implements DocumentSnapshot {
 }
 
 ReferenceContextSembast _context(FirestoreSembast firestore, String path) =>
-    new ReferenceContextSembast(firestore, path);
+    ReferenceContextSembast(firestore, path);
 
 class DocumentReferenceSembast extends BaseReferenceSembast
     with AttributesMixin
@@ -531,7 +529,7 @@ class DocumentReferenceSembast extends BaseReferenceSembast
 
   @override
   CollectionReference collection(String path) =>
-      new CollectionReferenceSembast(pathContext(getChildPath(path)));
+      CollectionReferenceSembast(pathContext(getChildPath(path)));
 
   @override
   Future delete() async {
@@ -559,8 +557,7 @@ class DocumentReferenceSembast extends BaseReferenceSembast
     WriteResultSembast result;
     var db = await firestore.ready;
     await db.transaction((txn) async {
-      result =
-          await firestore.txnSet(txn, path, new DocumentData(data), options);
+      result = await firestore.txnSet(txn, path, DocumentData(data), options);
     });
     if (result != null) {
       firestore.notify(result);
@@ -577,10 +574,10 @@ class DocumentReferenceSembast extends BaseReferenceSembast
     await db.transaction((txn) async {
       var record = await txn.getStore(docStoreName).getRecord(_key);
       if (record == null) {
-        throw new Exception("update failed, record $path does not exit");
+        throw Exception("update failed, record $path does not exit");
       }
       result = await firestore.txnSet(
-          txn, path, new DocumentData(data), new SetOptions(merge: true));
+          txn, path, DocumentData(data), SetOptions(merge: true));
     });
     if (result != null) {
       firestore.notify(result);
@@ -593,7 +590,7 @@ class DocumentReferenceSembast extends BaseReferenceSembast
     if (parentPath == null) {
       return null;
     } else {
-      return new CollectionReferenceSembast(pathContext(parentPath));
+      return CollectionReferenceSembast(pathContext(parentPath));
     }
   }
 
@@ -601,8 +598,7 @@ class DocumentReferenceSembast extends BaseReferenceSembast
   Stream<DocumentSnapshot> onSnapshot() {
     var subscription = firestore.addDocumentSubscription(path);
     var querySubscription;
-    var controller =
-        new StreamController<DocumentSnapshotSembast>(onCancel: () {
+    var controller = StreamController<DocumentSnapshotSembast>(onCancel: () {
       querySubscription.cancel();
     });
 
@@ -628,15 +624,15 @@ class CollectionReferenceSembast extends BaseReferenceSembast
   CollectionReferenceSembast(ReferenceContextSembast context) : super(context);
 
   // always created initially
-  QueryInfo queryInfo = new QueryInfo();
+  QueryInfo queryInfo = QueryInfo();
 
   @override
   DocumentReference doc([String path]) {
     path ??= _generateId();
-    return new DocumentReferenceSembast(pathContext(getChildPath(path)));
+    return DocumentReferenceSembast(pathContext(getChildPath(path)));
   }
 
-  String _generateId() => new Uuid().v4().toString();
+  String _generateId() => Uuid().v4().toString();
 
   @override
   Future<DocumentReference> add(Map<String, dynamic> data) async {
@@ -647,14 +643,14 @@ class CollectionReferenceSembast extends BaseReferenceSembast
 
     var db = await firestore.ready;
     await db.transaction((txn) async {
-      result = await firestore.txnSet(txn, path, new DocumentData(data));
+      result = await firestore.txnSet(txn, path, DocumentData(data));
     });
     if (result != null) {
       firestore.notify(result);
     }
 
     DocumentReferenceSembast documentReference =
-        new DocumentReferenceSembast(pathContext(path));
+        DocumentReferenceSembast(pathContext(path));
     return documentReference;
   }
 
@@ -664,7 +660,7 @@ class CollectionReferenceSembast extends BaseReferenceSembast
     if (parentPath == null) {
       return null;
     } else {
-      return new DocumentReferenceSembast(pathContext(parentPath));
+      return DocumentReferenceSembast(pathContext(parentPath));
     }
   }
 }
@@ -768,12 +764,12 @@ abstract class QueryMixin implements Query, AttributesMixin {
     // Get and filter
     List<DocumentSnapshotSembast> docs = [];
     for (Record record
-        in await db.getStore(docStoreName).findRecords(new Finder())) {
+        in await db.getStore(docStoreName).findRecords(Finder())) {
       String recordPath = record.key;
       String parentPath = url.dirname(recordPath);
       if (parentPath == path) {
         var docRef =
-            new DocumentReferenceSembast(pathContext(record.key as String));
+            DocumentReferenceSembast(pathContext(record.key as String));
         var documentData = documentDataFromRecordMap(
             firestore, record.value as Map<String, dynamic>);
 
@@ -890,7 +886,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
       List<DocumentSnapshotSembast> selectedDocs = [];
       for (var snapshot in docs) {
         var data = snapshot.documentData.map;
-        selectedDocs.add(new DocumentSnapshotSembast(
+        selectedDocs.add(DocumentSnapshotSembast(
             _wrapDocumentReference(snapshot.ref),
             snapshot.rev,
             documentDataFromRecordMap(
@@ -899,7 +895,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
       }
       docs = selectedDocs;
     }
-    return new QuerySnapshotSembast(docs, <DocumentChangeSembast>[]);
+    return QuerySnapshotSembast(docs, <DocumentChangeSembast>[]);
   }
 
   @override
@@ -916,7 +912,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
         key, descending == true ? orderByDescending : orderByAscending);
 
   QuerySembast clone() {
-    return new QuerySembast(context)..queryInfo = queryInfo?.clone();
+    return QuerySembast(context)..queryInfo = queryInfo?.clone();
   }
 
   @override
@@ -930,7 +926,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
     bool isNull,
   }) =>
       clone()
-        ..queryInfo.addWhere(new WhereInfo(fieldPath,
+        ..queryInfo.addWhere(WhereInfo(fieldPath,
             isEqualTo: isEqualTo,
             isLessThan: isLessThan,
             isLessThanOrEqualTo: isGreaterThanOrEqualTo,
@@ -939,7 +935,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
             isNull: isNull));
 
   addOrderBy(String key, String directionStr) {
-    var orderBy = new OrderByInfo()
+    var orderBy = OrderByInfo()
       ..fieldPath = key
       ..ascending = directionStr != orderByDescending;
     queryInfo.orderBys.add(orderBy);
@@ -965,7 +961,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
   Stream<QuerySnapshot> onSnapshot() {
     var collectionSubscription = firestore.addCollectionSubscription(path);
     var querySubscription;
-    var controller = new StreamController<QuerySnapshotSembast>(onCancel: () {
+    var controller = StreamController<QuerySnapshotSembast>(onCancel: () {
       querySubscription.cancel();
     });
 
@@ -998,7 +994,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
       // set index
       int index = 0;
       for (var doc in querySnaphost.docs) {
-        querySnapshotIo.documentChanges.add(new DocumentChangeSembast(
+        querySnapshotIo.documentChanges.add(DocumentChangeSembast(
             DocumentChangeType.added, _wrapDocumentSnapshot(doc), index++, -1));
       }
       controller.add(querySnapshotIo);
@@ -1046,7 +1042,7 @@ abstract class AttributesMixin implements ReferenceAttributes {
   String getChildPath(String path) => url.join(this.path, path);
 
   ReferenceContextSembast pathContext(String path) =>
-      new ReferenceContextSembast(firestore, path);
+      ReferenceContextSembast(firestore, path);
 }
 
 class DocumentChangeSembast implements DocumentChange {

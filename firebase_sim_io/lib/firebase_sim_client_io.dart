@@ -6,6 +6,6 @@ import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 Firebase getFirebaseSim(
     {WebSocketChannelClientFactory clientFactory, String url}) {
   clientFactory ??= webSocketChannelClientFactoryIo;
-  Firebase firebase = new FirebaseSim(clientFactory: clientFactory, url: url);
+  Firebase firebase = FirebaseSim(clientFactory: clientFactory, url: url);
   return firebase;
 }

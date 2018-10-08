@@ -1,6 +1,7 @@
 @TestOn('vm')
 library tekartik_firebase_sembast.firebase_io_src_test;
 
+import 'package:path/path.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
@@ -16,24 +17,25 @@ void main() {
     test('db_name', () async {
       var app = firebase.initializeApp(name: 'test');
       var ioFirestore = app.firestore() as FirestoreSembast;
-      expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
+      expect(ioFirestore.dbPath,
+          join('.dart_tool', 'firebase_admin_shim', 'test.db'));
 
       app = firebase.initializeApp(name: 'test.db');
       ioFirestore = app.firestore() as FirestoreSembast;
-      expect(ioFirestore.dbPath, '.dart_tool/firebase_admin_shim/test.db');
+      expect(ioFirestore.dbPath,
+          join('.dart_tool', 'firebase_admin_shim', 'test.db'));
 
-      app = firebase.initializeApp(name: 'test/test.db');
+      app = firebase.initializeApp(name: join('test', 'test.db'));
       ioFirestore = app.firestore() as FirestoreSembast;
-      expect(ioFirestore.dbPath, 'test/test.db');
+      expect(ioFirestore.dbPath, join('test', 'test.db'));
     });
 
     group('DocumentData', () {
       test('dateTime', () {
         var utcDate =
-            new DateTime.fromMillisecondsSinceEpoch(12345657890123).toUtc();
-        var localDate =
-            new DateTime.fromMillisecondsSinceEpoch(123456578901234);
-        DocumentData documentData = new DocumentData();
+            DateTime.fromMillisecondsSinceEpoch(12345657890123).toUtc();
+        var localDate = DateTime.fromMillisecondsSinceEpoch(123456578901234);
+        DocumentData documentData = DocumentData();
         documentData.setDateTime('utcDateTime', utcDate);
         documentData.setDateTime('dateTime', localDate);
         expect(documentDataToRecordMap(documentData), {
@@ -49,8 +51,8 @@ void main() {
       });
 
       test('sub data', () {
-        DocumentDataMap documentData = new DocumentDataMap();
-        DocumentData subData = new DocumentData();
+        DocumentDataMap documentData = DocumentDataMap();
+        DocumentData subData = DocumentData();
         subData.setInt('test', 1234);
         documentData.setData('sub', subData);
         // store as a map
@@ -67,9 +69,9 @@ void main() {
       });
 
       test('sub data', () {
-        DocumentDataMap documentData = new DocumentDataMap();
-        DocumentData subData = new DocumentData();
-        DocumentData subSubData = new DocumentData();
+        DocumentDataMap documentData = DocumentDataMap();
+        DocumentData subData = DocumentData();
+        DocumentData subSubData = DocumentData();
         subSubData.setInt('test', 1234);
         documentData.setData('sub', subData);
         subData.setData('subsub', subSubData);
@@ -96,7 +98,7 @@ void main() {
       });
 
       test('list', () {
-        DocumentData documentData = new DocumentData();
+        DocumentData documentData = DocumentData();
         documentData.setList('test', [1, 2]);
         expect(documentDataToRecordMap(documentData), {
           'test': [1, 2]
@@ -109,7 +111,7 @@ void main() {
       });
 
       test('documentMapFromRecordMap', () {
-        var documentData = new DocumentDataMap();
+        var documentData = DocumentDataMap();
         expect(documentData.map, {});
         documentDataFromRecordMap(firestore, {}, documentData);
         expect(documentData.map, {});
@@ -132,10 +134,10 @@ void main() {
       });
 
       test('complex', () {
-        var date = new DateTime.fromMillisecondsSinceEpoch(12345657890123);
-        DocumentData documentData = new DocumentData();
-        DocumentData subData = new DocumentData();
-        DocumentData listItemDocumentData = new DocumentData();
+        var date = DateTime.fromMillisecondsSinceEpoch(12345657890123);
+        DocumentData documentData = DocumentData();
+        DocumentData subData = DocumentData();
+        DocumentData listItemDocumentData = DocumentData();
         listItemDocumentData.setDateTime('date', date);
         listItemDocumentData.setInt('test', 12345);
         documentData.setData('sub', subData);
