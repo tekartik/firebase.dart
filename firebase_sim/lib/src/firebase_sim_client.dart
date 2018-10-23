@@ -30,10 +30,10 @@ class SimDocumentSnapshot implements DocumentSnapshot {
   Map<String, dynamic> get data => documentData?.asMap();
 
   @override
-  final String updateTime;
+  final Timestamp updateTime;
 
   @override
-  final String createTime;
+  final Timestamp createTime;
 }
 
 class DocumentReferenceSim implements DocumentReference {

@@ -227,11 +227,11 @@ class DocumentSnapshotBrowser implements DocumentSnapshot {
 
   // Not supported for browser
   @override
-  String get updateTime => null;
+  Timestamp get updateTime => null;
 
   // Not supported for browser
   @override
-  String get createTime => null;
+  Timestamp get createTime => null;
 }
 
 native.SetOptions _unwrapOptions(SetOptions options) {

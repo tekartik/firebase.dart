@@ -187,3 +187,125 @@ enum FieldValueMapValue {
   delete,
   serverTimestamp,
 }
+
+/// Represents Firestore timestamp object.
+class Timestamp implements Comparable<Timestamp> {
+  final int seconds;
+  final int nanoseconds;
+  Timestamp(this.seconds, this.nanoseconds);
+
+  static int tryParseNanoseconds(String text) {
+    var len = text.length;
+    var end = len - 1;
+    if (text[end] == 'Z') {
+      end--;
+    }
+
+    return null;
+  }
+
+  static Timestamp tryParse(String text) {
+    if (text != null) {
+      // 2018-10-20T05:13:45.985343Z
+      var dateTime = DateTime.tryParse(text);
+      var len = text.length;
+      var end = len;
+      if (text[end - 1] == 'Z') {
+        end--;
+      }
+      int seconds;
+      int nanos = 0;
+      if (end > 3 && text[end - 4] == '.') {
+        // Ok nothing to parse more
+        if (dateTime != null) {
+          nanos = (dateTime.millisecondsSinceEpoch % 1000) * 1000000;
+        }
+      } else if (end > 6 && text[end - 7] == '.') {
+        int micros = int.tryParse(text.substring(end - 6, end));
+        if (micros != null) {
+          nanos = micros * 1000;
+        }
+      } else if (end > 9 && text[end - 10] == '.') {
+        // remove nanos
+        dateTime ??= DateTime.tryParse(
+            '${text.substring(0, end - 3)}${text.substring(end)}');
+
+        nanos = int.tryParse(text.substring(end - 9, end));
+      }
+      if (dateTime != null && nanos != null) {
+        seconds ??= (dateTime.millisecondsSinceEpoch / 1000).floor();
+        return Timestamp(seconds, nanos);
+      }
+    }
+    return null;
+  }
+
+  factory Timestamp.fromDateTime(DateTime dateTime) {
+    final int seconds = dateTime.millisecondsSinceEpoch ~/ 1000;
+    final int nanoseconds = (dateTime.microsecondsSinceEpoch % 1000000) * 1000;
+    return Timestamp(seconds, nanoseconds);
+  }
+
+  factory Timestamp.now() => Timestamp.fromDateTime(DateTime.now());
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is Timestamp) {
+      Timestamp typedOther = other;
+      return seconds == typedOther.seconds &&
+          nanoseconds == typedOther.nanoseconds;
+    }
+    return false;
+  }
+
+  @override
+  int get hashCode => (seconds ?? 0) + (nanoseconds ?? 0);
+
+  int get millisecondsSinceEpoch {
+    return (seconds * 1000 + nanoseconds / 10000000).floor();
+  }
+
+  int get microsecondsSinceEpoch {
+    return (seconds * 1000000 + nanoseconds / 1000).floor();
+  }
+
+  DateTime toDateTime({bool isUtc}) {
+    return new DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
+        isUtc: isUtc);
+  }
+
+  static String _threeDigits(int n) {
+    if (n >= 100) return "${n}";
+    if (n >= 10) return "0${n}";
+    return "00${n}";
+  }
+
+  String toIso8601String() {
+    var text = toDateTime(isUtc: true).toIso8601String();
+    // handle micros for node and browser
+    int microsOnly = nanoseconds % 1000000;
+    if (microsOnly != 0) {
+      int micros = (microsOnly / 1000).floor();
+      var len = text.length;
+      // Append micros if needed
+      if ((text[len - 1] == 'Z') && (text[len - 5] == '.')) {
+        return '${text.substring(0, len - 1)}${_threeDigits(micros)}Z';
+      }
+    }
+    return text;
+  }
+
+  @override
+  String toString() => toIso8601String();
+
+  @override
+  int compareTo(Timestamp other) {
+    if (seconds != other.seconds) {
+      return seconds - other.seconds;
+    }
+    return nanoseconds - other.nanoseconds;
+  }
+}

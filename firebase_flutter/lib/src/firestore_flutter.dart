@@ -290,11 +290,11 @@ class DocumentSnapshotFlutter implements DocumentSnapshot {
 
   // not supported
   @override
-  String get updateTime => null;
+  Timestamp get updateTime => null;
 
   // not supported
   @override
-  String get createTime => null;
+  Timestamp get createTime => null;
 }
 
 class QuerySnapshotFlutter implements QuerySnapshot {

@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
-import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:test/test.dart';
 
@@ -98,7 +97,7 @@ runApp(Firebase firebase, App app) {
         var testsRef = getTestsRef();
         var docRef = testsRef.doc('time');
         await docRef.delete();
-        var now = DateTime.now();
+        var now = Timestamp.now();
         await docRef.set({'test': 1});
         var snapshot = await docRef.get();
         // devPrint('createTime ${snapshot.createTime}');
@@ -106,8 +105,7 @@ runApp(Firebase firebase, App app) {
         expect(snapshot.data, {'test': 1});
 
         if (firebase.firestore.supportsDocumentSnapshotTime) {
-          expect(dateTimeParseTimestamp(snapshot.updateTime).compareTo(now),
-              greaterThanOrEqualTo(0));
+          expect(snapshot.updateTime.compareTo(now), greaterThanOrEqualTo(0));
           expect(snapshot.createTime, snapshot.updateTime);
         } else {
           expect(snapshot.createTime, isNull);
@@ -120,9 +118,7 @@ runApp(Firebase firebase, App app) {
         _check() {
           expect(snapshot.data, {'test': 2});
           if (firebase.firestore.supportsDocumentSnapshotTime) {
-            expect(
-                dateTimeParseTimestamp(snapshot.updateTime)
-                    .compareTo(dateTimeParseTimestamp(snapshot.createTime)),
+            expect(snapshot.updateTime.compareTo(snapshot.createTime),
                 greaterThan(0),
                 reason:
                     'createTime ${snapshot.createTime} updateTime ${snapshot.updateTime}');

@@ -1,3 +1,5 @@
+import 'package:tekartik_firebase/firestore.dart';
+
 DateTime dateTimeParseTimestamp(String text) {
   if (text != null) {
     // 2018-10-20T05:13:45.985343Z
@@ -72,9 +74,9 @@ const createTimeKey = r'$createTime';
 const minUpdateTime = '2018-10-23T00:00:00.000000Z';
 const minCreateTime = '2018-10-23T00:00:00.000000Z';
 
-String mapUpdateTime(Map<String, dynamic> recordMap) => recordMap != null
-    ? ((recordMap[updateTimeKey] as String) ?? minUpdateTime)
+Timestamp mapUpdateTime(Map<String, dynamic> recordMap) => recordMap != null
+    ? Timestamp.tryParse((recordMap[updateTimeKey] as String) ?? minUpdateTime)
     : null;
-String mapCreateTime(Map<String, dynamic> recordMap) => recordMap != null
-    ? ((recordMap[createTimeKey] as String) ?? minCreateTime)
+Timestamp mapCreateTime(Map<String, dynamic> recordMap) => recordMap != null
+    ? Timestamp.tryParse((recordMap[createTimeKey] as String) ?? minCreateTime)
     : null;

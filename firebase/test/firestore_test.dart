@@ -77,6 +77,7 @@ main() {
       expect(geoPoint.longitude, 4.0);
     });
 
+    test('timestamp', () {});
     test('documentReference', () {
       var data = DocumentData();
       data.setDocumentReference("ref", firestore.doc('tests/doc'));

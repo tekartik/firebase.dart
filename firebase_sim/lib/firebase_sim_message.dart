@@ -64,22 +64,22 @@ class FirestoreGetData extends FirestorePathData {}
 
 class FirestoreDocumentSnapshotDataImpl extends FirestoreSetData
     implements FirestoreDocumentSnapshotData {
-  String createTime;
-  String updateTime;
+  Timestamp createTime;
+  Timestamp updateTime;
 
   @override
   void fromMap(Map<String, dynamic> map) {
     super.fromMap(map);
-    createTime = map['createTime'] as String;
-    updateTime = map['updateTime'] as String;
+    createTime = Timestamp.tryParse(map['createTime'] as String);
+    updateTime = Timestamp.tryParse(map['updateTime'] as String);
   }
 }
 
 abstract class FirestoreDocumentSnapshotData {
   String get path;
   Map<String, dynamic> get data;
-  String get createTime;
-  String get updateTime;
+  Timestamp get createTime;
+  Timestamp get updateTime;
 }
 
 class DocumentGetSnapshotData extends DocumentSnapshotData {
@@ -106,8 +106,8 @@ class DocumentGetSnapshotData extends DocumentSnapshotData {
 class DocumentSnapshotData extends FirestorePathData
     implements FirestoreDocumentSnapshotData {
   Map<String, dynamic> data;
-  String createTime;
-  String updateTime;
+  Timestamp createTime;
+  Timestamp updateTime;
 
   DocumentSnapshotData.fromSnapshot(DocumentSnapshot snapshot) {
     path = snapshot.ref.path;
@@ -122,8 +122,8 @@ class DocumentSnapshotData extends FirestorePathData
   fromMap(Map<String, dynamic> map) {
     super.fromMap(map);
     data = (map['data'] as Map)?.cast<String, dynamic>();
-    createTime = map['createTime'] as String;
-    updateTime = map['updateTime'] as String;
+    createTime = Timestamp.tryParse(map['createTime'] as String);
+    updateTime = Timestamp.tryParse(map['updateTime'] as String);
   }
 
   Map<String, dynamic> toMap() {

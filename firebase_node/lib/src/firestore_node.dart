@@ -337,12 +337,16 @@ class DocumentSnapshotNode implements DocumentSnapshot {
   bool get exists => nativeInstance.exists;
 
   @override
-  String get updateTime => nativeInstance.updateTime;
+  Timestamp get updateTime => _wrapTimestamp(nativeInstance.updateTime);
 
   @override
-  // ignore: INVALID_USE_OF_PROTECTED_MEMBER
-  String get createTime => nativeInstance.nativeInstance.createTime;
+  Timestamp get createTime => _wrapTimestamp(nativeInstance.createTime);
 }
+
+Timestamp _wrapTimestamp(node.Timestamp nativeInstance) =>
+    nativeInstance != null
+        ? Timestamp(nativeInstance.seconds, nativeInstance.nanoseconds)
+        : null;
 
 DocumentChangeType _wrapDocumentChangeType(node.DocumentChangeType type) {
   switch (type) {

@@ -33,10 +33,10 @@ class DocumentSnapshotMock implements DocumentSnapshot {
   bool get exists => null;
 
   @override
-  String get updateTime => null;
+  Timestamp get updateTime => null;
 
   @override
-  String get createTime => null;
+  Timestamp get createTime => null;
 }
 
 class DocumentReferenceMock implements DocumentReference {

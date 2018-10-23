@@ -93,9 +93,9 @@ DocumentDataMap _documentDataMap(DocumentData documentData) =>
 
 int recordMapRev(Map<String, dynamic> recordMap) =>
     recordMap != null ? recordMap[revKey] as int : null;
-String recordMapUpdateTime(Map<String, dynamic> recordMap) =>
+Timestamp recordMapUpdateTime(Map<String, dynamic> recordMap) =>
     mapUpdateTime(recordMap);
-String recordMapCreateTime(Map<String, dynamic> recordMap) =>
+Timestamp recordMapCreateTime(Map<String, dynamic> recordMap) =>
     mapCreateTime(recordMap);
 
 DocumentSnapshotSembast documentSnapshotFromRecordMap(
@@ -352,8 +352,8 @@ class FirestoreSembast implements Firestore {
   DocumentSnapshotSembast documentFromRecordMap(
       String path, Map<String, dynamic> recordMap) {
     int rev = recordMapRev(recordMap);
-    String updateTime = recordMapUpdateTime(recordMap);
-    String createTime = recordMapCreateTime(recordMap);
+    Timestamp updateTime = recordMapUpdateTime(recordMap);
+    Timestamp createTime = recordMapCreateTime(recordMap);
     if (recordMap != null) {
       recordMap.remove(revKey);
       recordMap.remove(updateTimeKey);
@@ -534,9 +534,9 @@ class DocumentSnapshotSembast implements DocumentSnapshot {
   final DocumentReferenceSembast documentReference;
   final int rev;
   @override
-  final String updateTime;
+  final Timestamp updateTime;
   @override
-  final String createTime;
+  final Timestamp createTime;
   final DocumentDataMap documentData;
 
   bool _exists;
