@@ -208,16 +208,24 @@ class WriteResultSembast {
 
   WriteResultSembast(this.path);
 
-  bool get added =>
-      previousSnapshot?.exists != true && newSnashot?.exists == true;
+  bool get added => newExists && !previousExists;
 
-  bool get removed =>
-      previousSnapshot?.exists == true && newSnashot?.exists != true;
+  bool get removed => previousExists && !newExists;
 
-  bool get exists => newSnashot?.exists == true;
+  bool get exists => newExists;
+
+  bool get previousExists => previousSnapshot?.exists == true;
+  bool get newExists => newSnapshot?.exists == true;
 
   DocumentSnapshotSembast previousSnapshot;
-  DocumentSnapshotSembast newSnashot;
+  DocumentSnapshotSembast newSnapshot;
+
+  bool get shouldNotify => previousExists || newExists;
+
+  @override
+  String toString() {
+    return '$path added $added removed $removed old ${previousSnapshot?.exists} new ${newSnapshot?.exists}';
+  }
 }
 
 class FirestoreSembast implements Firestore {
@@ -398,7 +406,7 @@ class FirestoreSembast implements Firestore {
       recordMap[updateTimeKey] = now;
     }
 
-    result.newSnashot = documentSnapshotFromRecordMap(this, path, recordMap);
+    result.newSnapshot = documentSnapshotFromRecordMap(this, path, recordMap);
     Record record = Record(docStore.store, recordMap, path);
     await txn.putRecord(record);
     return result;
@@ -410,10 +418,10 @@ class FirestoreSembast implements Firestore {
     if (documentSubscription != null) {
       documentSubscription.streamController.add(DocumentSnapshotSembast(
           DocumentReferenceSembast(ReferenceContextSembast(this, path)),
-          result.newSnashot?.rev,
-          result.newSnashot?.documentData,
-          updateTime: result.newSnashot?.updateTime,
-          createTime: result.newSnashot?.createTime));
+          result.newSnapshot?.rev,
+          result.newSnapshot?.documentData,
+          updateTime: result.newSnapshot?.updateTime,
+          createTime: result.newSnapshot?.createTime));
     }
     // notify collection listeners
     var collectionSubscription = findSubscription(url.dirname(path));
@@ -425,7 +433,7 @@ class FirestoreSembast implements Firestore {
                   ? DocumentChangeType.removed
                   : DocumentChangeType.modified),
           DocumentSnapshotSembast.fromSnapshot(
-              result.removed ? result.previousSnapshot : result.newSnashot,
+              result.removed ? result.previousSnapshot : result.newSnapshot,
               true),
           null,
           null));
@@ -538,7 +546,7 @@ class DocumentSnapshotSembast implements DocumentSnapshot {
 
   DocumentSnapshotSembast(this.documentReference, this.rev, this.documentData,
       {bool exists, @required this.updateTime, @required this.createTime}) {
-    _exists = exists ??= documentData != null;
+    _exists = exists ?? (documentData != null);
   }
 
   DocumentSnapshotSembast.fromSnapshot(
@@ -574,7 +582,8 @@ class DocumentReferenceSembast extends BaseReferenceSembast
     await db.transaction((txn) async {
       result = await firestore.txnDelete(txn, path);
     });
-    if (result != null) {
+    // We must either have added or removed it
+    if (result.shouldNotify) {
       firestore.notify(result);
     }
   }
