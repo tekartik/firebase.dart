@@ -7,6 +7,9 @@ import 'package:tekartik_firebase/src/firestore.dart';
 class FirestoreServiceNode implements FirestoreService {
   @override
   bool get supportsQuerySelect => true;
+
+  @override
+  bool get supportsDocumentSnapshotTime => true;
 }
 
 class FirestoreNode implements Firestore {
@@ -332,6 +335,13 @@ class DocumentSnapshotNode implements DocumentSnapshot {
 
   @override
   bool get exists => nativeInstance.exists;
+
+  @override
+  String get updateTime => nativeInstance.updateTime;
+
+  @override
+  // ignore: INVALID_USE_OF_PROTECTED_MEMBER
+  String get createTime => nativeInstance.nativeInstance.createTime;
 }
 
 DocumentChangeType _wrapDocumentChangeType(node.DocumentChangeType type) {

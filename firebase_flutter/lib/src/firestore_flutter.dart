@@ -287,6 +287,14 @@ class DocumentSnapshotFlutter implements DocumentSnapshot {
 
   @override
   DocumentReference get ref => _wrapDocumentReference(nativeInstance.reference);
+
+  // not supported
+  @override
+  String get updateTime => null;
+
+  // not supported
+  @override
+  String get createTime => null;
 }
 
 class QuerySnapshotFlutter implements QuerySnapshot {

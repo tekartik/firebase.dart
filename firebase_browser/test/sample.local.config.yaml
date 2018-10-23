@@ -1,2 +1,2 @@
 # Copy this file as "config.local.yaml" in the same folder (.gitignored)
-projectId =
+projectId: [YOUR-FIREBASE-PROJECT-ID]

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:test/test.dart';
 
@@ -71,6 +72,84 @@ runApp(Firebase firebase, App app) {
 
         var snapshot = await docRef.get();
         expect(snapshot.exists, isFalse);
+      });
+    });
+
+    group('DocumentSnapshot', () {
+      test('null', () async {
+        var testsRef = getTestsRef();
+        var docRef = testsRef.doc('null');
+        await docRef.set(null);
+        var snapshot = await docRef.get();
+        expect(snapshot.data, {});
+        expect(snapshot.exists, isTrue);
+      });
+
+      test('empty', () async {
+        var testsRef = getTestsRef();
+        var docRef = testsRef.doc('empty');
+        await docRef.set({});
+        var snapshot = await docRef.get();
+        expect(snapshot.data, {});
+        expect(snapshot.exists, isTrue);
+      });
+
+      test('time', () async {
+        var testsRef = getTestsRef();
+        var docRef = testsRef.doc('time');
+        await docRef.delete();
+        var now = DateTime.now();
+        await docRef.set({'test': 1});
+        var snapshot = await docRef.get();
+        // devPrint('createTime ${snapshot.createTime}');
+        // devPrint('updateTime ${snapshot.updateTime}');
+        expect(snapshot.data, {'test': 1});
+
+        if (firebase.firestore.supportsDocumentSnapshotTime) {
+          expect(dateTimeParseTimestamp(snapshot.updateTime).compareTo(now),
+              greaterThanOrEqualTo(0));
+          expect(snapshot.createTime, snapshot.updateTime);
+        } else {
+          expect(snapshot.createTime, isNull);
+          expect(snapshot.updateTime, isNull);
+        }
+        await sleep(10);
+        await docRef.set({'test': 2});
+        snapshot = await docRef.get();
+
+        _check() {
+          expect(snapshot.data, {'test': 2});
+          if (firebase.firestore.supportsDocumentSnapshotTime) {
+            expect(
+                dateTimeParseTimestamp(snapshot.updateTime)
+                    .compareTo(dateTimeParseTimestamp(snapshot.createTime)),
+                greaterThan(0),
+                reason:
+                    'createTime ${snapshot.createTime} updateTime ${snapshot.updateTime}');
+          } else {
+            expect(snapshot.createTime, isNull);
+            expect(snapshot.updateTime, isNull);
+          }
+        }
+
+        _check();
+        // On node we have nanos!
+        // createTime 2018-10-23T06:31:53.351558000Z
+        // updateTime 2018-10-23T06:31:53.755402000Z
+        // devPrint('createTime ${snapshot.createTime}');
+        // devPrint('updateTime ${snapshot.updateTime}');
+
+        // Try using stream
+        snapshot = await docRef.onSnapshot().first;
+        _check();
+
+        // Try using col stream
+        snapshot = (await testsRef.onSnapshot().first)
+            .docs
+            .where(
+                (DocumentSnapshot snapshot) => snapshot.ref.path == docRef.path)
+            .first;
+        _check();
       });
     });
 

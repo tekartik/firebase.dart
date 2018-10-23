@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:sembast/sembast.dart' hide Transaction;
 import 'package:sembast/sembast.dart' as sembast;
@@ -9,6 +10,7 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/src/firestore_common.dart';
+import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_firebase_sembast/src/firebase_sembast.dart' as sembast;
 import 'package:uuid/uuid.dart';
 
@@ -91,13 +93,19 @@ DocumentDataMap _documentDataMap(DocumentData documentData) =>
 
 int recordMapRev(Map<String, dynamic> recordMap) =>
     recordMap != null ? recordMap[revKey] as int : null;
+String recordMapUpdateTime(Map<String, dynamic> recordMap) =>
+    mapUpdateTime(recordMap);
+String recordMapCreateTime(Map<String, dynamic> recordMap) =>
+    mapCreateTime(recordMap);
 
 DocumentSnapshotSembast documentSnapshotFromRecordMap(
     FirestoreSembast firestore, String path, Map<String, dynamic> recordMap) {
   return DocumentSnapshotSembast(
       DocumentReferenceSembast(ReferenceContextSembast(firestore, path)),
       recordMapRev(recordMap),
-      documentDataFromRecordMap(firestore, recordMap));
+      documentDataFromRecordMap(firestore, recordMap),
+      updateTime: recordMapUpdateTime(recordMap),
+      createTime: recordMapCreateTime(recordMap));
 }
 
 // merge with existing record map if any
@@ -135,6 +143,14 @@ DocumentDataMap documentDataFromRecordMap(
     recordMap.forEach((String key, value) {
       // ignore rev
       if (key == revKey) {
+        return;
+      }
+      // ignore updateTime
+      if (key == updateTimeKey) {
+        return;
+      }
+      // ignore createTime
+      if (key == createTimeKey) {
         return;
       }
       // call setValue to prevent checking type again
@@ -324,17 +340,23 @@ class FirestoreSembast implements Firestore {
     return documentFromRecordMap(path, recordMap);
   }
 
+  // Remove meta keys
   DocumentSnapshotSembast documentFromRecordMap(
       String path, Map<String, dynamic> recordMap) {
-    int rev;
+    int rev = recordMapRev(recordMap);
+    String updateTime = recordMapUpdateTime(recordMap);
+    String createTime = recordMapCreateTime(recordMap);
     if (recordMap != null) {
-      rev = recordMap[r'$rev'] as int;
-      recordMap.remove(r'$rev');
+      recordMap.remove(revKey);
+      recordMap.remove(updateTimeKey);
+      recordMap.remove(createTimeKey);
     }
     return DocumentSnapshotSembast(
         DocumentReferenceSembast(ReferenceContextSembast(this, path)),
         rev,
-        documentDataFromRecordMap(this, recordMap));
+        documentDataFromRecordMap(this, recordMap),
+        updateTime: updateTime,
+        createTime: createTime);
   }
 
   // return previous data
@@ -365,9 +387,15 @@ class FirestoreSembast implements Firestore {
       recordMap = documentDataToRecordMap(documentData);
     }
 
-    rev++;
     if (recordMap != null) {
       recordMap[revKey] = rev;
+    }
+
+    // set update Time
+    if (recordMap != null) {
+      var now = dateTimeToTimestampMicros(DateTime.now());
+      recordMap[createTimeKey] = result.previousSnapshot?.createTime ?? now;
+      recordMap[updateTimeKey] = now;
     }
 
     result.newSnashot = documentSnapshotFromRecordMap(this, path, recordMap);
@@ -383,7 +411,9 @@ class FirestoreSembast implements Firestore {
       documentSubscription.streamController.add(DocumentSnapshotSembast(
           DocumentReferenceSembast(ReferenceContextSembast(this, path)),
           result.newSnashot?.rev,
-          result.newSnashot?.documentData));
+          result.newSnashot?.documentData,
+          updateTime: result.newSnashot?.updateTime,
+          createTime: result.newSnashot?.createTime));
     }
     // notify collection listeners
     var collectionSubscription = findSubscription(url.dirname(path));
@@ -495,6 +525,10 @@ class BaseReferenceSembast extends Object with AttributesMixin {
 class DocumentSnapshotSembast implements DocumentSnapshot {
   final DocumentReferenceSembast documentReference;
   final int rev;
+  @override
+  final String updateTime;
+  @override
+  final String createTime;
   final DocumentDataMap documentData;
 
   bool _exists;
@@ -503,14 +537,16 @@ class DocumentSnapshotSembast implements DocumentSnapshot {
   bool get exists => _exists;
 
   DocumentSnapshotSembast(this.documentReference, this.rev, this.documentData,
-      [bool exists]) {
+      {bool exists, @required this.updateTime, @required this.createTime}) {
     _exists = exists ??= documentData != null;
   }
 
   DocumentSnapshotSembast.fromSnapshot(
       DocumentSnapshotSembast snapshot, bool exists)
       : this(snapshot.documentReference, snapshot.rev, snapshot.documentData,
-            exists);
+            exists: exists,
+            updateTime: snapshot.updateTime,
+            createTime: snapshot.createTime);
 
   @override
   Map<String, dynamic> get data => documentData?.asMap();
@@ -891,7 +927,9 @@ abstract class QueryMixin implements Query, AttributesMixin {
             snapshot.rev,
             documentDataFromRecordMap(
                 firestore, toSelectedMap(data, queryInfo.selectKeyPaths)),
-            true));
+            exists: true,
+            updateTime: snapshot.updateTime,
+            createTime: snapshot.createTime));
       }
       docs = selectedDocs;
     }

@@ -31,6 +31,12 @@ class DocumentSnapshotMock implements DocumentSnapshot {
 
   @override
   bool get exists => null;
+
+  @override
+  String get updateTime => null;
+
+  @override
+  String get createTime => null;
 }
 
 class DocumentReferenceMock implements DocumentReference {

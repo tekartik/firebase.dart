@@ -6,6 +6,7 @@ import 'package:collection/collection.dart';
 
 abstract class FirestoreService {
   bool get supportsQuerySelect;
+  bool get supportsDocumentSnapshotTime;
 }
 
 abstract class Firestore {
@@ -125,6 +126,12 @@ abstract class DocumentSnapshot {
   Map<String, dynamic> get data;
 
   bool get exists;
+
+  /// The time the document was last updated (at the time the snapshot was
+  /// generated). Not set for documents that don't exist.
+  String get updateTime;
+
+  String get createTime;
 }
 
 // Sentinal values for update/set

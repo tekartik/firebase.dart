@@ -1,9 +1,12 @@
 @TestOn('vm')
 library tekartik_firebase_sembast.firebase_io_src_test;
 
+import 'dart:io';
+
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
+import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 import 'package:tekartik_firebase_sembast/src/firestore_sembast.dart';
 import 'package:test/test.dart';
@@ -14,20 +17,47 @@ void main() {
   var firestore = app.firestore();
 
   group('firestore_io', () {
+    group('v1', () {
+      test('read', () async {
+        var dst =
+            join('.dart_tool', 'tekartik_firebase_sembast', 'default_v1.db');
+        await File(dst).create(recursive: true);
+        await File(join('test', 'data', 'default_v1.db')).copy(dst);
+
+        var firebase = firebaseSembastIo;
+        var app = firebase.initializeApp(name: 'default_v1');
+        var snapshot = await app.firestore().doc('all_fields').get();
+        expect(snapshot.updateTime, '2018-10-23T00:00:00.000000Z');
+      });
+    });
+
     test('db_name', () async {
       var app = firebase.initializeApp(name: 'test');
       var ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath,
-          join('.dart_tool', 'firebase_admin_shim', 'test.db'));
+          join('.dart_tool', 'tekartik_firebase_sembast', 'test.db'));
 
       app = firebase.initializeApp(name: 'test.db');
       ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath,
-          join('.dart_tool', 'firebase_admin_shim', 'test.db'));
+          join('.dart_tool', 'tekartik_firebase_sembast', 'test.db'));
 
       app = firebase.initializeApp(name: join('test', 'test.db'));
       ioFirestore = app.firestore() as FirestoreSembast;
       expect(ioFirestore.dbPath, join('test', 'test.db'));
+    });
+
+    test('db_format', () async {
+      var app = firebase.initializeApp(name: 'format');
+      await app.firestore().doc('doc_path').delete();
+      await app.firestore().doc('doc_path').set({'test': 1});
+      var db = (app.firestore() as FirestoreSembast).db;
+      Map map = await db.getStore('doc').get('doc_path');
+      expect(map['test'], 1);
+      expect(map[r'$rev'], 1);
+      expect(dateTimeParseTimestamp(map[r'$createTime'] as String), isNotNull);
+      expect(dateTimeParseTimestamp(map[r'$updateTime'] as String), isNotNull);
+      expect(map.length, 4, reason: map.toString());
     });
 
     group('DocumentData', () {
