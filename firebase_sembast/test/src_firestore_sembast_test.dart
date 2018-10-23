@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
-import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_firebase_sembast/firebase_sembast_io.dart';
 import 'package:tekartik_firebase_sembast/src/firestore_sembast.dart';
 import 'package:test/test.dart';
@@ -27,7 +26,7 @@ void main() {
         var firebase = firebaseSembastIo;
         var app = firebase.initializeApp(name: 'default_v1');
         var snapshot = await app.firestore().doc('all_fields').get();
-        expect(snapshot.updateTime, '2018-10-23T00:00:00.000000Z');
+        expect(snapshot.updateTime.toIso8601String(), '2018-10-23T00:00:00.000Z');
       });
     });
 
@@ -55,8 +54,8 @@ void main() {
       Map map = await db.getStore('doc').get('doc_path');
       expect(map['test'], 1);
       expect(map[r'$rev'], 1);
-      expect(dateTimeParseTimestamp(map[r'$createTime'] as String), isNotNull);
-      expect(dateTimeParseTimestamp(map[r'$updateTime'] as String), isNotNull);
+      expect(Timestamp.tryParse(map[r'$createTime'] as String), isNotNull);
+      expect(Timestamp.tryParse(map[r'$updateTime'] as String), isNotNull);
       expect(map.length, 4, reason: map.toString());
     });
 

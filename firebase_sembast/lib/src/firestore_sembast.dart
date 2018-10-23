@@ -401,9 +401,9 @@ class FirestoreSembast implements Firestore {
 
     // set update Time
     if (recordMap != null) {
-      var now = dateTimeToTimestampMicros(DateTime.now());
-      recordMap[createTimeKey] = result.previousSnapshot?.createTime ?? now;
-      recordMap[updateTimeKey] = now;
+      var now = Timestamp.now();
+      recordMap[createTimeKey] = (result.previousSnapshot?.createTime ?? now).toIso8601String();
+      recordMap[updateTimeKey] = now.toIso8601String();
     }
 
     result.newSnapshot = documentSnapshotFromRecordMap(this, path, recordMap);

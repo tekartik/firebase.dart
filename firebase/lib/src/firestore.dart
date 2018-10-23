@@ -204,6 +204,17 @@ class Timestamp implements Comparable<Timestamp> {
     return null;
   }
 
+  static Timestamp tryParseAny(Object object) {
+    if (object is Timestamp) {
+      return object;
+    } else if (object is String) {
+      return tryParse(object);
+    } else if (object is DateTime) {
+      return Timestamp.fromDateTime(object);
+    }
+    return null;
+  }
+
   static Timestamp tryParse(String text) {
     if (text != null) {
       // 2018-10-20T05:13:45.985343Z
@@ -273,7 +284,7 @@ class Timestamp implements Comparable<Timestamp> {
   }
 
   DateTime toDateTime({bool isUtc}) {
-    return new DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
+    return DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
         isUtc: isUtc);
   }
 

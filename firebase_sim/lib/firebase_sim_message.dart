@@ -129,8 +129,8 @@ class DocumentSnapshotData extends FirestorePathData
   Map<String, dynamic> toMap() {
     var map = super.toMap();
     map['data'] = data;
-    map['createTime'] = createTime;
-    map['updateTime'] = updateTime;
+    map['createTime'] = createTime?.toIso8601String();
+    map['updateTime'] = updateTime?.toIso8601String();
     return map;
   }
 }
