@@ -26,7 +26,8 @@ void main() {
         var firebase = firebaseSembastIo;
         var app = firebase.initializeApp(name: 'default_v1');
         var snapshot = await app.firestore().doc('all_fields').get();
-        expect(snapshot.updateTime.toIso8601String(), '2018-10-23T00:00:00.000Z');
+        expect(
+            snapshot.updateTime.toIso8601String(), '2018-10-23T00:00:00.000Z');
       });
     });
 

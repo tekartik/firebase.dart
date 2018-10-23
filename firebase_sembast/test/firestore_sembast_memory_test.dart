@@ -1,4 +1,4 @@
-@TestOn('vm')
+@TestOn('vm,browser,node')
 library tekartik_firebase_sembast.firebase_io_test;
 
 import 'package:test/test.dart';
