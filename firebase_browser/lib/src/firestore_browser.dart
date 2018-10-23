@@ -9,6 +9,9 @@ import 'package:tekartik_firebase/src/firestore.dart';
 class FirestoreServiceBrowser implements FirestoreService {
   @override
   bool get supportsQuerySelect => false;
+
+  @override
+  bool get supportsDocumentSnapshotTime => false;
 }
 
 class FirestoreBrowser implements Firestore {
@@ -221,6 +224,14 @@ class DocumentSnapshotBrowser implements DocumentSnapshot {
 
   @override
   DocumentReference get ref => _wrapDocumentReference(_native.ref);
+
+  // Not supported for browser
+  @override
+  Timestamp get updateTime => null;
+
+  // Not supported for browser
+  @override
+  Timestamp get createTime => null;
 }
 
 native.SetOptions _unwrapOptions(SetOptions options) {

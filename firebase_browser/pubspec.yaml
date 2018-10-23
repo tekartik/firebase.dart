@@ -1,6 +1,6 @@
 name: tekartik_firebase_browser
 description: Firebase browser
-version: 0.0.1
+version: 0.3.1
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -13,6 +13,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
+    version: 0.3.1
   firebase: '>=5.0.1'
   tekartik_browser_utils:
     git:

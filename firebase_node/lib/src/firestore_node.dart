@@ -7,6 +7,9 @@ import 'package:tekartik_firebase/src/firestore.dart';
 class FirestoreServiceNode implements FirestoreService {
   @override
   bool get supportsQuerySelect => true;
+
+  @override
+  bool get supportsDocumentSnapshotTime => true;
 }
 
 class FirestoreNode implements Firestore {
@@ -332,7 +335,18 @@ class DocumentSnapshotNode implements DocumentSnapshot {
 
   @override
   bool get exists => nativeInstance.exists;
+
+  @override
+  Timestamp get updateTime => _wrapTimestamp(nativeInstance.updateTime);
+
+  @override
+  Timestamp get createTime => _wrapTimestamp(nativeInstance.createTime);
 }
+
+Timestamp _wrapTimestamp(node.Timestamp nativeInstance) =>
+    nativeInstance != null
+        ? Timestamp(nativeInstance.seconds, nativeInstance.nanoseconds)
+        : null;
 
 DocumentChangeType _wrapDocumentChangeType(node.DocumentChangeType type) {
   switch (type) {

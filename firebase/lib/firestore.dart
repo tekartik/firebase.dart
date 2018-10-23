@@ -3,9 +3,11 @@ import 'dart:typed_data';
 
 import 'src/firestore.dart';
 import 'package:collection/collection.dart';
+export 'package:tekartik_firebase/src/firestore.dart' show Timestamp;
 
 abstract class FirestoreService {
   bool get supportsQuerySelect;
+  bool get supportsDocumentSnapshotTime;
 }
 
 abstract class Firestore {
@@ -125,6 +127,14 @@ abstract class DocumentSnapshot {
   Map<String, dynamic> get data;
 
   bool get exists;
+
+  /// The time the document was last updated (at the time the snapshot was
+  /// generated). Not set for documents that don't exist.
+  Timestamp get updateTime;
+
+  /// The time the document was created. Not set for documents that don't
+  /// exist.
+  Timestamp get createTime;
 }
 
 // Sentinal values for update/set

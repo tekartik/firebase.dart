@@ -11,6 +11,9 @@ import 'package:sembast/sembast_memory.dart' as sembast;
 class FirestoreServiceSembast implements FirestoreService {
   @override
   bool get supportsQuerySelect => true;
+
+  @override
+  bool get supportsDocumentSnapshotTime => true;
 }
 
 class FirebaseSembast implements Firebase {
@@ -28,7 +31,7 @@ class FirebaseSembast implements Firebase {
 
 class AppSembast implements App {
   final FirebaseSembast firebase;
-  String get localPath => join(".dart_tool", "firebase_admin_shim");
+  String get localPath => join(".dart_tool", "tekartik_firebase_sembast");
 
   FirestoreSembast _firestore;
   StorageSembast _storage;

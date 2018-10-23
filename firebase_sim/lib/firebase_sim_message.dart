@@ -63,15 +63,28 @@ class FirestorePathData extends BaseData {
 class FirestoreGetData extends FirestorePathData {}
 
 class FirestoreDocumentSnapshotDataImpl extends FirestoreSetData
-    implements FirestoreDocumentSnapshotData {}
+    implements FirestoreDocumentSnapshotData {
+  Timestamp createTime;
+  Timestamp updateTime;
+
+  @override
+  void fromMap(Map<String, dynamic> map) {
+    super.fromMap(map);
+    createTime = Timestamp.tryParse(map['createTime'] as String);
+    updateTime = Timestamp.tryParse(map['updateTime'] as String);
+  }
+}
 
 abstract class FirestoreDocumentSnapshotData {
   String get path;
-
   Map<String, dynamic> get data;
+  Timestamp get createTime;
+  Timestamp get updateTime;
 }
 
 class DocumentGetSnapshotData extends DocumentSnapshotData {
+  DocumentGetSnapshotData.fromSnapshot(DocumentSnapshot snapshot)
+      : super.fromSnapshot(snapshot);
   // optional for stream only
   int streamId;
 
@@ -93,15 +106,31 @@ class DocumentGetSnapshotData extends DocumentSnapshotData {
 class DocumentSnapshotData extends FirestorePathData
     implements FirestoreDocumentSnapshotData {
   Map<String, dynamic> data;
+  Timestamp createTime;
+  Timestamp updateTime;
+
+  DocumentSnapshotData.fromSnapshot(DocumentSnapshot snapshot) {
+    path = snapshot.ref.path;
+    data = snapshotToJsonMap(snapshot);
+    createTime = snapshot.createTime;
+    updateTime = snapshot.updateTime;
+  }
+  DocumentSnapshotData.fromMessageMap(Map<String, dynamic> map) {
+    fromMap(map);
+  }
 
   fromMap(Map<String, dynamic> map) {
     super.fromMap(map);
     data = (map['data'] as Map)?.cast<String, dynamic>();
+    createTime = Timestamp.tryParse(map['createTime'] as String);
+    updateTime = Timestamp.tryParse(map['updateTime'] as String);
   }
 
   Map<String, dynamic> toMap() {
     var map = super.toMap();
     map['data'] = data;
+    map['createTime'] = createTime?.toIso8601String();
+    map['updateTime'] = updateTime?.toIso8601String();
     return map;
   }
 }
@@ -146,8 +175,8 @@ class FirestoreQuerySnapshotData extends BaseData {
     super.fromMap(map);
     list = [];
     for (var item in map['list'] as List) {
-      list.add(DocumentSnapshotData()
-        ..fromMap((item as Map).cast<String, dynamic>()));
+      list.add(DocumentSnapshotData.fromMessageMap(
+          (item as Map).cast<String, dynamic>()));
     }
     changes = [];
     for (var item in map['changes'] as List) {
@@ -184,7 +213,7 @@ class FirestoreSetData extends FirestorePathData {
   Map<String, dynamic> data;
   bool merge;
 
-  fromMap(Map<String, dynamic> map) {
+  void fromMap(Map<String, dynamic> map) {
     super.fromMap(map);
     data = (map['data'] as Map)?.cast<String, dynamic>();
     merge = map['merge'] as bool;

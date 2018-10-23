@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firestore.dart';
@@ -22,10 +23,17 @@ class SimDocumentSnapshot implements DocumentSnapshot {
 
   final DocumentData documentData;
 
-  SimDocumentSnapshot(this.ref, this.exists, this.documentData);
+  SimDocumentSnapshot(this.ref, this.exists, this.documentData,
+      {@required this.createTime, @required this.updateTime});
 
   @override
   Map<String, dynamic> get data => documentData?.asMap();
+
+  @override
+  final Timestamp updateTime;
+
+  @override
+  final Timestamp createTime;
 }
 
 class DocumentReferenceSim implements DocumentReference {
@@ -148,6 +156,8 @@ abstract class QueryMixinSim implements Query {
 
   CollectionReferenceSim get simCollectionReference;
 
+  FirestoreSim get simFirestore => simCollectionReference.simFirestore;
+
   QuerySim clone() {
     return QuerySim(simCollectionReference)..queryInfo = queryInfo?.clone();
   }
@@ -209,14 +219,8 @@ abstract class QueryMixinSim implements Query {
 
   SimDocumentSnapshot documentSnapshotFromData(
       DocumentSnapshotData documentSnapshotData) {
-    return documentSnapshotFromDataMap(
-        documentSnapshotData.path, documentSnapshotData.data);
+    return simFirestore.documentSnapshotFromData(documentSnapshotData);
   }
-
-  SimDocumentSnapshot documentSnapshotFromDataMap(
-          String path, Map<String, dynamic> map) =>
-      simCollectionReference.simFirestore
-          .documentSnapshotFromDataMap(path, map);
 
   @override
   Future<QuerySnapshot> get() async {
@@ -271,7 +275,7 @@ abstract class QueryMixinSim implements Query {
               // snapshot present?
               SimDocumentSnapshot snapshot;
               if (changeData.data != null) {
-                snapshot = documentSnapshotFromDataMap(
+                snapshot = simFirestore.documentSnapshotFromDataMap(
                     join(simCollectionReference.path, changeData.id),
                     changeData.data);
               } else {
@@ -419,6 +423,9 @@ class FirestoreServiceSim implements FirestoreService {
 
   @override
   bool get supportsQuerySelect => true;
+
+  @override
+  bool get supportsDocumentSnapshotTime => true;
 }
 
 class FirestoreSim implements Firestore {
@@ -454,14 +461,25 @@ class FirestoreSim implements Firestore {
 
   SimDocumentSnapshot documentSnapshotFromData(
       FirestoreDocumentSnapshotData documentSnapshotData) {
+    var dataMap = documentSnapshotData.data;
+    return SimDocumentSnapshot(
+        DocumentReferenceSim(this, documentSnapshotData.path),
+        dataMap != null,
+        documentDataFromJsonMap(this, dataMap),
+        createTime: documentSnapshotData.createTime,
+        updateTime: documentSnapshotData.updateTime);
+    /*
     return documentSnapshotFromDataMap(
         documentSnapshotData.path, documentSnapshotData.data);
+        */
   }
 
+  // warning no createTime and update time here
   SimDocumentSnapshot documentSnapshotFromDataMap(
       String path, Map<String, dynamic> map) {
     return SimDocumentSnapshot(DocumentReferenceSim(this, path), map != null,
-        documentDataFromJsonMap(this, map));
+        documentDataFromJsonMap(this, map),
+        createTime: null, updateTime: null);
   }
 
   @override
@@ -499,12 +517,16 @@ class FirestoreSim implements Firestore {
       throw response.error;
     }
 
+    var map = ((response as Response).result as Map)?.cast<String, dynamic>();
+
     var documentSnapshotData = FirestoreDocumentSnapshotDataImpl()
-      ..fromMap((response as Response).result as Map<String, dynamic>);
+      ..fromMap(map);
     return SimDocumentSnapshot(
         DocumentReferenceSim(this, documentSnapshotData.path),
         documentSnapshotData.data != null,
-        documentDataFromJsonMap(this, documentSnapshotData.data));
+        documentDataFromJsonMap(this, documentSnapshotData.data),
+        createTime: documentSnapshotData.createTime,
+        updateTime: documentSnapshotData.updateTime);
   }
 }
 

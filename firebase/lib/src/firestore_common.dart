@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:tekartik_common_utils/date_time_utils.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
+import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 
 const String jsonTypeField = r"$t";
 const String jsonValueField = r"$v";
@@ -166,6 +167,17 @@ dynamic jsonToDocumentDataValue(Firestore firestore, dynamic value) {
   }
 }
 
+// remove createTime and updateTime
+DocumentData documentDataFromSnapshotJsonMap(
+    Firestore firestore, Map<String, dynamic> map) {
+  if (map == null) {
+    return null;
+  }
+  map.remove(createTimeKey);
+  map.remove(updateTimeKey);
+  return documentDataFromJsonMap(firestore, map);
+}
+
 DocumentData documentDataFromJsonMap(
     Firestore firestore, Map<String, dynamic> map) {
   if (map == null) {
@@ -185,6 +197,15 @@ DocumentData documentDataFromMap(Map<String, dynamic> map) {
 
 DocumentData documentDataFromSnapshot(DocumentSnapshot snapshot) =>
     snapshot?.exists == true ? DocumentData(snapshot.data) : null;
+
+Map<String, dynamic> snapshotToJsonMap(DocumentSnapshot snapshot) {
+  if (snapshot?.exists == true) {
+    var map = documentDataToJsonMap(documentDataFromSnapshot(snapshot));
+    return map;
+  } else {
+    return null;
+  }
+}
 
 Map<String, dynamic> documentDataToJsonMap(DocumentData documentData) {
   if (documentData == null) {

@@ -254,10 +254,22 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
       });
     }
 
-    var data = documentDataFromSnapshot(documentSnapshot);
-    var snapshotData = DocumentGetSnapshotData()
-      ..path = documentSnapshot.ref.path
-      ..data = documentDataToJsonMap(data);
+    /*
+
+Map<String, dynamic> snapshotToJsonMap(DocumentSnapshot snapshot) {
+  if (snapshot?.exists == true) {
+    var map = documentDataToJsonMap(documentDataFromSnapshot(snapshot));
+    if (snapshot.createTime != null) {
+      map[createTimeKey] = snapshot.createTime;
+      map[updateTimeKey] = snapshot.updateTime;
+    }
+    return map;
+  } else {
+    return null;
+  }
+}
+     */
+    var snapshotData = DocumentGetSnapshotData.fromSnapshot(documentSnapshot);
 
     // Get
     var response = Response(request.id, snapshotData.toMap());
@@ -276,12 +288,8 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
           ref.onSnapshot().listen((DocumentSnapshot snapshot) {
         // delayed to make sure the response was send already
         Future.value().then((_) async {
-          var data = DocumentGetSnapshotData();
+          var data = DocumentGetSnapshotData.fromSnapshot(snapshot);
           data.streamId = streamId;
-          data.path = ref.path;
-
-          var docData = documentDataFromSnapshot(snapshot);
-          data.data = documentDataToJsonMap(docData);
 
           var notification =
               Notification(methodFirestoreGetStream, data.toMap());
@@ -345,10 +353,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
           data.streamId = streamId;
           data.list = <DocumentSnapshotData>[];
           for (DocumentSnapshot doc in querySnapshot.docs) {
-            var docData = documentDataFromSnapshot(doc);
-            data.list.add(DocumentSnapshotData()
-              ..path = doc.ref.path
-              ..data = documentDataToJsonMap(docData));
+            data.list.add(DocumentSnapshotData.fromSnapshot(doc));
           }
           // Changes
           data.changes = <DocumentChangeData>[];
@@ -486,10 +491,7 @@ class FirebaseSimServerClient extends Object with FirebaseSimMixin {
       var data = FirestoreQuerySnapshotData();
       data.list = <DocumentSnapshotData>[];
       for (DocumentSnapshot doc in querySnapshot.docs) {
-        var docData = documentDataFromSnapshot(doc);
-        data.list.add(DocumentSnapshotData()
-          ..path = doc.ref.path
-          ..data = documentDataToJsonMap(docData));
+        data.list.add(DocumentSnapshotData.fromSnapshot(doc));
       }
 
       // Get
