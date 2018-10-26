@@ -1,6 +1,6 @@
 name: tekartik_firebase_sembast
 description: Firebase sembast
-version: 0.3.2
+version: 0.3.3
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -15,7 +15,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: 0.3.2
+    version: 0.3.3
 
 dev_dependencies:
   test: any
