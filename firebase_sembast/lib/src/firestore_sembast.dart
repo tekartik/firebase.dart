@@ -18,6 +18,9 @@ const revKey = r'$rev';
 
 Map<String, dynamic> dateTimeToRecordValue(DateTime dateTime) =>
     dateTimeToJsonValue(dateTime);
+// For now it is still a date
+Map<String, dynamic> timestampToRecordValue(Timestamp timestamp) =>
+    dateTimeToJsonValue(timestamp.toDateTime());
 
 Map<String, dynamic> documentReferenceToRecordValue(
         DocumentReferenceSembast documentReference) =>
@@ -70,6 +73,8 @@ dynamic valueToRecordValue(dynamic value) {
     return dateTimeToRecordValue(DateTime.now());
   } else if (value is DateTime) {
     return dateTimeToRecordValue(value);
+  } else if (value is Timestamp) {
+    return timestampToRecordValue(value);
   } else if (value is Map) {
     return value.map((key, value) => MapEntry(key, valueToRecordValue(value)));
   } else if (value is List) {
@@ -182,6 +187,10 @@ bool mapWhere(DocumentData documentData, WhereInfo where) {
   } else if (where.isLessThanOrEqualTo != null) {
     // ignore: non_bool_operand
     return fieldValue != null && fieldValue <= where.isLessThanOrEqualTo;
+  } else if (where.arrayContains != null) {
+    return fieldValue != null &&
+        (fieldValue is Iterable) &&
+        (fieldValue.contains(where.arrayContains));
   }
   return false;
 }
@@ -971,6 +980,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) =>
       clone()
@@ -980,6 +990,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
             isLessThanOrEqualTo: isGreaterThanOrEqualTo,
             isGreaterThan: isGreaterThan,
             isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+            arrayContains: arrayContains,
             isNull: isNull));
 
   addOrderBy(String key, String directionStr) {

@@ -159,12 +159,14 @@ class QueryFlutter implements Query {
       isLessThanOrEqualTo,
       isGreaterThan,
       isGreaterThanOrEqualTo,
+      arrayContains,
       bool isNull}) {
     return _wrapQuery(nativeInstance.where(fieldPath,
         isEqualTo: isEqualTo,
         isLessThan: isLessThan,
         isGreaterThan: isGreaterThan,
         isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+        arrayContains: arrayContains,
         isNull: isNull));
   }
 }

@@ -409,6 +409,7 @@ class QueryBrowser implements Query {
       isLessThanOrEqualTo,
       isGreaterThan,
       isGreaterThanOrEqualTo,
+      arrayContains,
       bool isNull}) {
     String opStr;
     dynamic value;
@@ -440,6 +441,11 @@ class QueryBrowser implements Query {
       assert(opStr == null);
       opStr = '==';
       value = null;
+    }
+    if (arrayContains != null) {
+      assert(opStr == null);
+      opStr = 'array-contains';
+      value = arrayContains;
     }
     return _wrapQuery(_native.where(fieldPath, opStr, value));
   }

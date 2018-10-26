@@ -170,6 +170,7 @@ abstract class QueryMixinSim implements Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) =>
       clone()
@@ -179,6 +180,7 @@ abstract class QueryMixinSim implements Query {
             isLessThanOrEqualTo: isGreaterThanOrEqualTo,
             isGreaterThan: isGreaterThan,
             isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+            arrayContains: arrayContains,
             isNull: isNull));
 
   addOrderBy(String key, String directionStr) {

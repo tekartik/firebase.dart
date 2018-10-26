@@ -533,6 +533,7 @@ Map<String, dynamic> snapshotToJsonMap(DocumentSnapshot snapshot) {
             isLessThanOrEqualTo: where.isGreaterThanOrEqualTo,
             isGreaterThan: where.isGreaterThan,
             isGreaterThanOrEqualTo: where.isGreaterThanOrEqualTo,
+            arrayContains: where.arrayContains,
             isNull: where.isNull);
       }
 

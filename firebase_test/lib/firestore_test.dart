@@ -250,6 +250,17 @@ runApp(Firebase firebase, App app) {
         await docRef.delete();
       });
 
+      test('timestamp', () async {
+        var testsRef = getTestsRef();
+        var docRef = testsRef.doc('timestamp');
+        var timestamp = Timestamp(1234567890, 1234);
+        await docRef.set({"some_timestamp": timestamp});
+        expect((await docRef.get()).data, {
+          "some_timestamp": timestamp.toDateTime(),
+        });
+        await docRef.delete();
+      }, skip: true);
+
       // All fields that we do not delete
       test('allFields', () async {
         var testsRef = getTestsRef();
@@ -456,6 +467,7 @@ runApp(Firebase firebase, App app) {
         var docRefOne = collRef.doc('one');
         List<DocumentSnapshot> list;
         await docRefOne.set({
+          'array': [3, 4],
           'value': 1,
           'date': DateTime.fromMillisecondsSinceEpoch(2),
           'sub': {'value': 'b'}
@@ -543,6 +555,16 @@ runApp(Firebase firebase, App app) {
         list = querySnapshot.docs;
         expect(list.length, 1);
         expect(list.first.ref.id, "two");
+
+        // array contains
+        querySnapshot = await collRef.where('array', arrayContains: 4).get();
+        list = querySnapshot.docs;
+        expect(list.length, 1);
+        expect(list.first.ref.id, "one");
+
+        querySnapshot = await collRef.where('array', arrayContains: 5).get();
+        list = querySnapshot.docs;
+        expect(list.length, 0);
       });
 
       test('onSnapshot', () async {
