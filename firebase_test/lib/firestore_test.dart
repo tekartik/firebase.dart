@@ -250,6 +250,17 @@ runApp(Firebase firebase, App app) {
         await docRef.delete();
       });
 
+      test('timestamp', () async {
+        var testsRef = getTestsRef();
+        var docRef = testsRef.doc('timestamp');
+        var timestamp = Timestamp(1234567890, 1234);
+        await docRef.set({"some_timestamp": timestamp});
+        expect((await docRef.get()).data, {
+          "some_timestamp": timestamp.toDateTime(),
+        });
+        await docRef.delete();
+      }, skip: true);
+
       // All fields that we do not delete
       test('allFields', () async {
         var testsRef = getTestsRef();

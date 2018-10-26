@@ -18,6 +18,9 @@ const revKey = r'$rev';
 
 Map<String, dynamic> dateTimeToRecordValue(DateTime dateTime) =>
     dateTimeToJsonValue(dateTime);
+// For now it is still a date
+Map<String, dynamic> timestampToRecordValue(Timestamp timestamp) =>
+    dateTimeToJsonValue(timestamp.toDateTime());
 
 Map<String, dynamic> documentReferenceToRecordValue(
         DocumentReferenceSembast documentReference) =>
@@ -70,6 +73,8 @@ dynamic valueToRecordValue(dynamic value) {
     return dateTimeToRecordValue(DateTime.now());
   } else if (value is DateTime) {
     return dateTimeToRecordValue(value);
+  } else if (value is Timestamp) {
+    return timestampToRecordValue(value);
   } else if (value is Map) {
     return value.map((key, value) => MapEntry(key, valueToRecordValue(value)));
   } else if (value is List) {

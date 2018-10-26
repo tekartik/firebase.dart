@@ -285,7 +285,7 @@ class Timestamp implements Comparable<Timestamp> {
 
   DateTime toDateTime({bool isUtc}) {
     return DateTime.fromMicrosecondsSinceEpoch(microsecondsSinceEpoch,
-        isUtc: isUtc);
+        isUtc: isUtc == true);
   }
 
   static String _threeDigits(int n) {
