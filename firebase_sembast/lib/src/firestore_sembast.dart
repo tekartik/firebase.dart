@@ -182,6 +182,10 @@ bool mapWhere(DocumentData documentData, WhereInfo where) {
   } else if (where.isLessThanOrEqualTo != null) {
     // ignore: non_bool_operand
     return fieldValue != null && fieldValue <= where.isLessThanOrEqualTo;
+  } else if (where.arrayContains != null) {
+    return fieldValue != null &&
+        (fieldValue is Iterable) &&
+        (fieldValue.contains(where.arrayContains));
   }
   return false;
 }
@@ -971,6 +975,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) =>
       clone()
@@ -980,6 +985,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
             isLessThanOrEqualTo: isGreaterThanOrEqualTo,
             isGreaterThan: isGreaterThan,
             isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+            arrayContains: arrayContains,
             isNull: isNull));
 
   addOrderBy(String key, String directionStr) {

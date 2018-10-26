@@ -204,6 +204,7 @@ const String operatorLessThan = '<';
 const String operatorGreaterThan = '>';
 const String operatorLessThanOrEqual = '<=';
 const String operatorGreaterThanOrEqual = '>=';
+const String opeatorArrayContains = 'array-contains';
 
 const orderByAscending = "asc";
 const orderByDescending = "desc";
@@ -297,6 +298,7 @@ abstract class Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   });
 }

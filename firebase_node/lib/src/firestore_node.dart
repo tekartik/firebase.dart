@@ -127,6 +127,7 @@ abstract class QueryMixin implements Query {
     dynamic isLessThanOrEqualTo,
     dynamic isGreaterThan,
     dynamic isGreaterThanOrEqualTo,
+    dynamic arrayContains,
     bool isNull,
   }) =>
       _wrapQuery(nativeInstance.where(fieldPath,
@@ -135,6 +136,7 @@ abstract class QueryMixin implements Query {
           isLessThanOrEqualTo: isGreaterThanOrEqualTo,
           isGreaterThan: isGreaterThan,
           isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
+          arrayContains: arrayContains,
           isNull: isNull));
 
   @override

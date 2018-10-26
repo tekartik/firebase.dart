@@ -243,6 +243,7 @@ class WhereInfo {
     this.isLessThanOrEqualTo,
     this.isGreaterThan,
     this.isGreaterThanOrEqualTo,
+    this.arrayContains,
     this.isNull,
   });
 
@@ -251,6 +252,7 @@ class WhereInfo {
   dynamic isLessThanOrEqualTo;
   dynamic isGreaterThan;
   dynamic isGreaterThanOrEqualTo;
+  dynamic arrayContains;
   bool isNull;
 }
 
@@ -322,7 +324,9 @@ WhereInfo whereInfoFromJsonMap(Firestore firestore, Map<String, dynamic> map) {
       isLessThanOrEqualTo: (operator == operatorLessThanOrEqual) ? value : null,
       isGreaterThan: (operator == operatorGreaterThan) ? value : null,
       isGreaterThanOrEqualTo:
-          (operator == operatorGreaterThanOrEqual) ? value : null);
+          (operator == operatorGreaterThanOrEqual) ? value : null,
+      arrayContains: (operator == opeatorArrayContains) ? value : null);
+
   return whereInfo;
 }
 
@@ -350,6 +354,9 @@ Map<String, dynamic> whereInfoToJsonMap(WhereInfo whereInfo) {
   } else if (whereInfo.isGreaterThan != null) {
     map['operator'] = operatorGreaterThan;
     map['value'] = documentDataValueToJson(whereInfo.isGreaterThan);
+  } else if (whereInfo.arrayContains != null) {
+    map['operator'] = opeatorArrayContains;
+    map['value'] = documentDataValueToJson(whereInfo.arrayContains);
   } else if (whereInfo.isNull != null) {
     map['operator'] = operatorEqual;
     map['value'] = null;
