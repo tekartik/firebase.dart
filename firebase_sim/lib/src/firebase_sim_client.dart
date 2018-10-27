@@ -431,6 +431,9 @@ class FirestoreServiceSim implements FirestoreService {
 
   @override
   bool get supportsTimestampsInSnapshots => false;
+
+  @override
+  bool get supportsTimestamps => true;
 }
 
 class FirestoreSim implements Firestore {

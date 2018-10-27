@@ -15,6 +15,9 @@ class FirestoreServiceBrowser implements FirestoreService {
 
   @override
   bool get supportsTimestampsInSnapshots => false;
+
+  @override
+  bool get supportsTimestamps => false;
 }
 
 class FirestoreBrowser implements Firestore {
@@ -179,8 +182,10 @@ bool _isNativeGeoPoint(dynamic native) {
 dynamic toNativeValue(value) {
   if (isCommonValue(value)) {
     return value;
-  }
-  if (value is Iterable) {
+  } else if (value is Timestamp) {
+    // Currently only DateTime are supported
+    return value.toDateTime();
+  } else if (value is Iterable) {
     return value.map((nativeValue) => toNativeValue(nativeValue)).toList();
   } else if (value is Map) {
     return value.map<String, dynamic>(

@@ -22,6 +22,9 @@ class FirestoreServiceNode implements FirestoreService {
 
   @override
   bool get supportsTimestampsInSnapshots => true;
+
+  @override
+  bool get supportsTimestamps => true;
 }
 
 class FirestoreNode implements Firestore {

@@ -235,7 +235,7 @@ runApp(Firebase firebase, App app) {
           var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
           var utcDateTime =
               DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
-          var timestamp = Timestamp(123456789, 123000);
+          var timestamp = Timestamp(123456789, 123456000);
           var docRef = testsRef.doc('all_fields');
           var documentData = DocumentData();
           documentData.setString("string", "string_value");
@@ -273,7 +273,12 @@ runApp(Firebase firebase, App app) {
           expect(documentData.getDateTime("localDateTime"), localDateTime);
           expect(
               documentData.getDateTime("utcDateTime"), utcDateTime.toLocal());
-          expect(documentData.getTimestamp('timestamp'), timestamp);
+          // Might only get milliseconds in the browser
+          expect(
+              documentData.getTimestamp('timestamp'),
+              firebase.firestore.supportsTimestamps
+                  ? timestamp
+                  : Timestamp(123456789, 123000000));
           expect(documentData.getDocumentReference('docRef').path, 'tests/doc');
           expect(documentData.getBlob('blob').data, [1, 2, 3]);
           expect(documentData.getGeoPoint('geoPoint'), GeoPoint(1.2, 4));
@@ -399,7 +404,7 @@ runApp(Firebase firebase, App app) {
         _check(snapshot.data);
 
         await docRef.delete();
-      });
+      }, skip: !firebase.firestore.supportsTimestamps);
 
       // All fields that we do not delete
       test(

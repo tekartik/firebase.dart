@@ -10,6 +10,7 @@ export 'package:tekartik_firebase/src/firestore.dart'
 abstract class FirestoreService {
   bool get supportsQuerySelect;
   bool get supportsDocumentSnapshotTime;
+  bool get supportsTimestamps;
   bool get supportsTimestampsInSnapshots;
 }
 
