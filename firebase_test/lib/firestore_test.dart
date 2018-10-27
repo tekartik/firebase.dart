@@ -303,43 +303,46 @@ runApp(Firebase firebase, App app) {
         await docRef.delete();
       });
 
-      test('date', () async {
-        var testsRef = getTestsRef();
-        var docRef = testsRef.doc('date');
-        var localDateTime =
-            DateTime.fromMillisecondsSinceEpoch(1234567890).toLocal();
-        var utcDateTime =
-            DateTime.fromMillisecondsSinceEpoch(12345678901).toUtc();
-        await docRef
-            .set({"some_date": localDateTime, "some_utc_date": utcDateTime});
+      test(
+        'date',
+        () async {
+          var testsRef = getTestsRef();
+          var docRef = testsRef.doc('date');
+          var localDateTime =
+              DateTime.fromMillisecondsSinceEpoch(1234567890).toLocal();
+          var utcDateTime =
+              DateTime.fromMillisecondsSinceEpoch(12345678901).toUtc();
+          await docRef
+              .set({"some_date": localDateTime, "some_utc_date": utcDateTime});
 
-        _check(Map data) {
-          if (firebase.firestore.supportsDocumentSnapshotTime) {
-            //devPrint(data['some_date'].runtimeType);
-            expect(data, {
-              "some_date": Timestamp.fromDateTime(localDateTime),
-              "some_utc_date": Timestamp.fromDateTime(utcDateTime.toLocal())
-            });
-          } else {
-            expect(data, {
-              "some_date": localDateTime,
-              "some_utc_date": utcDateTime.toLocal()
-            });
+          _check(Map data) {
+            if (firebase.firestore.supportsDocumentSnapshotTime) {
+              //devPrint(data['some_date'].runtimeType);
+              expect(data, {
+                "some_date": Timestamp.fromDateTime(localDateTime),
+                "some_utc_date": Timestamp.fromDateTime(utcDateTime.toLocal())
+              });
+            } else {
+              expect(data, {
+                "some_date": localDateTime,
+                "some_utc_date": utcDateTime.toLocal()
+              });
+            }
           }
-        }
 
-        _check((await docRef.get()).data);
+          _check((await docRef.get()).data);
 
-        var snapshot = (await testsRef
-                .where('some_date', isEqualTo: localDateTime)
-                .where('some_utc_date', isEqualTo: utcDateTime)
-                .get())
-            .docs
-            .first;
+          var snapshot = (await testsRef
+                  .where('some_date', isEqualTo: localDateTime)
+                  .where('some_utc_date', isEqualTo: utcDateTime)
+                  .get())
+              .docs
+              .first;
 
-        _check(snapshot.data);
-        await docRef.delete();
-      });
+          _check(snapshot.data);
+          await docRef.delete();
+        },
+      );
 
       test('timestamp_nanos', () async {
         var testsRef = getTestsRef();

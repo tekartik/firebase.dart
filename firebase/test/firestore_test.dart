@@ -9,7 +9,7 @@ import 'src_firestore_common_test.dart';
 
 main() {
   var firestore = FirestoreMock();
-  group('jsonMap', () {
+  group('jsonValue', () {
     test('dateTime', () {
       expect(
           dateTimeToJsonValue(
@@ -22,13 +22,25 @@ main() {
           DateTime.fromMillisecondsSinceEpoch(123456578901234).toUtc());
     });
 
+    test('timestamp', () {
+      expect(timestampToJsonValue(Timestamp(1234567890, 123456000)),
+          {r'$t': 'Timestamp', r'$v': '2009-02-13T23:31:30.123456Z'});
+
+      expect(
+          jsonValueToTimestamp(
+              {r'$t': 'DateTime', r'$v': '2009-02-13T23:31:30.123456Z'}),
+          Timestamp(1234567890, 123456000));
+    });
+
     test('fieldValue', () {
       expect(fieldValueToJsonValue(FieldValue.delete),
           {r'$t': 'FieldValue', r'$v': '~delete'});
       expect(fieldValueToJsonValue(FieldValue.serverTimestamp),
           {r'$t': 'FieldValue', r'$v': '~serverTimestamp'});
     });
+  });
 
+  group('jsonMap', () {
     test('list', () {
       var data = DocumentData();
       expect(data.getList('list'), isNull);
@@ -77,18 +89,44 @@ main() {
       expect(geoPoint.longitude, 4.0);
     });
 
-    test('timestamp', () {});
+    test('timestamp', () {
+      var data = DocumentData();
+      data.setTimestamp("timestamp", Timestamp(12345678901, 123456000));
+      var map = documentDataToJsonMap(data);
+      expect(map, {
+        'timestamp': {r'$t': 'Timestamp', r'$v': '2361-03-21T19:15:01.123456Z'}
+      });
+
+      // As timestamp
+      firestore.firestoreSettings =
+          FirestoreSettings(timestampsInSnapshots: true);
+      data = documentDataFromJsonMap(firestore, map);
+      expect(data.getTimestamp('timestamp'), Timestamp(12345678901, 123456000));
+      expect(data.asMap()['timestamp'], Timestamp(12345678901, 123456000));
+
+      // As date
+      firestore.firestoreSettings = null;
+      data = documentDataFromJsonMap(firestore, map);
+      expect(data.getTimestamp('timestamp'), Timestamp(12345678901, 123456000));
+      expect(data.asMap()['timestamp'],
+          DateTime.parse("2361-03-21 20:15:01.123456"));
+
+      expect(data.getTimestamp('timestamp'), Timestamp(12345678901, 123456000));
+      data.setTimestamp("timestamp", null);
+      expect(documentDataToJsonMap(data), {'timestamp': null});
+      expect(data.getTimestamp('timestamp'), null);
+    });
     test('documentReference', () {
       var data = DocumentData();
       data.setDocumentReference("ref", firestore.doc('tests/doc'));
       expect(documentDataToJsonMap(data), {
         'ref': {r'$t': 'DocumentReference', r'$v': 'tests/doc'}
       });
+      expect(data.getDocumentReference('ref').path, 'tests/doc');
       data.setDocumentReference("ref", null);
       expect(documentDataToJsonMap(data), {'ref': null});
       data = documentDataFromJsonMap(firestore, documentDataToJsonMap(data));
-      var ref = data.getDocumentReference('ref');
-      expect(ref, null);
+      expect(data.getDocumentReference('ref'), isNull);
     });
 
     test('toJsonMap', () {

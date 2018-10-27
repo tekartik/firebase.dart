@@ -336,4 +336,10 @@ class FirestoreSettings {
   final bool timestampsInSnapshots;
 
   FirestoreSettings({this.timestampsInSnapshots});
+
+  @override
+  String toString() {
+    var map = {'timestampsInSnapshots': timestampsInSnapshots};
+    return map.toString();
+  }
 }

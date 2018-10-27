@@ -10,17 +10,19 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/src/firestore_common.dart';
+import 'package:tekartik_firebase/utils/firestore_mixin.dart';
 import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_firebase_sembast/src/firebase_sembast.dart' as sembast;
 import 'package:uuid/uuid.dart';
 
 const revKey = r'$rev';
 
+// Stored as timestamp
 Map<String, dynamic> dateTimeToRecordValue(DateTime dateTime) =>
-    dateTimeToJsonValue(dateTime);
+    timestampToRecordValue(Timestamp.fromDateTime(dateTime));
 // For now it is still a date
 Map<String, dynamic> timestampToRecordValue(Timestamp timestamp) =>
-    dateTimeToJsonValue(timestamp.toDateTime());
+    timestampToJsonValue(timestamp);
 
 Map<String, dynamic> documentReferenceToRecordValue(
         DocumentReferenceSembast documentReference) =>
@@ -166,31 +168,43 @@ DocumentDataMap documentDataFromRecordMap(
   return documentData as DocumentDataMap;
 }
 
+// We always use Timestamp even for DateTime
+dynamic _comparableValue(dynamic value) {
+  if (value is DateTime) {
+    return Timestamp.fromDateTime(value);
+  }
+  return value;
+}
+
 bool mapWhere(DocumentData documentData, WhereInfo where) {
-  var fieldValue =
-      _documentDataMap(documentData).valueAtFieldPath(where.fieldPath);
+  var fieldValue = _comparableValue(
+      _documentDataMap(documentData).valueAtFieldPath(where.fieldPath));
   if (where.isNull == true) {
     return fieldValue == null;
   } else if (where.isNull == false) {
     return fieldValue != null;
   } else if (where.isEqualTo != null) {
-    return fieldValue == where.isEqualTo;
+    return fieldValue == _comparableValue(where.isEqualTo);
   } else if (where.isGreaterThan != null) {
-    // ignore: non_bool_operand
-    return (fieldValue == null) || (fieldValue > where.isGreaterThan);
+    return (fieldValue == null) ||
+        // ignore: non_bool_operand
+        (fieldValue > _comparableValue(where.isGreaterThan));
   } else if (where.isGreaterThanOrEqualTo != null) {
-    // ignore: non_bool_operand
-    return fieldValue == null || fieldValue >= where.isGreaterThanOrEqualTo;
+    return (fieldValue == null) ||
+        // ignore: non_bool_operand
+        (fieldValue >= _comparableValue(where.isGreaterThanOrEqualTo));
   } else if (where.isLessThan != null) {
-    // ignore: non_bool_operand
-    return fieldValue != null && fieldValue < where.isLessThan;
+    return fieldValue != null &&
+        // ignore: non_bool_operand
+        (fieldValue < _comparableValue(where.isLessThan));
   } else if (where.isLessThanOrEqualTo != null) {
-    // ignore: non_bool_operand
-    return fieldValue != null && fieldValue <= where.isLessThanOrEqualTo;
+    return fieldValue != null &&
+        // ignore: non_bool_operand
+        (fieldValue <= _comparableValue(where.isLessThanOrEqualTo));
   } else if (where.arrayContains != null) {
     return fieldValue != null &&
         (fieldValue is Iterable) &&
-        (fieldValue.contains(where.arrayContains));
+        (fieldValue.contains(_comparableValue(where.arrayContains)));
   }
   return false;
 }
@@ -237,7 +251,7 @@ class WriteResultSembast {
   }
 }
 
-class FirestoreSembast implements Firestore {
+class FirestoreSembast extends Object with FirestoreMixin implements Firestore {
   var dbLock = Lock();
   Database db;
   final sembast.AppSembast app;
@@ -470,7 +484,11 @@ class FirestoreSembast implements Firestore {
 
   @override
   void settings(FirestoreSettings settings) {
-    // TODO: implement settings
+    if (this.firestoreSettings != null) {
+      throw StateError(
+          'firestore settings already set to $firestoreSettings cannot set to $settings');
+    }
+    this.firestoreSettings = settings;
   }
 }
 
