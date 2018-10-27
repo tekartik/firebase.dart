@@ -467,6 +467,11 @@ class FirestoreSembast implements Firestore {
     });
     transaction.notify(results);
   }
+
+  @override
+  void settings(FirestoreSettings settings) {
+    // TODO: implement settings
+  }
 }
 
 class WriteBatchSembast extends WriteBatchBase implements WriteBatch {

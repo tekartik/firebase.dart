@@ -16,11 +16,71 @@ void run(Firebase firebase, {AppOptions options}) {
   });
 
   runApp(firebase, app);
+
+  if (firebase.firestore.supportsDocumentSnapshotTime) {
+    // old date support
+    App appNoTimestampsInSnapshots = firebase.initializeApp(
+        options: options ?? AppOptions(), name: 'noTimestampsInSnapshots');
+    runNoTimestampsInSnapshots(firebase, appNoTimestampsInSnapshots);
+  }
+}
+
+runNoTimestampsInSnapshots(Firebase firebase, App app) {
+  group('firestore_noTimestampsInSnapshots', () {
+    setUpAll(() {
+      //devPrint('App name: ${app.name}');
+      if (firebase.firestore.supportsDocumentSnapshotTime) {
+        app
+            .firestore()
+            .settings(FirestoreSettings(timestampsInSnapshots: false));
+      }
+    });
+    var testsRefPath = 'tests/tekartik_firebase/tests';
+
+    CollectionReference getTestsRef() {
+      return app.firestore().collection(testsRefPath);
+    }
+
+    group("Data", () {
+      test('date', () async {
+        var testsRef = getTestsRef();
+        var docRef = testsRef.doc('date');
+        var localDateTime =
+            DateTime.fromMillisecondsSinceEpoch(1234567890).toLocal();
+        var utcDateTime =
+            DateTime.fromMillisecondsSinceEpoch(12345678901).toUtc();
+        await docRef
+            .set({"some_date": localDateTime, "some_utc_date": utcDateTime});
+        expect((await docRef.get()).data, {
+          "some_date": localDateTime,
+          "some_utc_date": utcDateTime.toLocal()
+        });
+
+        var snapshot = (await testsRef
+                .where('some_date', isEqualTo: localDateTime)
+                .where('some_utc_date', isEqualTo: utcDateTime)
+                .get())
+            .docs
+            .first;
+        expect(snapshot.data, {
+          "some_date": localDateTime,
+          "some_utc_date": utcDateTime.toLocal()
+        });
+        await docRef.delete();
+      });
+    });
+  });
 }
 
 runApp(Firebase firebase, App app) {
+  setUpAll(() async {
+    if (firebase.firestore.supportsDocumentSnapshotTime) {
+      // force support
+      app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
+    }
+  });
   group('firestore', () {
-    var testsRefPath = 'tests/firebase_shim/tests';
+    var testsRefPath = 'tests/tekartik_firebase/tests';
 
     CollectionReference getTestsRef() {
       return app.firestore().collection(testsRefPath);
@@ -168,62 +228,71 @@ runApp(Firebase firebase, App app) {
       });
 
       // All fields that we do not delete
-      test('allFields', () async {
-        var testsRef = getTestsRef();
-        var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
-        var utcDateTime =
-            DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
-        var docRef = testsRef.doc('all_fields');
-        var documentData = DocumentData();
-        documentData.setString("string", "string_value");
+      test(
+        'allFields',
+        () async {
+          var testsRef = getTestsRef();
+          var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
+          var utcDateTime =
+              DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
+          var timestamp = Timestamp(123456789, 123000);
+          var docRef = testsRef.doc('all_fields');
+          var documentData = DocumentData();
+          documentData.setString("string", "string_value");
 
-        documentData.setInt("int", 12345678901);
-        documentData.setNum("num", 3.1416);
-        documentData.setBool("bool", true);
-        documentData.setDateTime("localDateTime", localDateTime);
-        documentData.setDateTime("utcDateTime", utcDateTime);
-        documentData.setList('intList', <int>[4, 3]);
-        documentData.setDocumentReference(
-            'docRef', app.firestore().doc('tests/doc'));
-        documentData.setBlob('blob', Blob(Uint8List.fromList([1, 2, 3])));
-        documentData.setGeoPoint('geoPoint', GeoPoint(1.2, 4));
+          documentData.setInt("int", 12345678901);
+          documentData.setNum("num", 3.1416);
+          documentData.setBool("bool", true);
+          documentData.setDateTime("localDateTime", localDateTime);
+          documentData.setDateTime("utcDateTime", utcDateTime);
+          documentData.setTimestamp('timestamp', timestamp);
+          documentData.setList('intList', <int>[4, 3]);
+          documentData.setDocumentReference(
+              'docRef', app.firestore().doc('tests/doc'));
+          documentData.setBlob('blob', Blob(Uint8List.fromList([1, 2, 3])));
+          documentData.setGeoPoint('geoPoint', GeoPoint(1.2, 4));
 
-        documentData.setFieldValue(
-            "serverTimestamp", FieldValue.serverTimestamp);
+          documentData.setFieldValue(
+              "serverTimestamp", FieldValue.serverTimestamp);
 
-        var subData = DocumentData();
-        subData.setDateTime("localDateTime", localDateTime);
-        documentData.setData("subData", subData);
+          var subData = DocumentData();
+          subData.setDateTime("localDateTime", localDateTime);
+          documentData.setData("subData", subData);
 
-        var subSubData = DocumentData();
-        subData.setData("inner", subSubData);
+          var subSubData = DocumentData();
+          subData.setData("inner", subSubData);
 
-        await docRef.set(documentData.asMap());
-        documentData = DocumentData((await docRef.get()).data);
-        expect(documentData.getString("string"), "string_value");
+          await docRef.set(documentData.asMap());
+          documentData = DocumentData((await docRef.get()).data);
+          expect(documentData.getString("string"), "string_value");
 
-        expect(documentData.getInt("int"), 12345678901);
-        expect(documentData.getNum("num"), 3.1416);
-        expect(documentData.getBool("bool"), true);
+          expect(documentData.getInt("int"), 12345678901);
+          expect(documentData.getNum("num"), 3.1416);
+          expect(documentData.getBool("bool"), true);
 
-        expect(documentData.getDateTime("localDateTime"), localDateTime);
-        expect(documentData.getDateTime("utcDateTime"), utcDateTime.toLocal());
-        expect(documentData.getDocumentReference('docRef').path, 'tests/doc');
-        expect(documentData.getBlob('blob').data, [1, 2, 3]);
-        expect(documentData.getGeoPoint('geoPoint'), GeoPoint(1.2, 4));
-        expect(
-            documentData.getDateTime("serverTimestamp").millisecondsSinceEpoch >
-                0,
-            isTrue);
-        List<int> list = documentData.getList('intList');
-        expect(list, [4, 3]);
+          expect(documentData.getDateTime("localDateTime"), localDateTime);
+          expect(
+              documentData.getDateTime("utcDateTime"), utcDateTime.toLocal());
+          expect(documentData.getTimestamp('timestamp'), timestamp);
+          expect(documentData.getDocumentReference('docRef').path, 'tests/doc');
+          expect(documentData.getBlob('blob').data, [1, 2, 3]);
+          expect(documentData.getGeoPoint('geoPoint'), GeoPoint(1.2, 4));
+          expect(
+              documentData
+                      .getDateTime("serverTimestamp")
+                      .millisecondsSinceEpoch >
+                  0,
+              isTrue);
+          List<int> list = documentData.getList('intList');
+          expect(list, [4, 3]);
 
-        subData = documentData.getData("subData");
-        expect(subData.getDateTime("localDateTime"), localDateTime);
+          subData = documentData.getData("subData");
+          expect(subData.getDateTime("localDateTime"), localDateTime);
 
-        subSubData = subData.getData("inner");
-        expect(subSubData, isNotNull);
-      });
+          subSubData = subData.getData("inner");
+          expect(subSubData, isNotNull);
+        },
+      );
     });
     group("Data", () {
       test('string', () async {
@@ -243,71 +312,158 @@ runApp(Firebase firebase, App app) {
             DateTime.fromMillisecondsSinceEpoch(12345678901).toUtc();
         await docRef
             .set({"some_date": localDateTime, "some_utc_date": utcDateTime});
-        expect((await docRef.get()).data, {
-          "some_date": localDateTime,
-          "some_utc_date": utcDateTime.toLocal()
-        });
+
+        _check(Map data) {
+          if (firebase.firestore.supportsDocumentSnapshotTime) {
+            //devPrint(data['some_date'].runtimeType);
+            expect(data, {
+              "some_date": Timestamp.fromDateTime(localDateTime),
+              "some_utc_date": Timestamp.fromDateTime(utcDateTime.toLocal())
+            });
+          } else {
+            expect(data, {
+              "some_date": localDateTime,
+              "some_utc_date": utcDateTime.toLocal()
+            });
+          }
+        }
+
+        _check((await docRef.get()).data);
+
+        var snapshot = (await testsRef
+                .where('some_date', isEqualTo: localDateTime)
+                .where('some_utc_date', isEqualTo: utcDateTime)
+                .get())
+            .docs
+            .first;
+
+        _check(snapshot.data);
         await docRef.delete();
       });
 
-      test('timestamp', () async {
+      test('timestamp_nanos', () async {
         var testsRef = getTestsRef();
         var docRef = testsRef.doc('timestamp');
         var timestamp = Timestamp(1234567890, 1234);
         await docRef.set({"some_timestamp": timestamp});
-        expect((await docRef.get()).data, {
-          "some_timestamp": timestamp.toDateTime(),
-        });
+
+        var data = (await docRef.get()).data;
+
+        if (firebase.firestore.supportsDocumentSnapshotTime) {
+          expect(
+              data,
+              {
+                "some_timestamp": timestamp,
+              },
+              reason:
+                  'nanos: ${timestamp.nanoseconds} vs ${(data['some_timestamp'] as Timestamp).nanoseconds}');
+        } else {
+          expect(data, {
+            "some_timestamp": timestamp.toDateTime(),
+          });
+        }
         await docRef.delete();
       }, skip: true);
 
-      // All fields that we do not delete
-      test('allFields', () async {
+      test('timestamp', () async {
         var testsRef = getTestsRef();
-        var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
-        var utcDateTime =
-            DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
-        var docRef = testsRef.doc('all_fields');
-        var data = {
-          "string": "string_value",
-          "int": 12345678901,
-          "num": 3.1416,
-          "bool": true,
-          "localDateTime": localDateTime,
-          "utcDateTime": utcDateTime,
-          'intList': <int>[4, 3],
-          'docRef': app.firestore().doc('tests/doc'),
-          'blob': Blob(Uint8List.fromList([1, 2, 3])),
-          'geoPoint': GeoPoint(1.2, 4),
-          "serverTimestamp": FieldValue.serverTimestamp,
-          "subData": {
-            "localDateTime": localDateTime,
-            "inner": {'int': 1234}
-          }
-        };
+        var docRef = testsRef.doc('timestamp');
+        var timestamp = Timestamp(1234567890, 123000);
+        await docRef.set({"some_timestamp": timestamp});
 
-        await docRef.set(data);
-        data = (await docRef.get()).data;
-        expect((data['serverTimestamp'] as DateTime).isUtc, isFalse);
-        expect((data['docRef'] as DocumentReference).path, 'tests/doc');
-        data.remove('serverTimestamp');
-        data.remove('docRef');
-        expect(data, {
-          "string": "string_value",
-          "int": 12345678901,
-          "num": 3.1416,
-          "bool": true,
-          "localDateTime": localDateTime,
-          "utcDateTime": utcDateTime.toLocal(),
-          'intList': <int>[4, 3],
-          'blob': Blob(Uint8List.fromList([1, 2, 3])),
-          'geoPoint': GeoPoint(1.2, 4),
-          "subData": {
-            "localDateTime": localDateTime,
-            "inner": {'int': 1234}
+        _check(Map<String, dynamic> data) {
+          if (firebase.firestore.supportsDocumentSnapshotTime) {
+            expect(
+                data,
+                {
+                  "some_timestamp": timestamp,
+                },
+                reason:
+                    'nanos: ${timestamp.nanoseconds} vs ${(data['some_timestamp'] as Timestamp).nanoseconds}');
+          } else {
+            expect(data, {
+              "some_timestamp": timestamp.toDateTime(),
+            });
           }
-        });
+        }
+
+        _check((await docRef.get()).data);
+
+        var snapshot =
+            (await testsRef.where('some_timestamp', isEqualTo: timestamp).get())
+                .docs
+                .first;
+        _check(snapshot.data);
+
+        await docRef.delete();
       });
+
+      // All fields that we do not delete
+      test(
+        'allFields',
+        () async {
+          var testsRef = getTestsRef();
+          var localDateTime = DateTime.fromMillisecondsSinceEpoch(1234567890);
+          var utcDateTime =
+              DateTime.fromMillisecondsSinceEpoch(1234567890, isUtc: true);
+          var timestamp = Timestamp(1234567890, 123000);
+          var docRef = testsRef.doc('all_fields');
+          var data = {
+            "string": "string_value",
+            "int": 12345678901,
+            "num": 3.1416,
+            "bool": true,
+            "localDateTime": localDateTime,
+            "utcDateTime": utcDateTime,
+            'timestamp': timestamp,
+            'intList': <int>[4, 3],
+            'docRef': app.firestore().doc('tests/doc'),
+            'blob': Blob(Uint8List.fromList([1, 2, 3])),
+            'geoPoint': GeoPoint(1.2, 4),
+            "serverTimestamp": FieldValue.serverTimestamp,
+            "subData": {
+              "localDateTime": localDateTime,
+              "inner": {'int': 1234}
+            }
+          };
+
+          await docRef.set(data);
+          data = (await docRef.get()).data;
+
+          if (firebase.firestore.supportsDocumentSnapshotTime) {
+            expect(data['serverTimestamp'], const TypeMatcher<Timestamp>());
+          } else {
+            expect((data['serverTimestamp'] as DateTime).isUtc, isFalse);
+          }
+          expect((data['docRef'] as DocumentReference).path, 'tests/doc');
+          data.remove('serverTimestamp');
+          data.remove('docRef');
+          expect(data, {
+            "string": "string_value",
+            "int": 12345678901,
+            "num": 3.1416,
+            "bool": true,
+            "localDateTime": firebase.firestore.supportsDocumentSnapshotTime
+                ? Timestamp.fromDateTime(localDateTime)
+                : localDateTime,
+            "utcDateTime": firebase.firestore.supportsDocumentSnapshotTime
+                ? Timestamp.fromDateTime(utcDateTime)
+                : utcDateTime.toLocal(),
+            'timestamp': firebase.firestore.supportsDocumentSnapshotTime
+                ? timestamp
+                : timestamp.toDateTime(),
+            'intList': <int>[4, 3],
+            'blob': Blob(Uint8List.fromList([1, 2, 3])),
+            'geoPoint': GeoPoint(1.2, 4),
+            "subData": {
+              "localDateTime": firebase.firestore.supportsDocumentSnapshotTime
+                  ? Timestamp.fromDateTime(localDateTime)
+                  : localDateTime,
+              "inner": {'int': 1234}
+            }
+          });
+        },
+      );
 
       test('deleteField', () async {
         var testsRef = getTestsRef();

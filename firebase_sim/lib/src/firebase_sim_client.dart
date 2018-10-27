@@ -428,6 +428,9 @@ class FirestoreServiceSim implements FirestoreService {
 
   @override
   bool get supportsDocumentSnapshotTime => true;
+
+  @override
+  bool get supportsTimestampsInSnapshots => false;
 }
 
 class FirestoreSim implements Firestore {
@@ -529,6 +532,11 @@ class FirestoreSim implements Firestore {
         documentDataFromJsonMap(this, documentSnapshotData.data),
         createTime: documentSnapshotData.createTime,
         updateTime: documentSnapshotData.updateTime);
+  }
+
+  @override
+  void settings(FirestoreSettings settings) {
+    // TODO: implement settings
   }
 }
 

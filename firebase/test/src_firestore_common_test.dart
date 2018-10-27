@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:test/test.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firestore.dart';
@@ -18,6 +19,9 @@ class FirestoreMock implements Firestore {
   @override
   Future runTransaction(Function(Transaction transaction) updateFunction) =>
       null;
+
+  @override
+  void settings(FirestoreSettings settings) {}
 }
 
 class DocumentSnapshotMock implements DocumentSnapshot {

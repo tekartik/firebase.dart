@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart' as native;
 import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/src/firestore.dart';
 
 class FirestoreFlutter implements Firestore {
   final native.Firestore nativeInstance;
@@ -25,6 +26,11 @@ class FirestoreFlutter implements Firestore {
       var transaction = TransactionFlutter(nativeTransaction);
       return await updateFunction(transaction);
     });
+  }
+
+  @override
+  void settings(FirestoreSettings settings) {
+    // TODO: implement settings
   }
 }
 

@@ -10,20 +10,19 @@ DateTime toLocaleTime(DateTime value) {
 DateTime parseDateTime(dynamic value) {
   if (value is DateTime) {
     return value;
+  } else {
+    return parseTimestamp(value)?.toDateTime();
+  }
+}
+
+Timestamp parseTimestamp(dynamic value) {
+  if (value is Timestamp) {
+    return value;
+  } else if (value is DateTime) {
+    return Timestamp.fromDateTime(value);
   } else if (value is String) {
     String text = value;
-    try {
-      return DateTime.parse(text);
-    } catch (e) {
-      //print(text);
-      //print(text.substring(18));
-      if (text.length > 23 &&
-          text.substring(text.length - 1, text.length) == 'Z') {
-        text = value.substring(0, 23) + 'Z';
-        //print(text);
-        return DateTime.parse(text);
-      }
-    }
+    return Timestamp.tryParse(text);
   }
   return null;
 }
@@ -181,6 +180,16 @@ class DocumentDataMap implements DocumentData {
   void setGeoPoint(String key, GeoPoint geoPoint) {
     setValue(key, geoPoint);
   }
+
+  @override
+  Timestamp getTimestamp(String key) {
+    return parseTimestamp(getValue(key));
+  }
+
+  @override
+  void setTimestamp(String key, Timestamp value) {
+    setValue(key, value);
+  }
 }
 
 enum FieldValueMapValue {
@@ -319,4 +328,12 @@ class Timestamp implements Comparable<Timestamp> {
     }
     return nanoseconds - other.nanoseconds;
   }
+}
+
+class FirestoreSettings {
+  /// Enables the use of `Timestamp`s for timestamp fields in
+  /// `DocumentSnapshot`s.
+  final bool timestampsInSnapshots;
+
+  FirestoreSettings({this.timestampsInSnapshots});
 }

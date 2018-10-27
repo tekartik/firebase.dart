@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 bool get _runningAsJavascript => identical(1, 1.0);
 
 main() {
-  group('utils', () {
+  group('timestamp', () {
     test('DateTime', () {
       // DateTime cannot parse firestore timestamp
       var text = '2018-10-20T05:13:45.985343Z';
@@ -89,6 +89,11 @@ main() {
       text = '2018-10-20T01Z';
       timestamp = Timestamp.tryParse(text);
       expect(timestamp.toIso8601String(), '2018-10-20T01:00:00.000Z');
+    });
+    test('equals', () {
+      expect(Timestamp(1, 2), Timestamp(1, 2));
+      expect(Timestamp(1, 2), isNot(Timestamp(1, 3)));
+      expect(Timestamp(1, 2), isNot(Timestamp(0, 2)));
     });
   });
 }

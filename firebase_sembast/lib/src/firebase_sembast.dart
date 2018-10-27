@@ -14,6 +14,9 @@ class FirestoreServiceSembast implements FirestoreService {
 
   @override
   bool get supportsDocumentSnapshotTime => true;
+
+  @override
+  bool get supportsTimestampsInSnapshots => false;
 }
 
 class FirebaseSembast implements Firebase {

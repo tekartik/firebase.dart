@@ -2,9 +2,16 @@ import 'dart:async';
 import 'package:js/js_util.dart' as js;
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as node;
 import 'package:node_interop/js.dart' as js;
+import 'package:node_interop/util.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:firebase_admin_interop/src/bindings.dart' as js;
+
+js.FirestoreSettings _unwrapSettings(FirestoreSettings settings) {
+  var nativeSettings = js.FirestoreSettings(
+      timestampsInSnapshots: settings.timestampsInSnapshots);
+  return nativeSettings;
+}
 
 class FirestoreServiceNode implements FirestoreService {
   @override
@@ -12,6 +19,9 @@ class FirestoreServiceNode implements FirestoreService {
 
   @override
   bool get supportsDocumentSnapshotTime => true;
+
+  @override
+  bool get supportsTimestampsInSnapshots => true;
 }
 
 class FirestoreNode implements Firestore {
@@ -36,6 +46,11 @@ class FirestoreNode implements Firestore {
         var transaction = TransactionNode(nativeTransaction);
         return await updateFunction(transaction);
       });
+
+  @override
+  void settings(FirestoreSettings settings) {
+    nativeInstance.settings(_unwrapSettings(settings));
+  }
 }
 
 FirestoreNode firestore(node.Firestore _impl) =>
@@ -180,11 +195,18 @@ class CollectionReferenceNode extends QueryNode implements CollectionReference {
   String get path => nativeInstance.nativeInstance.path;
 }
 
+js.Timestamp _createJsTimestamp(node.Timestamp ts) {
+  return js.callConstructor(js.admin.firestore.Timestamp as Function,
+      jsify([ts.seconds, ts.nanoseconds]) as List) as js.Timestamp;
+}
+
 _unwrapValue(value) {
   if (value == null || value is num || value is bool || value is String) {
     return value;
   } else if (value is DateTime) {
     return js.Date(value.millisecondsSinceEpoch);
+  } else if (value is Timestamp) {
+    return _createJsTimestamp(node.Timestamp(value.seconds, value.nanoseconds));
   } else {
     throw ArgumentError.value(
         value, "${value.runtimeType}", "Unsupported value for _unwrapValue");
@@ -238,6 +260,8 @@ documentValueFromNativeValue(dynamic value) {
       value is String ||
       value is DateTime) {
     return value;
+  } else if (value is node.Timestamp) {
+    return Timestamp(value.seconds, value.nanoseconds);
   } else if (value == node.Firestore.fieldValues.delete()) {
     return FieldValue.delete;
   } else if (value == node.Firestore.fieldValues.serverTimestamp()) {

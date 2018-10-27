@@ -12,6 +12,9 @@ class FirestoreServiceBrowser implements FirestoreService {
 
   @override
   bool get supportsDocumentSnapshotTime => false;
+
+  @override
+  bool get supportsTimestampsInSnapshots => false;
 }
 
 class FirestoreBrowser implements Firestore {
@@ -39,6 +42,11 @@ class FirestoreBrowser implements Firestore {
         var transaction = TransactionBrowser(nativeTransaction);
         return updateFunction(transaction);
       });
+
+  @override
+  void settings(FirestoreSettings settings) {
+    // TODO: implement settings
+  }
 }
 
 class WriteBatchBrowser implements WriteBatch {
