@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:test/test.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
@@ -107,11 +108,17 @@ main() {
       // As date
       firestore.firestoreSettings = null;
       data = documentDataFromJsonMap(firestore, map);
-      expect(data.getTimestamp('timestamp'), Timestamp(12345678901, 123456000));
-      expect(data.asMap()['timestamp'],
-          DateTime.parse("2361-03-21 20:15:01.123456"));
+      expect(
+          data.getTimestamp('timestamp'),
+          dateTimeHasMicros
+              ? Timestamp(12345678901, 123456000)
+              : Timestamp(12345678901, 123000000));
+      expect(
+          data.asMap()['timestamp'],
+          dateTimeHasMicros
+              ? DateTime.parse("2361-03-21T20:15:01.123456")
+              : DateTime.parse("2361-03-21T20:15:01.123"));
 
-      expect(data.getTimestamp('timestamp'), Timestamp(12345678901, 123456000));
       data.setTimestamp("timestamp", null);
       expect(documentDataToJsonMap(data), {'timestamp': null});
       expect(data.getTimestamp('timestamp'), null);

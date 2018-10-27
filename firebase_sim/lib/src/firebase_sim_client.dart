@@ -15,7 +15,7 @@ import 'package:tekartik_web_socket/web_socket.dart';
 
 class DocumentDataSim extends DocumentDataMap {}
 
-class SimDocumentSnapshot implements DocumentSnapshot {
+class DocumentSnapshotSim implements DocumentSnapshot {
   @override
   final DocumentReferenceSim ref;
 
@@ -23,7 +23,7 @@ class SimDocumentSnapshot implements DocumentSnapshot {
 
   final DocumentData documentData;
 
-  SimDocumentSnapshot(this.ref, this.exists, this.documentData,
+  DocumentSnapshotSim(this.ref, this.exists, this.documentData,
       {@required this.createTime, @required this.updateTime});
 
   @override
@@ -104,13 +104,13 @@ class DocumentReferenceSim implements DocumentReference {
     }
   }
 
-  SimDocumentSnapshot documentSnapshotFromDataMap(
+  DocumentSnapshotSim documentSnapshotFromDataMap(
           String path, Map<String, dynamic> map) =>
       simFirestore.documentSnapshotFromDataMap(path, map);
 
   @override
   Stream<DocumentSnapshot> onSnapshot() {
-    ServerSubscriptionSim<SimDocumentSnapshot> subscription;
+    ServerSubscriptionSim<DocumentSnapshotSim> subscription;
     subscription = ServerSubscriptionSim(StreamController(
         onCancel: () => simFirestore.removeSubscription(subscription)));
 
@@ -219,7 +219,7 @@ abstract class QueryMixinSim implements Query {
     ..addOrderBy(
         key, descending == true ? orderByDescending : orderByAscending);
 
-  SimDocumentSnapshot documentSnapshotFromData(
+  DocumentSnapshotSim documentSnapshotFromData(
       DocumentSnapshotData documentSnapshotData) {
     return simFirestore.documentSnapshotFromData(documentSnapshotData);
   }
@@ -275,7 +275,7 @@ abstract class QueryMixinSim implements Query {
             var changes = <DocumentChangeSim>[];
             for (var changeData in querySnapshotData.changes) {
               // snapshot present?
-              SimDocumentSnapshot snapshot;
+              DocumentSnapshotSim snapshot;
               if (changeData.data != null) {
                 snapshot = simFirestore.documentSnapshotFromDataMap(
                     join(simCollectionReference.path, changeData.id),
@@ -342,7 +342,7 @@ class DocumentChangeSim implements DocumentChange {
   final DocumentChangeType type;
 
   @override
-  final SimDocumentSnapshot document;
+  final DocumentSnapshotSim document;
 
   @override
   final int newIndex;
@@ -354,7 +354,7 @@ class DocumentChangeSim implements DocumentChange {
 }
 
 class QuerySnapshotSim implements QuerySnapshot {
-  final List<SimDocumentSnapshot> simDocs;
+  final List<DocumentSnapshotSim> simDocs;
   final List<DocumentChangeSim> simDocChanges;
 
   QuerySnapshotSim(this.simDocs, this.simDocChanges);
@@ -464,10 +464,10 @@ class FirestoreSim implements Firestore {
     }
   }
 
-  SimDocumentSnapshot documentSnapshotFromData(
+  DocumentSnapshotSim documentSnapshotFromData(
       FirestoreDocumentSnapshotData documentSnapshotData) {
     var dataMap = documentSnapshotData.data;
-    return SimDocumentSnapshot(
+    return DocumentSnapshotSim(
         DocumentReferenceSim(this, documentSnapshotData.path),
         dataMap != null,
         documentDataFromJsonMap(this, dataMap),
@@ -480,9 +480,9 @@ class FirestoreSim implements Firestore {
   }
 
   // warning no createTime and update time here
-  SimDocumentSnapshot documentSnapshotFromDataMap(
+  DocumentSnapshotSim documentSnapshotFromDataMap(
       String path, Map<String, dynamic> map) {
-    return SimDocumentSnapshot(DocumentReferenceSim(this, path), map != null,
+    return DocumentSnapshotSim(DocumentReferenceSim(this, path), map != null,
         documentDataFromJsonMap(this, map),
         createTime: null, updateTime: null);
   }
@@ -526,7 +526,7 @@ class FirestoreSim implements Firestore {
 
     var documentSnapshotData = FirestoreDocumentSnapshotDataImpl()
       ..fromMap(map);
-    return SimDocumentSnapshot(
+    return DocumentSnapshotSim(
         DocumentReferenceSim(this, documentSnapshotData.path),
         documentSnapshotData.data != null,
         documentDataFromJsonMap(this, documentSnapshotData.data),

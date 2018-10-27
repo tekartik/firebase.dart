@@ -7,8 +7,8 @@ Map<String, dynamic> requestParams(Request request) =>
 Map<String, dynamic> notificationParams(Notification notification) =>
     notification.params as Map<String, dynamic>;
 
-SimDocumentSnapshot snapshotsFindById(
-    List<SimDocumentSnapshot> snapshots, String id) {
+DocumentSnapshotSim snapshotsFindById(
+    List<DocumentSnapshotSim> snapshots, String id) {
   for (var snapshot in snapshots) {
     if (snapshot.ref.id == id) {
       return snapshot;

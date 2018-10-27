@@ -17,7 +17,7 @@ void run(Firebase firebase, {AppOptions options}) {
 
   runApp(firebase, app);
 
-  if (firebase.firestore.supportsDocumentSnapshotTime) {
+  if (firebase.firestore.supportsTimestampsInSnapshots) {
     // old date support
     App appNoTimestampsInSnapshots = firebase.initializeApp(
         options: options ?? AppOptions(), name: 'noTimestampsInSnapshots');
@@ -29,7 +29,7 @@ runNoTimestampsInSnapshots(Firebase firebase, App app) {
   group('firestore_noTimestampsInSnapshots', () {
     setUpAll(() {
       //devPrint('App name: ${app.name}');
-      if (firebase.firestore.supportsDocumentSnapshotTime) {
+      if (firebase.firestore.supportsTimestampsInSnapshots) {
         app
             .firestore()
             .settings(FirestoreSettings(timestampsInSnapshots: false));
@@ -74,7 +74,7 @@ runNoTimestampsInSnapshots(Firebase firebase, App app) {
 
 runApp(Firebase firebase, App app) {
   setUpAll(() async {
-    if (firebase.firestore.supportsDocumentSnapshotTime) {
+    if (firebase.firestore.supportsTimestampsInSnapshots) {
       // force support
       app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
     }
@@ -316,7 +316,7 @@ runApp(Firebase firebase, App app) {
               .set({"some_date": localDateTime, "some_utc_date": utcDateTime});
 
           _check(Map data) {
-            if (firebase.firestore.supportsDocumentSnapshotTime) {
+            if (firebase.firestore.supportsTimestampsInSnapshots) {
               //devPrint(data['some_date'].runtimeType);
               expect(data, {
                 "some_date": Timestamp.fromDateTime(localDateTime),
@@ -352,7 +352,7 @@ runApp(Firebase firebase, App app) {
 
         var data = (await docRef.get()).data;
 
-        if (firebase.firestore.supportsDocumentSnapshotTime) {
+        if (firebase.firestore.supportsTimestampsInSnapshots) {
           expect(
               data,
               {
@@ -375,7 +375,7 @@ runApp(Firebase firebase, App app) {
         await docRef.set({"some_timestamp": timestamp});
 
         _check(Map<String, dynamic> data) {
-          if (firebase.firestore.supportsDocumentSnapshotTime) {
+          if (firebase.firestore.supportsTimestampsInSnapshots) {
             expect(
                 data,
                 {
@@ -433,7 +433,7 @@ runApp(Firebase firebase, App app) {
           await docRef.set(data);
           data = (await docRef.get()).data;
 
-          if (firebase.firestore.supportsDocumentSnapshotTime) {
+          if (firebase.firestore.supportsTimestampsInSnapshots) {
             expect(data['serverTimestamp'], const TypeMatcher<Timestamp>());
           } else {
             expect((data['serverTimestamp'] as DateTime).isUtc, isFalse);
@@ -446,20 +446,20 @@ runApp(Firebase firebase, App app) {
             "int": 12345678901,
             "num": 3.1416,
             "bool": true,
-            "localDateTime": firebase.firestore.supportsDocumentSnapshotTime
+            "localDateTime": firebase.firestore.supportsTimestampsInSnapshots
                 ? Timestamp.fromDateTime(localDateTime)
                 : localDateTime,
-            "utcDateTime": firebase.firestore.supportsDocumentSnapshotTime
+            "utcDateTime": firebase.firestore.supportsTimestampsInSnapshots
                 ? Timestamp.fromDateTime(utcDateTime)
                 : utcDateTime.toLocal(),
-            'timestamp': firebase.firestore.supportsDocumentSnapshotTime
+            'timestamp': firebase.firestore.supportsTimestampsInSnapshots
                 ? timestamp
                 : timestamp.toDateTime(),
             'intList': <int>[4, 3],
             'blob': Blob(Uint8List.fromList([1, 2, 3])),
             'geoPoint': GeoPoint(1.2, 4),
             "subData": {
-              "localDateTime": firebase.firestore.supportsDocumentSnapshotTime
+              "localDateTime": firebase.firestore.supportsTimestampsInSnapshots
                   ? Timestamp.fromDateTime(localDateTime)
                   : localDateTime,
               "inner": {'int': 1234}
