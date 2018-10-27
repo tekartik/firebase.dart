@@ -116,8 +116,8 @@ main() {
       expect(
           data.asMap()['timestamp'],
           dateTimeHasMicros
-              ? DateTime.parse("2361-03-21T20:15:01.123456")
-              : DateTime.parse("2361-03-21T20:15:01.123"));
+              ? DateTime.parse("2361-03-21T19:15:01.123456Z").toLocal()
+              : DateTime.parse("2361-03-21T19:15:01.123Z").toLocal());
 
       data.setTimestamp("timestamp", null);
       expect(documentDataToJsonMap(data), {'timestamp': null});
