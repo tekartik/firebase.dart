@@ -177,7 +177,7 @@ abstract class QueryMixinSim implements Query {
         ..queryInfo.addWhere(WhereInfo(fieldPath,
             isEqualTo: isEqualTo,
             isLessThan: isLessThan,
-            isLessThanOrEqualTo: isGreaterThanOrEqualTo,
+            isLessThanOrEqualTo: isLessThanOrEqualTo,
             isGreaterThan: isGreaterThan,
             isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
             arrayContains: arrayContains,

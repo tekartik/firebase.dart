@@ -275,7 +275,16 @@ class WhereInfo {
     this.isGreaterThanOrEqualTo,
     this.arrayContains,
     this.isNull,
-  });
+  }) {
+    assert(
+        isEqualTo != null ||
+            isLessThan != null ||
+            isLessThanOrEqualTo != null ||
+            isGreaterThan != null ||
+            isGreaterThanOrEqualTo != null ||
+            arrayContains != null,
+        "Empty where");
+  }
 
   dynamic isEqualTo;
   dynamic isLessThan;

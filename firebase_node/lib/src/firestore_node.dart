@@ -153,7 +153,7 @@ abstract class QueryMixin implements Query {
       _wrapQuery(nativeInstance.where(fieldPath,
           isEqualTo: _unwrapValue(isEqualTo),
           isLessThan: _unwrapValue(isLessThan),
-          isLessThanOrEqualTo: _unwrapValue(isGreaterThanOrEqualTo),
+          isLessThanOrEqualTo: _unwrapValue(isLessThanOrEqualTo),
           isGreaterThan: _unwrapValue(isGreaterThan),
           isGreaterThanOrEqualTo: _unwrapValue(isGreaterThanOrEqualTo),
           arrayContains: _unwrapValue(arrayContains),

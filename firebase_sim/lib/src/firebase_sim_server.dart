@@ -11,6 +11,13 @@ import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/rpc_message.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_common.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart';
+
+// for debugging
+@deprecated
+set debugSimServerMessage(bool debugMessage) =>
+    _debugMessage = debugMessage;
+bool _debugMessage = false;
 
 Future<FirebaseSimServer> serve(
     Firebase firebase, WebSocketChannelFactory channelFactory,
@@ -63,6 +70,9 @@ abstract class FirebaseSimMixin {
   }
 
   void sendMessage(Message message) {
+    if (_debugMessage) {
+      print(message);
+    }
     webSocketChannel.sink.add(json.encode(message.toMap()));
   }
 
@@ -530,7 +540,7 @@ Map<String, dynamic> snapshotToJsonMap(DocumentSnapshot snapshot) {
         query = query.where(where.fieldPath,
             isEqualTo: where.isEqualTo,
             isLessThan: where.isLessThan,
-            isLessThanOrEqualTo: where.isGreaterThanOrEqualTo,
+            isLessThanOrEqualTo: where.isLessThanOrEqualTo,
             isGreaterThan: where.isGreaterThan,
             isGreaterThanOrEqualTo: where.isGreaterThanOrEqualTo,
             arrayContains: where.arrayContains,
@@ -594,6 +604,7 @@ Map<String, dynamic> snapshotToJsonMap(DocumentSnapshot snapshot) {
     );
     app = server.firebase
         .initializeApp(options: options, name: adminInitializeAppData.name);
+    // app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
     // var snapshot = app.firestore().doc(firestoreSetData.path).get();
 
     sendMessage(response);

@@ -37,6 +37,9 @@ abstract class Message {
       return Notification(map['method'] as String, map['params']);
     }
   }
+
+  @override
+  String toString() => toMap().toString();
 }
 
 abstract class _MessageWithId extends Message {

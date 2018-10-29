@@ -722,11 +722,31 @@ runApp(Firebase firebase, App app) {
         expect(list.length, 1);
         expect(list.first.ref.id, "two");
 
-        // where
+        // where >
         querySnapshot = await collRef.where('value', isGreaterThan: 1).get();
         list = querySnapshot.docs;
         expect(list.length, 1);
         expect(list.first.ref.id, "two");
+
+        // where >=
+        querySnapshot =
+            await collRef.where('value', isGreaterThanOrEqualTo: 2).get();
+        list = querySnapshot.docs;
+        expect(list.length, 1);
+        expect(list.first.ref.id, "two");
+
+        // where <
+        querySnapshot = await collRef.where('value', isLessThan: 2).get();
+        list = querySnapshot.docs;
+        expect(list.length, 1);
+        expect(list.first.ref.id, "one");
+
+        // where <=
+        querySnapshot =
+            await collRef.where('value', isLessThanOrEqualTo: 1).get();
+        list = querySnapshot.docs;
+        expect(list.length, 1);
+        expect(list.first.ref.id, "one");
 
         // array contains
         querySnapshot = await collRef.where('array', arrayContains: 4).get();

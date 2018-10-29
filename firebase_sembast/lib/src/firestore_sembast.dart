@@ -1014,7 +1014,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
         ..queryInfo.addWhere(WhereInfo(fieldPath,
             isEqualTo: isEqualTo,
             isLessThan: isLessThan,
-            isLessThanOrEqualTo: isGreaterThanOrEqualTo,
+            isLessThanOrEqualTo: isLessThanOrEqualTo,
             isGreaterThan: isGreaterThan,
             isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
             arrayContains: arrayContains,
