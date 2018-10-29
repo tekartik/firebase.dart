@@ -1,12 +1,11 @@
 @TestOn('vm')
 library tekartik_firebase_sim_io.admin_sim_test;
 
-import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
+import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 import 'package:test/test.dart';
-import 'package:tekartik_firebase_test/firebase_test.dart';
 
 import 'test_common.dart';
 
@@ -25,7 +24,8 @@ main() async {
       await simClient.close();
     });
     test('initializeApp', () async {
-      await simClient.sendRequest(methodAdminInitializeApp, {'projectId': 'test', 'name': 'test_name'});
+      await simClient.sendRequest(
+          methodAdminInitializeApp, {'projectId': 'test', 'name': 'test_name'});
       var name = await simClient.sendRequest(methodAdminGetAppName);
       expect(name, 'test_name');
     });

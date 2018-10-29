@@ -5,9 +5,7 @@ import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
-import 'package:tekartik_firebase_sim/rpc_message.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
-
 
 class AppSim implements App {
   final FirebaseSim admin;
@@ -31,9 +29,9 @@ class AppSim implements App {
             methodAdminInitializeApp, adminInitializeAppData.toMap());
         readyCompleter.complete(simClient);
       } catch (e) {
-        readyCompleter.completeError(e);;
+        readyCompleter.completeError(e);
+        ;
       }
-
     }
     return readyCompleter.future;
   }

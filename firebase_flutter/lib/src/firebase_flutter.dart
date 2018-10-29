@@ -38,5 +38,4 @@ class AppFlutter implements App {
   Storage storage() {
     throw 'not supported';
   }
-
 }

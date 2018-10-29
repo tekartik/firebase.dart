@@ -1,6 +1,3 @@
-import 'package:tekartik_firebase/firestore.dart';
-import 'package:tekartik_firebase/src/firestore_common.dart';
-
 const methodPing = 'ping'; // from client or server
 
 const methodAdminInitializeApp = 'admin/initializeApp';

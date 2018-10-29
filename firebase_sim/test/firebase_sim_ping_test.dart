@@ -8,7 +8,7 @@ import 'package:tekartik_web_socket/web_socket.dart';
 //import 'package:tekartik_serial_wss_client/channel/channel.dart';
 
 main() {
-  debugSimServerMessage = true;
+  // debugSimServerMessage = true;
   firebase_sim_ping_test_main(webSocketChannelFactoryMemory);
 }
 
@@ -25,7 +25,9 @@ firebase_sim_ping_test_main(WebSocketChannelFactory channelFactory) {
     tearDownAll(() async {});
 
     setUp(() {
-      simClient = FirebaseSimClient.connect(simServer.webSocketChannelServer.url, webSocketChannelClientFactory: channelFactory.client);
+      simClient = FirebaseSimClient.connect(
+          simServer.webSocketChannelServer.url,
+          webSocketChannelClientFactory: channelFactory.client);
     });
     test('ping', () async {
       /*

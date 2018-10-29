@@ -1,24 +1,17 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:core' hide Error;
-import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 
+import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 import 'package:meta/meta.dart';
-import 'package:synchronized/synchronized.dart';
-import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/firestore.dart';
-import 'package:tekartik_firebase/src/firestore_common.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
-import 'package:tekartik_firebase_sim/rpc_message.dart';
-import 'package:tekartik_firebase_sim/src/firebase_sim_common.dart';
-import 'package:tekartik_web_socket/web_socket.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:tekartik_firebase/firebase.dart';
+import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
+import 'package:tekartik_web_socket/web_socket.dart';
 
 // for debugging
-@deprecated
-set debugSimServerMessage(bool debugMessage) =>
-    _debugMessage = debugMessage;
-bool _debugMessage = false;
+//@deprecated
+//set debugSimServerMessage(bool debugMessage) => _debugMessage = debugMessage;
+//bool _debugMessage = false;
 
 Future<FirebaseSimServer> serve(
     Firebase firebase, WebSocketChannelFactory channelFactory,
@@ -32,29 +25,20 @@ class FirebaseSimServer {
   int lastAppId = 0;
   final Firebase firebase;
 
-
-
-
-
   final List<FirebaseSimPlugin> _plugins = [];
-  final List<FirebaseSimServerClient> clients = [];
   final List<FirebaseSimServerChannel> _channels = [];
   final WebSocketChannelServer<String> webSocketChannelServer;
 
   void addPlugin(FirebaseSimPlugin plugin) {
     _plugins.add(plugin);
   }
+
   String get url => webSocketChannelServer.url;
 
   FirebaseSimServer(this.firebase, this.webSocketChannelServer) {
     webSocketChannelServer.stream.listen((clientChannel) {
-      if (false) {
-        var client = FirebaseSimServerClient(this, clientChannel);
-        clients.add(client);
-      } else {
-        var channel = FirebaseSimServerChannel(this, clientChannel);
-        _channels.add(channel);
-      }
+      var channel = FirebaseSimServerChannel(this, clientChannel);
+      _channels.add(channel);
     });
   }
 
@@ -62,14 +46,15 @@ class FirebaseSimServer {
     // stop allowing clients
     await webSocketChannelServer.close();
     // Close existing clients
-    for (var client in clients) {
-      await client.close();
+    for (var channel in _channels) {
+      await channel.close();
     }
   }
 }
 
 abstract class FirebaseSimMixin {
   WebSocketChannel<String> get webSocketChannel;
+
   // default
   // check overrides if this changes
   Future close() async {
@@ -79,7 +64,6 @@ abstract class FirebaseSimMixin {
   Future closeMixin() async {
     await webSocketChannel.sink.close();
   }
-
 
   // called internally
   @protected
@@ -91,43 +75,30 @@ abstract class FirebaseSimMixin {
     });
     */
   }
-
-
 }
-
-class SimSubscription<T> {
-  final int id;
-  final StreamSubscription<T> firestoreSubscription;
-
-  SimSubscription(this.id, this.firestoreSubscription);
-}
-
 
 Map<String, dynamic> _mapParams(json_rpc.Parameters parameters) {
   return (parameters.value as Map)?.cast<String, dynamic>();
 }
+
 class FirebaseSimServerChannel {
   App _app;
   final List<FirebaseSimPluginClient> _pluginClients = [];
-
 
   FirebaseSimServerChannel(this._server, WebSocketChannel<String> channel)
       : _rpcServer = json_rpc.Server(channel) {
     // Specific method for getting server info upon start
     _rpcServer.registerMethod(methodAdminInitializeApp,
-            (json_rpc.Parameters parameters) async {
-
-          return await handleAdminInitializeApp(_mapParams(parameters));
-        });
+        (json_rpc.Parameters parameters) async {
+      return await handleAdminInitializeApp(_mapParams(parameters));
+    });
     _rpcServer.registerMethod(methodAdminGetAppName,
-            (json_rpc.Parameters parameters) async {
-
-          return _app.name;
-        });
-    _rpcServer.registerMethod(methodPing,
-            (json_rpc.Parameters parameters) {
-          return _mapParams(parameters);
-        });
+        (json_rpc.Parameters parameters) async {
+      return _app.name;
+    });
+    _rpcServer.registerMethod(methodPing, (json_rpc.Parameters parameters) {
+      return _mapParams(parameters);
+    });
     /*
     // Specific method for deleting a database
     _rpcServer.registerMethod(methodDeleteDatabase,
@@ -187,15 +158,13 @@ class FirebaseSimServerChannel {
     _rpcServer.listen();
   }
 
-
   Map<String, dynamic> handleAdminInitializeApp(Map<String, dynamic> param) {
-
-    var adminInitializeAppData = AdminInitializeAppData()
-      ..fromMap(param);
+    var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
     var options = AppOptions(
       projectId: adminInitializeAppData.projectId,
     );
-    _app = _server.firebase.initializeApp(options: options, name: adminInitializeAppData.name);
+    _app = _server.firebase
+        .initializeApp(options: options, name: adminInitializeAppData.name);
     // app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
     // var snapshot = app.firestore().doc(firestoreSetData.path).get();
 
@@ -204,7 +173,6 @@ class FirebaseSimServerChannel {
       if (client != null) {
         _pluginClients.add(client);
       }
-
     }
     return null;
   }
@@ -216,39 +184,13 @@ class FirebaseSimServerChannel {
     for (var client in _pluginClients) {
       await client.close();
     }
-
   }
 }
 
 abstract class FirebaseSimPluginClient {
   Future close();
 }
+
 abstract class FirebaseSimPlugin {
   FirebaseSimPluginClient register(App app, json_rpc.Server rpcServer);
-}
-class FirebaseSimServerClient extends Object with FirebaseSimMixin {
-  final FirebaseSimServer server;
-  final WebSocketChannel<String> webSocketChannel;
-  App app;
-  int appId;
-  Completer transactionCompleter;
-
-
-  FirebaseSimServerClient(this.server, this.webSocketChannel) {
-    init();
-  }
-
-  @override
-  Future close() async {
-    // Close any pending transaction
-    if (transactionCompleter != null) {
-      if (!transactionCompleter.isCompleted) {
-        transactionCompleter.completeError('database closed');
-      }
-    }
-    await closeMixin();
-
-  }
-
-
 }
