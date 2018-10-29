@@ -27,6 +27,7 @@ dependencies:
   meta: any
   synchronized: '>=1.5.0-dev.2'
   logging: any
+  json_rpc_2:
 
 dev_dependencies:
   test: "^1.0.0"

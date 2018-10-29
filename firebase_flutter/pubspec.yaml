@@ -1,5 +1,8 @@
-name: tekartik_firebase_shim_flutter
-description: A new Flutter project.
+name: tekartik_firebase_flutter
+description: Firebase flutter
+version: 0.3.5
+environment:
+  sdk: ">=2.0.0 <3.0.0"
 
 dependencies:
   flutter:

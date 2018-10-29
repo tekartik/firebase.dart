@@ -32,9 +32,7 @@ firebase_sim_ping_test_main(WebSocketChannelFactory channelFactory) {
       simClient = FirebaseSimClient(client);
     });
     test('ping', () async {
-      var request = simClient.newRequest(methodPing);
-      var response = await simClient.sendRequest(request);
-      expect(response.id, request.id);
+      await simClient.sendRequest(methodPing);
     });
   });
 }

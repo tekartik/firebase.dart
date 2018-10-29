@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase_sim/rpc_message.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
 export 'src/firebase_sim_client.dart' show FirebaseSim;
+import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 
 const requestTimeoutDuration = Duration(seconds: 15);
 
@@ -23,9 +25,20 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
   int _lastRequestId = 0;
   final WebSocketChannel<String> webSocketChannel;
   final Map<int, _Request> _currentRequests = {};
+  json_rpc.Client rpcClient;
 
+  static FirebaseSimClient connect( String url, {
+  WebSocketChannelClientFactory webSocketChannelClientFactory}) {
+    var client = webSocketChannelClientFactory
+        .connect<String>(url);
+    return FirebaseSimClient(client);
+
+  }
   FirebaseSimClient(this.webSocketChannel) {
+    rpcClient = json_rpc.Client(webSocketChannel);
     init();
+    // starting listening
+    rpcClient.listen();
   }
 
   @override
@@ -34,50 +47,15 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
     await closeMixin();
   }
 
-  Request newRequest(String method, [data]) {
-    return Request(++_lastRequestId, method, data);
-  }
-
-  Future< /*Response | ErrorResponse*/ dynamic> sendRequest(
-      Request request) async {
-    int id = request.id as int;
-    _Request internalRequest = _Request(request);
+  Future<T> sendRequest<T>(String method, [dynamic param]) async {
+    T t;
     try {
-      _currentRequests[id] = internalRequest;
-      sendMessage(request);
-      await internalRequest.completer.future.timeout(requestTimeoutDuration);
-      return internalRequest.response;
-    } finally {
-      _currentRequests.remove(id);
+      t = await rpcClient.sendRequest(method, param) as T;
+    } on json_rpc.RpcException catch (e) {
+      // devPrint('ERROR ${e.runtimeType} $e ${e.message} ${e.data}');
+      throw e.message;
     }
+    return t;
   }
 
-  @override
-  void handleMessage(Message message) {
-    if (message is Response || message is ErrorResponse) {
-      handleResponse(message);
-    } else if (message is Notification) {
-      handleNotification(message);
-    }
-  }
-
-  void handleResponse(/*Response | ErrorResponse*/ Message response) {
-    int id;
-    if (response is Response) {
-      id = response.id as int;
-    } else {
-      id = (response as ErrorResponse).id as int;
-    }
-    _Request internalRequest = _currentRequests[id];
-    if (internalRequest != null) {
-      internalRequest.response = response;
-      internalRequest.completer.complete(response);
-    } else {
-      print('unhandled response ${response}');
-    }
-  }
-
-  void handleNotification(Notification notification) {
-    _notificationController.add(notification);
-  }
 }
