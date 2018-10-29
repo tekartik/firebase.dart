@@ -374,7 +374,7 @@ runApp(Firebase firebase, App app) {
       }, skip: true);
 
       test('timestamp', () async {
-        var testsRef = getTestsRef();
+        var testsRef = getTestsRef().doc('lookup').collection('timestamp');
         var docRef = testsRef.doc('timestamp');
         var timestamp = Timestamp(1234567890, 123000);
         await docRef.set({"some_timestamp": timestamp});
@@ -401,6 +401,14 @@ runApp(Firebase firebase, App app) {
             (await testsRef.where('some_timestamp', isEqualTo: timestamp).get())
                 .docs
                 .first;
+        _check(snapshot.data);
+
+        // Try compare
+        snapshot = (await testsRef
+                .where('some_timestamp', isGreaterThanOrEqualTo: timestamp)
+                .get())
+            .docs
+            .first;
         _check(snapshot.data);
 
         await docRef.delete();

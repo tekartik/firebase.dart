@@ -284,6 +284,26 @@ class WhereInfo {
   dynamic isGreaterThanOrEqualTo;
   dynamic arrayContains;
   bool isNull;
+
+  @override
+  String toString() {
+    if (isNull != null) {
+      return '$fieldPath is null';
+    } else if (isEqualTo != null) {
+      return '$fieldPath == $isEqualTo';
+    } else if (isLessThan != null) {
+      return '$fieldPath < $isLessThan';
+    } else if (isLessThanOrEqualTo != null) {
+      return '$fieldPath <= $isLessThanOrEqualTo';
+    } else if (isGreaterThan != null) {
+      return '$fieldPath > $isGreaterThan';
+    } else if (isGreaterThanOrEqualTo != null) {
+      return '$fieldPath >= $isGreaterThanOrEqualTo';
+    } else if (arrayContains != null) {
+      return '$fieldPath array-contains $arrayContains';
+    }
+    return super.toString();
+  }
 }
 
 // Mutable, must be clone before

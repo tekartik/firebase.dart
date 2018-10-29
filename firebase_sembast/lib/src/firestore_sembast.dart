@@ -168,43 +168,47 @@ DocumentDataMap documentDataFromRecordMap(
   return documentData as DocumentDataMap;
 }
 
-// We always use Timestamp even for DateTime
-dynamic _comparableValue(dynamic value) {
-  if (value is DateTime) {
-    return Timestamp.fromDateTime(value);
-  }
-  return value;
-}
-
 bool mapWhere(DocumentData documentData, WhereInfo where) {
-  var fieldValue = _comparableValue(
+  // We always use Timestamp even for DateTime
+  dynamic _fixValue(dynamic value) {
+    if (value is DateTime) {
+      return Timestamp.fromDateTime(value);
+    }
+    return value;
+  }
+
+  var fieldValue = _fixValue(
       _documentDataMap(documentData).valueAtFieldPath(where.fieldPath));
+  Comparable _comparableFieldValue() {
+    return fieldValue as Comparable;
+  }
+
   if (where.isNull == true) {
     return fieldValue == null;
   } else if (where.isNull == false) {
     return fieldValue != null;
   } else if (where.isEqualTo != null) {
-    return fieldValue == _comparableValue(where.isEqualTo);
+    return fieldValue == _fixValue(where.isEqualTo);
   } else if (where.isGreaterThan != null) {
     return (fieldValue == null) ||
-        // ignore: non_bool_operand
-        (fieldValue > _comparableValue(where.isGreaterThan));
+        (_comparableFieldValue().compareTo(_fixValue(where.isGreaterThan)) > 0);
   } else if (where.isGreaterThanOrEqualTo != null) {
     return (fieldValue == null) ||
-        // ignore: non_bool_operand
-        (fieldValue >= _comparableValue(where.isGreaterThanOrEqualTo));
+        (_comparableFieldValue()
+                .compareTo(_fixValue(where.isGreaterThanOrEqualTo)) >=
+            0);
   } else if (where.isLessThan != null) {
     return fieldValue != null &&
-        // ignore: non_bool_operand
-        (fieldValue < _comparableValue(where.isLessThan));
+        (_comparableFieldValue().compareTo(_fixValue(where.isLessThan)) < 0);
   } else if (where.isLessThanOrEqualTo != null) {
     return fieldValue != null &&
-        // ignore: non_bool_operand
-        (fieldValue <= _comparableValue(where.isLessThanOrEqualTo));
+        (_comparableFieldValue()
+                .compareTo(_fixValue(where.isLessThanOrEqualTo)) <=
+            0);
   } else if (where.arrayContains != null) {
     return fieldValue != null &&
         (fieldValue is Iterable) &&
-        (fieldValue.contains(_comparableValue(where.arrayContains)));
+        (fieldValue.contains(_fixValue(where.arrayContains)));
   }
   return false;
 }
