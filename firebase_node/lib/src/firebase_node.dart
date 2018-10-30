@@ -8,8 +8,8 @@ import 'package:tekartik_firebase_node/src/firestore_node.dart';
 import 'package:tekartik_firebase_node/src/storage_node.dart';
 import 'package:tekartik_firebase_node/src/storage_bindings.dart' as native;
 
-Firebase _firebaseNode;
-Firebase get firebaseNode =>
+FirebaseNode _firebaseNode;
+FirebaseNode get firebaseNode =>
     _firebaseNode ??= FirebaseNode._(native.FirebaseAdmin.instance);
 
 //import 'package:firebase_functions_interop/

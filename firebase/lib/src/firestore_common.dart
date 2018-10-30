@@ -3,11 +3,13 @@ import 'dart:convert';
 import 'package:tekartik_common_utils/date_time_utils.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
+import 'package:tekartik_firebase/utils/firestore_mixin.dart';
 import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 
 const String jsonTypeField = r"$t";
 const String jsonValueField = r"$v";
 const String typeDateTime = "DateTime";
+const String typeTimestamp = "Timestamp";
 const String typeFieldValue = "FieldValue";
 const String typeDocumentReference = "DocumentReference";
 const String typeGeoPoint = "GeoPoint";
@@ -21,6 +23,9 @@ Map<String, dynamic> typeValueToJson(String type, dynamic value) {
 
 Map<String, dynamic> dateTimeToJsonValue(DateTime dateTime) =>
     typeValueToJson(typeDateTime, dateTimeToString(dateTime));
+
+Map<String, dynamic> timestampToJsonValue(Timestamp timestamp) =>
+    typeValueToJson(typeTimestamp, timestamp?.toIso8601String());
 
 Map<String, dynamic> documentReferenceToJsonValue(
         DocumentReference documentReference) =>
@@ -55,6 +60,15 @@ DateTime jsonValueToDateTime(Map map) {
   }
   assert(map[jsonTypeField] == typeDateTime);
   return anyToDateTime(map[jsonValueField]);
+}
+
+Timestamp jsonValueToTimestamp(Map map) {
+  if (map == null) {
+    return null;
+  }
+  assert(map[jsonTypeField] == typeDateTime ||
+      map[jsonTypeField] == typeTimestamp);
+  return parseTimestamp(map[jsonValueField]);
 }
 
 DocumentReference jsonValueToDocumentReference(Firestore firestore, Map map) {
@@ -118,6 +132,8 @@ dynamic documentDataValueToJson(dynamic value) {
     return documentDataValueToJson((value as DocumentDataMap).map);
   } else if (value is DateTime) {
     return dateTimeToJsonValue(value);
+  } else if (value is Timestamp) {
+    return timestampToJsonValue(value);
   } else if (value is FieldValue) {
     return fieldValueToJsonValue(value);
   } else if (value is DocumentReference) {
@@ -145,7 +161,21 @@ dynamic jsonToDocumentDataValue(Firestore firestore, dynamic value) {
     if (type != null) {
       switch (type) {
         case typeDateTime:
-          return anyToDateTime(value[jsonValueField])?.toLocal();
+          {
+            var dateTime = anyToDateTime(value[jsonValueField])?.toLocal();
+            if (firestoreTimestampsInSnapshots(firestore)) {
+              return Timestamp.fromDateTime(dateTime);
+            }
+            return dateTime;
+          }
+        case typeTimestamp:
+          {
+            var timestamp = parseTimestamp(value[jsonValueField]);
+            if (firestoreTimestampsInSnapshots(firestore)) {
+              return timestamp;
+            }
+            return timestamp.toDateTime();
+          }
         case typeFieldValue:
           return fieldValueFromJsonValue(value[jsonValueField]);
         case typeDocumentReference:
@@ -245,7 +275,16 @@ class WhereInfo {
     this.isGreaterThanOrEqualTo,
     this.arrayContains,
     this.isNull,
-  });
+  }) {
+    assert(
+        isEqualTo != null ||
+            isLessThan != null ||
+            isLessThanOrEqualTo != null ||
+            isGreaterThan != null ||
+            isGreaterThanOrEqualTo != null ||
+            arrayContains != null,
+        "Empty where");
+  }
 
   dynamic isEqualTo;
   dynamic isLessThan;
@@ -254,6 +293,26 @@ class WhereInfo {
   dynamic isGreaterThanOrEqualTo;
   dynamic arrayContains;
   bool isNull;
+
+  @override
+  String toString() {
+    if (isNull != null) {
+      return '$fieldPath is null';
+    } else if (isEqualTo != null) {
+      return '$fieldPath == $isEqualTo';
+    } else if (isLessThan != null) {
+      return '$fieldPath < $isLessThan';
+    } else if (isLessThanOrEqualTo != null) {
+      return '$fieldPath <= $isLessThanOrEqualTo';
+    } else if (isGreaterThan != null) {
+      return '$fieldPath > $isGreaterThan';
+    } else if (isGreaterThanOrEqualTo != null) {
+      return '$fieldPath >= $isGreaterThanOrEqualTo';
+    } else if (arrayContains != null) {
+      return '$fieldPath array-contains $arrayContains';
+    }
+    return super.toString();
+  }
 }
 
 // Mutable, must be clone before

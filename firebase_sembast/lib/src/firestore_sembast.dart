@@ -10,17 +10,19 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/src/firestore_common.dart';
+import 'package:tekartik_firebase/utils/firestore_mixin.dart';
 import 'package:tekartik_firebase/utils/timestamp_utils.dart';
 import 'package:tekartik_firebase_sembast/src/firebase_sembast.dart' as sembast;
 import 'package:uuid/uuid.dart';
 
 const revKey = r'$rev';
 
+// Stored as timestamp
 Map<String, dynamic> dateTimeToRecordValue(DateTime dateTime) =>
-    dateTimeToJsonValue(dateTime);
+    timestampToRecordValue(Timestamp.fromDateTime(dateTime));
 // For now it is still a date
 Map<String, dynamic> timestampToRecordValue(Timestamp timestamp) =>
-    dateTimeToJsonValue(timestamp.toDateTime());
+    timestampToJsonValue(timestamp);
 
 Map<String, dynamic> documentReferenceToRecordValue(
         DocumentReferenceSembast documentReference) =>
@@ -167,30 +169,46 @@ DocumentDataMap documentDataFromRecordMap(
 }
 
 bool mapWhere(DocumentData documentData, WhereInfo where) {
-  var fieldValue =
-      _documentDataMap(documentData).valueAtFieldPath(where.fieldPath);
+  // We always use Timestamp even for DateTime
+  dynamic _fixValue(dynamic value) {
+    if (value is DateTime) {
+      return Timestamp.fromDateTime(value);
+    }
+    return value;
+  }
+
+  var fieldValue = _fixValue(
+      _documentDataMap(documentData).valueAtFieldPath(where.fieldPath));
+  Comparable _comparableFieldValue() {
+    return fieldValue as Comparable;
+  }
+
   if (where.isNull == true) {
     return fieldValue == null;
   } else if (where.isNull == false) {
     return fieldValue != null;
   } else if (where.isEqualTo != null) {
-    return fieldValue == where.isEqualTo;
+    return fieldValue == _fixValue(where.isEqualTo);
   } else if (where.isGreaterThan != null) {
-    // ignore: non_bool_operand
-    return (fieldValue == null) || (fieldValue > where.isGreaterThan);
+    return (fieldValue == null) ||
+        (_comparableFieldValue().compareTo(_fixValue(where.isGreaterThan)) > 0);
   } else if (where.isGreaterThanOrEqualTo != null) {
-    // ignore: non_bool_operand
-    return fieldValue == null || fieldValue >= where.isGreaterThanOrEqualTo;
+    return (fieldValue == null) ||
+        (_comparableFieldValue()
+                .compareTo(_fixValue(where.isGreaterThanOrEqualTo)) >=
+            0);
   } else if (where.isLessThan != null) {
-    // ignore: non_bool_operand
-    return fieldValue != null && fieldValue < where.isLessThan;
+    return fieldValue != null &&
+        (_comparableFieldValue().compareTo(_fixValue(where.isLessThan)) < 0);
   } else if (where.isLessThanOrEqualTo != null) {
-    // ignore: non_bool_operand
-    return fieldValue != null && fieldValue <= where.isLessThanOrEqualTo;
+    return fieldValue != null &&
+        (_comparableFieldValue()
+                .compareTo(_fixValue(where.isLessThanOrEqualTo)) <=
+            0);
   } else if (where.arrayContains != null) {
     return fieldValue != null &&
         (fieldValue is Iterable) &&
-        (fieldValue.contains(where.arrayContains));
+        (fieldValue.contains(_fixValue(where.arrayContains)));
   }
   return false;
 }
@@ -237,7 +255,7 @@ class WriteResultSembast {
   }
 }
 
-class FirestoreSembast implements Firestore {
+class FirestoreSembast extends Object with FirestoreMixin implements Firestore {
   var dbLock = Lock();
   Database db;
   final sembast.AppSembast app;
@@ -466,6 +484,15 @@ class FirestoreSembast implements Firestore {
       return await transaction.txnCommit(txn);
     });
     transaction.notify(results);
+  }
+
+  @override
+  void settings(FirestoreSettings settings) {
+    if (this.firestoreSettings != null) {
+      throw StateError(
+          'firestore settings already set to $firestoreSettings cannot set to $settings');
+    }
+    this.firestoreSettings = settings;
   }
 }
 
@@ -987,7 +1014,7 @@ abstract class QueryMixin implements Query, AttributesMixin {
         ..queryInfo.addWhere(WhereInfo(fieldPath,
             isEqualTo: isEqualTo,
             isLessThan: isLessThan,
-            isLessThanOrEqualTo: isGreaterThanOrEqualTo,
+            isLessThanOrEqualTo: isLessThanOrEqualTo,
             isGreaterThan: isGreaterThan,
             isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
             arrayContains: arrayContains,

@@ -8,6 +8,7 @@
 
     pub run build_runner test -- -p node
     pub run test -p node
+    pub run test -p node test/firestore_node_test.dart
 
 ### Single test
 

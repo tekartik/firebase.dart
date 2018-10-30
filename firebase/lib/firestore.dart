@@ -1,23 +1,50 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'src/firestore.dart';
 import 'package:collection/collection.dart';
-export 'package:tekartik_firebase/src/firestore.dart' show Timestamp;
+export 'package:tekartik_firebase/src/firestore.dart'
+    show Timestamp, FirestoreSettings;
 
 abstract class FirestoreService {
   bool get supportsQuerySelect;
   bool get supportsDocumentSnapshotTime;
+  bool get supportsTimestamps;
+  bool get supportsTimestampsInSnapshots;
 }
 
+/// Represents a Firestore Database and is the entry point for all
+/// Firestore operations.
 abstract class Firestore {
+  /// Gets a [CollectionReference] for the specified Firestore path.
   CollectionReference collection(String path);
 
+  /// Gets a [DocumentReference] for the specified Firestore path.
   DocumentReference doc(String path);
 
+  /// Creates a write batch, used for performing multiple writes as a single
+  /// atomic operation.
   WriteBatch batch();
 
+  /// Executes the given [updateFunction] and commits the changes applied within
+  /// the transaction.
+  ///
+  /// You can use the transaction object passed to [updateFunction] to read and
+  /// modify Firestore documents under lock. Transactions are committed once
+  /// [updateFunction] resolves and attempted up to five times on failure.
+  ///
+  /// Returns the same `Future` returned by [updateFunction] if transaction
+  /// completed successfully of was explicitly aborted by returning a Future
+  /// with an error. If [updateFunction] throws then returned Future completes
+  /// with the same error.
   Future runTransaction(updateFunction(Transaction transaction));
+
+  /// Specifies custom settings to be used to configure the `Firestore`
+  /// instance.
+  ///
+  /// Can only be invoked once and before any other [Firestore] method.
+  void settings(FirestoreSettings settings);
 }
 
 abstract class CollectionReference extends Query {
@@ -78,6 +105,10 @@ abstract class DocumentData {
   void setDateTime(String key, DateTime value);
 
   DateTime getDateTime(String key);
+
+  void setTimestamp(String key, Timestamp value);
+
+  Timestamp getTimestamp(String key);
 
   void setList<T>(String key, List<T> list);
 
@@ -164,6 +195,11 @@ class Blob {
       return const ListEquality().equals(other.data, _data);
     }
     return false;
+  }
+
+  @override
+  String toString() {
+    return base64.encode(data);
   }
 }
 

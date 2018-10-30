@@ -1,5 +1,9 @@
 import 'package:tekartik_firebase/firestore.dart';
 
+bool get _runningAsJavascript => identical(1, 1.0);
+
+bool get dateTimeHasMicros => !_runningAsJavascript;
+
 // Copied from sembast
 const updateTimeKey = r'$updateTime';
 const createTimeKey = r'$createTime';

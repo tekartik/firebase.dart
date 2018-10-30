@@ -69,8 +69,11 @@ void main() {
         documentData.setDateTime('utcDateTime', utcDate);
         documentData.setDateTime('dateTime', localDate);
         expect(documentDataToRecordMap(documentData), {
-          'utcDateTime': {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'},
-          'dateTime': {r'$t': 'DateTime', r'$v': '5882-03-08T14:08:21.234Z'}
+          'utcDateTime': {
+            r'$t': 'Timestamp',
+            r'$v': '2361-03-21T13:24:50.123Z'
+          },
+          'dateTime': {r'$t': 'Timestamp', r'$v': '5882-03-08T14:08:21.234Z'}
         });
 
         documentData = documentDataFromRecordMap(
@@ -78,6 +81,22 @@ void main() {
         // this is local time
         expect(documentData.getDateTime('utcDateTime'), utcDate.toLocal());
         expect(documentData.getDateTime('dateTime'), localDate);
+      });
+
+      test('timestamp', () {
+        var timestamp = Timestamp(1234567890, 123456000);
+        DocumentData documentData = DocumentData();
+        documentData.setTimestamp('timestamp', timestamp);
+        expect(documentDataToRecordMap(documentData), {
+          'timestamp': {
+            r'$t': 'Timestamp',
+            r'$v': '2009-02-13T23:31:30.123456Z'
+          },
+        });
+
+        documentData = documentDataFromRecordMap(
+            firestore, documentDataToRecordMap(documentData));
+        expect(documentData.getTimestamp('timestamp'), timestamp);
       });
 
       test('sub data', () {
@@ -178,14 +197,14 @@ void main() {
           'sub': {
             'list': [
               1234,
-              {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'},
+              {r'$t': 'Timestamp', r'$v': '2361-03-21T13:24:50.123Z'},
               {
-                'date': {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'},
+                'date': {r'$t': 'Timestamp', r'$v': '2361-03-21T13:24:50.123Z'},
                 'test': 12345
               }
             ],
             'map': {
-              'date': {r'$t': 'DateTime', r'$v': '2361-03-21T13:24:50.123Z'},
+              'date': {r'$t': 'Timestamp', r'$v': '2361-03-21T13:24:50.123Z'},
               'test': 12345
             }
           }

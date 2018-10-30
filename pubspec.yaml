@@ -1,6 +1,6 @@
 name: tekartik_firebase_repo
 description: Firebase repo (tools)
-version: 0.3.3
+version: 0.3.6
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -15,4 +15,4 @@ dev_dependencies:
     git:
       url: git://github.com/tekartik/build_utils.dart
       ref: dart2
-    version: '>=0.3.4'
+    version: '>=0.5.8'
