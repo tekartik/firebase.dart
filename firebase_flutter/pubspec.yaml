@@ -1,6 +1,6 @@
 name: tekartik_firebase_flutter
 description: Firebase flutter
-version: 0.3.5
+version: 0.3.6
 environment:
   sdk: ">=2.0.0 <3.0.0"
 
@@ -13,7 +13,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: 0.3.5
+    version: 0.3.6
   cloud_firestore: any
 
   # The following adds the Cupertino Icons font to your application.
