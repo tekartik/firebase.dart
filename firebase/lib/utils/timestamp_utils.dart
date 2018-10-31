@@ -1,4 +1,4 @@
-import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/src/firestore.dart';
 
 bool get _runningAsJavascript => identical(1, 1.0);
 

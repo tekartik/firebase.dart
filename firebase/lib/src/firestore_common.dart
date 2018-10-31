@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:tekartik_common_utils/date_time_utils.dart';
-import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/utils/firestore_mixin.dart';
 import 'package:tekartik_firebase/utils/timestamp_utils.dart';

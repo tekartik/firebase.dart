@@ -1,8 +1,17 @@
 //import 'package:tekartik_build_utils/cmd_run.dart';
 import 'package:tekartik_build_utils/common_import.dart';
 
+Future getAll(List<String> packages) async {
+  var futures = <Future>[];
+  for (var package in packages) {
+    futures.add(runCmd(PubCmd(pubGetArgs())..workingDirectory = package));
+  }
+  await Future.wait(futures);
+}
+
 Future testFirebase() async {
   var dir = 'firebase';
+  await runCmd(PubCmd(pubGetArgs())..workingDirectory = dir);
   await runCmd(DartAnalyzerCmd(['lib', 'test'])..workingDirectory = dir);
   await runCmd(PubCmd(pubRunTestArgs(platforms: ['vm', 'chrome']))
     ..workingDirectory = dir);
@@ -72,7 +81,17 @@ Future testFirebaseTest() async {
   await runCmd(DartAnalyzerCmd(['lib'])..workingDirectory = dir);
 }
 
+var packages = [
+  'firebase',
+  'firebase_browser',
+  'firebase_sembast',
+  'firebase_sim',
+  'firebase_sim_io',
+  'firebase_sim_browser'
+];
 Future main() async {
+  await getAll(packages);
+  /*
   await testFirebase();
   await testFirebaseBrowser();
   await testFirebaseSembast();
@@ -82,4 +101,5 @@ Future main() async {
   await testFirebaseNode();
   await testFirebaseFlutter();
   await testFirebaseTest();
+  */
 }

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';

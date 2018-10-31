@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_sembast/src/firestore_sembast.dart';
 import 'package:tekartik_firebase_sembast/src/storage_sembast.dart';

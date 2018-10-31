@@ -13,11 +13,13 @@ main() {
     Firebase admin = FirebaseSim(
         clientFactory: webSocketClientChannelFactoryBrowser, url: "ws://dummy");
 
-    var app = admin.initializeApp();
+    admin.initializeApp();
 
+    /*
     try {
       var snapshot = await app.firestore().doc("test").get();
       print(snapshot?.exists);
     } catch (e) {}
+    */
   });
 }

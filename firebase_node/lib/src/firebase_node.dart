@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_node/src/firestore_node.dart';
 import 'package:tekartik_firebase_node/src/storage_node.dart';

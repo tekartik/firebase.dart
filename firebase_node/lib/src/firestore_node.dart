@@ -3,7 +3,6 @@ import 'package:js/js_util.dart' as js;
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as node;
 import 'package:node_interop/js.dart' as js;
 import 'package:node_interop/util.dart';
-import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:firebase_admin_interop/src/bindings.dart' as js;
 

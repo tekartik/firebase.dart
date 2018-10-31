@@ -1,4 +1,4 @@
-import 'package:tekartik_firebase/firestore.dart';
+import 'package:tekartik_firebase/src/firestore.dart';
 
 // might evolve to be always true
 bool firestoreTimestampsInSnapshots(Firestore firestore) {

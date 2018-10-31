@@ -7,7 +7,6 @@ import 'package:sembast/sembast.dart' as sembast;
 import 'package:sembast/sembast_memory.dart' as sembast;
 import 'package:synchronized/synchronized.dart';
 import 'package:tekartik_common_utils/common_utils_import.dart';
-import 'package:tekartik_firebase/firestore.dart';
 import 'package:tekartik_firebase/src/firestore.dart';
 import 'package:tekartik_firebase/src/firestore_common.dart';
 import 'package:tekartik_firebase/utils/firestore_mixin.dart';
