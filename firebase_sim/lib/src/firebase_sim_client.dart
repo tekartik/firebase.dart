@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/firestore.dart';
-import 'package:tekartik_firebase/storage.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
@@ -52,16 +50,7 @@ class AppSim implements App {
   String get name => _name;
 
   @override
-  Firestore firestore() => null;
-
-  @override
   final AppOptions options;
-
-  @override
-  Storage storage() {
-    // TODO: implement storage
-    throw 'not implemented yet';
-  }
 
   // basic ping feature with console display
   Future ping() async {
@@ -86,7 +75,4 @@ class FirebaseSim implements Firebase {
   App initializeApp({AppOptions options, String name}) {
     return AppSim(this, options, name);
   }
-
-  @override
-  FirestoreService firestore = null;
 }

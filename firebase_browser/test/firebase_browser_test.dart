@@ -13,16 +13,12 @@ void main() async {
   Firebase firebase = firebaseBrowser;
 
   group('browser', () {
-    test('factory', () {
-      expect(firebase.firestore.supportsQuerySelect, isFalse);
+    test('appOptions', () {
+      expect(options, isNotNull, reason: "All tests are skipped");
     });
+    if (options == null) {
+      return;
+    }
+    run(firebase, options: options);
   });
-
-  test('appOptions', () {
-    expect(options, isNotNull, reason: "All tests are skipped");
-  });
-  if (options == null) {
-    return;
-  }
-  run(firebaseBrowser, options: options);
 }
