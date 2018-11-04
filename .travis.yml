@@ -13,7 +13,7 @@ jobs:
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="firebase_sembast"
+      env: PKG="firebase_local"
       dart: dev
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
@@ -45,10 +45,6 @@ jobs:
       dart: dev
     - stage: test_vm
       script: ./tool/travis.sh test_vm
-      env: PKG="firebase_sembast"
-      dart: dev
-    - stage: test_vm
-      script: ./tool/travis.sh test_vm
       env: PKG="firebase_sim"
       dart: dev
     - stage: test_vm
@@ -69,7 +65,7 @@ jobs:
       dart: stable
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
-      env: PKG="firebase_sembast"
+      env: PKG="firebase_local"
       dart: stable
     - stage: analyzer_and_format
       script: ./tool/travis.sh dartfmt dartanalyzer
@@ -98,10 +94,6 @@ jobs:
     - stage: test_vm
       script: ./tool/travis.sh test_vm
       env: PKG="firebase"
-      dart: stable
-    - stage: test_vm
-      script: ./tool/travis.sh test_vm
-      env: PKG="firebase_sembast"
       dart: stable
     - stage: test_vm
       script: ./tool/travis.sh test_vm

@@ -2,11 +2,6 @@ import 'dart:async';
 
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/src/firestore.dart';
-import 'package:tekartik_firebase/storage.dart';
-import 'package:tekartik_firebase_node/src/firestore_node.dart';
-import 'package:tekartik_firebase_node/src/storage_node.dart';
-import 'package:tekartik_firebase_node/src/storage_bindings.dart' as native;
 
 FirebaseNode _firebaseNode;
 FirebaseNode get firebaseNode =>
@@ -17,9 +12,6 @@ class FirebaseNode implements Firebase {
   FirebaseNode._(this.nativeInstance);
 
   final native.FirebaseAdmin nativeInstance;
-
-  @override
-  var firestore = FirestoreServiceNode();
 
   @override
   App initializeApp({AppOptions options, String name}) {
@@ -64,20 +56,6 @@ class AppNode implements App {
 
   @override
   Future delete() => nativeInstance.delete();
-
-  @override
-  Firestore firestore() => FirestoreNode(nativeInstance.firestore());
-
-  @override
-  Storage storage() {
-    native.Storage nativeStorage =
-        // ignore: invalid_use_of_protected_member
-        (nativeInstance.nativeInstance as native.StorageApp).storage();
-    if (nativeStorage != null) {
-      return StorageNode(nativeStorage);
-    }
-    return null;
-  }
 
   @override
   AppOptions get options => _wrapAppOptions(nativeInstance.options);

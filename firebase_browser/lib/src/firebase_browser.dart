@@ -4,9 +4,6 @@ import 'package:firebase/firebase.dart' as native;
 import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/src/firestore.dart';
-import 'package:tekartik_firebase/storage.dart';
-import 'package:tekartik_firebase_browser/src/firestore_browser.dart';
 
 String firebaseJsVersion = "5.1.0";
 
@@ -30,9 +27,6 @@ Future loadFirebaseJs() async {
 }
 
 class FirebaseBrowser implements Firebase {
-  @override
-  final FirestoreService firestore = FirestoreServiceBrowser();
-
   @override
   App initializeApp({AppOptions options, String name}) {
     options ??= AppOptions();
@@ -59,20 +53,6 @@ class AppBrowser implements App {
   @override
   Future delete() async {
     await nativeApp.delete();
-  }
-
-  @override
-  Firestore firestore() {
-    var nativeFirestore = nativeApp.firestore();
-    if (nativeFirestore == null) {
-      return null;
-    }
-    return FirestoreBrowser(nativeFirestore);
-  }
-
-  @override
-  Storage storage() {
-    throw 'not supported';
   }
 
   @override
