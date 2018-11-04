@@ -13,7 +13,6 @@ main() {
 
     admin.initializeApp();
 
-    /*
     try {
       var snapshot = await app.firestore().doc("test").get();
       print(snapshot?.exists);
