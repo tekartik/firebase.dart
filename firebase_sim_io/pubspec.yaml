@@ -1,6 +1,6 @@
 name: tekartik_firebase_sim_io
 description: Firebase simulation
-version: 0.3.6
+version: 0.3.7
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -13,10 +13,10 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase_sim
       ref: dart2
-  tekartik_firebase_sembast:
+  tekartik_firebase_local:
     git:
       url: git://github.com/tekartik/firebase.dart
-      path: firebase_sembast
+      path: firebase_local
       ref: dart2
   tekartik_web_socket_io:
     git:
@@ -38,5 +38,5 @@ dependency_overrides:
     path: ../firebase_sim
   tekartik_firebase:
     path: ../firebase
-  tekartik_firebase_sembast:
-    path: ../firebase_sembast
+  tekartik_firebase_local:
+    path: ../firebase_local

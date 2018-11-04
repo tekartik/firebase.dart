@@ -22,7 +22,7 @@ Future flutterGetAll(List<String> packages) async {
 var packages = [
   'firebase',
   'firebase_browser',
-  'firebase_sembast',
+  'firebase_local',
   'firebase_sim',
   'firebase_test',
   'firebase_sim_io',
