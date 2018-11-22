@@ -10,7 +10,6 @@ environment:
 dependencies:
   collection: '>=1.14.10'
   js: any
-  sembast: '>=1.7.0'
   uuid: '>=1.0.0'
   tekartik_firebase:
     git:
@@ -19,7 +18,7 @@ dependencies:
       ref: dart2
     version: 0.3.7
   firebase_functions_interop: ">=1.0.0-dev.11.0"
-  firebase_admin_interop: ">=1.0.0-dev.20.0"
+  firebase_admin_interop: ">=1.1.0"
 
 dev_dependencies:
   test: ">=1.2.0"
