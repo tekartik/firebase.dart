@@ -22,4 +22,9 @@ class AppFlutter implements App {
 
   @override
   AppOptions get options => null;
+
+  @override
+  Auth auth() {
+    throw UnsupportedError('auth not supported');
+  }
 }

@@ -63,6 +63,11 @@ class AppSim implements App {
     var simClient = await this.simClient;
     return await simClient.sendRequest(methodAdminGetAppName);
   }
+
+  @override
+  Auth auth() {
+    throw UnsupportedError('auth not supported');
+  }
 }
 
 class FirebaseSim implements Firebase {

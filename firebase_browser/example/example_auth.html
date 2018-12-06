@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sample FirebaseUI App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Firebase App is always required and must be first -->
+    <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-app.js"></script>
+    <!-- Add additional services that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-auth.js"></script>
+
+    <link rel="icon" href="packages/tekartik_browser_utils/img/favicon.png">
+
+    <script src="example_auth.dart.js"></script>
+</head>
+<body>
+<!-- The surrounding HTML is left untouched by FirebaseUI.
+     Your app may use that space for branding, controls and other customizations.-->
+<h1>Firebase Auth</h1>
+<button id="signOut">Sign out</button>
+<button id="googleSignIn">Sign in</button>
+<button id="googleSignInWithRedirect">Sign in (redirect)</button>
+<pre id="output"></pre>
+</body>
+</html>

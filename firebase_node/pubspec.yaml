@@ -1,6 +1,6 @@
 name: tekartik_firebase_node
 description: Firebase server node
-version: 0.3.7
+version: 0.3.8
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -16,7 +16,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: 0.3.7
+    version: '>=0.3.8'
   firebase_functions_interop: ">=1.0.0-dev.11.0"
   firebase_admin_interop: ">=1.1.0"
 
