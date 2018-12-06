@@ -6,7 +6,8 @@ import 'package:tekartik_firebase_sim/rpc_message.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
-export 'src/firebase_sim_client.dart' show FirebaseSim;
+export 'package:tekartik_firebase_sim/src/firebase_sim_client.dart'
+    show FirebaseSim;
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 
 const requestTimeoutDuration = Duration(seconds: 15);
