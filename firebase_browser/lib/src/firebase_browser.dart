@@ -6,7 +6,6 @@ import 'package:firebase/firebase.dart' as native;
 import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
-export 'package:firebase/firebase.dart';
 
 String firebaseJsVersion = "5.5.2";
 
