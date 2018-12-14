@@ -59,9 +59,4 @@ class AppNode implements App {
 
   @override
   AppOptions get options => _wrapAppOptions(nativeInstance.options);
-
-  @override
-  Auth auth() {
-    throw UnsupportedError('auth not supported');
-  }
 }

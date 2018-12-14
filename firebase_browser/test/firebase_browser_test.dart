@@ -20,19 +20,5 @@ void main() async {
       return;
     }
     run(firebase, options: options);
-
-    group('auth', () {
-      App app = firebase.initializeApp(options: options, name: 'auth');
-
-      tearDownAll(() {
-        return app.delete();
-      });
-
-      test('signOut', () async {
-        var auth = app.auth() as AuthBrowser;
-        await auth.signOut();
-        expect(await auth.onAuthStateChanged.take(1).toList(), [null]);
-      });
-    });
   });
 }

@@ -52,9 +52,4 @@ class AppLocal implements App {
   Future<Null> delete() async {
     deleted = true;
   }
-
-  @override
-  Auth auth() {
-    throw UnsupportedError('auth not supported');
-  }
 }

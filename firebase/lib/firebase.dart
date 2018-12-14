@@ -12,12 +12,8 @@ abstract class App {
 
   AppOptions get options;
 
-  Auth auth();
-
   Future delete();
 }
-
-abstract class Auth {}
 
 class AppOptions {
   String apiKey;

@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase/src/interop/auth_interop.dart';
-
 import 'package:firebase/firebase.dart' as native;
 import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
@@ -94,40 +92,6 @@ class AppBrowser implements App {
       return null;
     }
   }
-
-  @override
-  Auth auth() => AuthBrowserImpl(nativeApp.auth());
-}
-
-abstract class AuthBrowser {
-  Stream<native.User> get onAuthStateChanged;
-
-  Future signOut();
-
-  Future signInWithRedirect(native.AuthProvider authProvider);
-
-  Future<native.UserCredential> signInPopup(native.AuthProvider authProvider);
-}
-
-class AuthBrowserImpl implements Auth, AuthBrowser {
-  final native.Auth nativeAuth;
-
-  AuthBrowserImpl(this.nativeAuth);
-
-  Stream<native.User> get onAuthStateChanged => nativeAuth.onAuthStateChanged;
-
-  @override
-  Future signOut() => nativeAuth.signOut();
-
-  @override
-  Future<native.UserCredential> signInPopup(
-          native.AuthProvider<AuthProviderJsImpl> authProvider) =>
-      nativeAuth.signInWithPopup(authProvider);
-
-  @override
-  Future signInWithRedirect(
-          native.AuthProvider<AuthProviderJsImpl> authProvider) =>
-      nativeAuth.signInWithRedirect(authProvider);
 }
 
 FirebaseBrowser _firebaseBrowser;
