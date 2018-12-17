@@ -24,6 +24,11 @@ class FirebaseNode implements Firebase {
     return AppNode(
         nativeInstance.initializeApp(_unwrapAppOptions(options), name));
   }
+
+  @override
+  Future<App> initializeAppAsync({AppOptions options, String name}) async {
+    return initializeApp(options: options, name: name);
+  }
 }
 
 native.AppOptions _unwrapAppOptions(AppOptions appOptions) {

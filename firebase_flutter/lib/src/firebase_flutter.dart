@@ -1,16 +1,32 @@
 import 'package:firebase_core/firebase_core.dart' as flutter;
 import 'package:tekartik_firebase/firebase.dart';
 
-class FirebaseFlutter implements Firebase {
+class FirebaseFlutter implements FirebaseAsync {
   @override
-  App initializeApp({AppOptions options, String name}) => null;
+  Future<App> initializeAppAsync({AppOptions options, String name}) async {
+    flutter.FirebaseOptions fbOptions;
+    flutter.FirebaseApp nativeApp;
+    bool isDefault = false;
+    if (options != null) {
+      nativeApp =
+          await flutter.FirebaseApp.configure(name: name, options: fbOptions);
+    } else {
+      isDefault = true;
+      nativeApp = flutter.FirebaseApp.instance;
+    }
+
+    return AppFlutter(
+        nativeInstance: nativeApp, options: options, isDefault: isDefault);
+  }
 }
 
 class AppFlutter implements App {
-  final flutter.FirebaseOptions nativeOptions;
+  final bool isDefault;
+  @override
+  final AppOptions options;
   final flutter.FirebaseApp nativeInstance;
 
-  AppFlutter(this.nativeInstance, this.nativeOptions);
+  AppFlutter({this.nativeInstance, this.options, this.isDefault});
 
   @override
   Future delete() {
@@ -19,9 +35,6 @@ class AppFlutter implements App {
 
   @override
   String get name => nativeInstance.name;
-
-  @override
-  AppOptions get options => null;
 }
 
 FirebaseFlutter _firebaseFlutter;

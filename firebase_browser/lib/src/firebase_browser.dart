@@ -61,6 +61,11 @@ class FirebaseBrowser implements Firebase {
     }
     return AppBrowser(nativeApp);
   }
+
+  @override
+  Future<App> initializeAppAsync({AppOptions options, String name}) async {
+    return initializeApp(options: options, name: name);
+  }
 }
 
 class AppBrowser implements App {
