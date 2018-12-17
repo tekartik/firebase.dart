@@ -23,3 +23,6 @@ class AppFlutter implements App {
   @override
   AppOptions get options => null;
 }
+
+FirebaseFlutter _firebaseFlutter;
+FirebaseFlutter get firebaseFlutter => _firebaseFlutter ??= FirebaseFlutter();

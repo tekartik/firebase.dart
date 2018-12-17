@@ -29,6 +29,16 @@ void main() {
 
 ### Usage on flutter
 
+```yaml
+dependencies:
+  tekartik_firebase_flutter:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_flutter
+      ref: dart2
+    version: '>=0.3.9'
+```
+
 ```dart
 import 'package:tekartik_firebase_flutter/firebase_flutter.dart';
 
