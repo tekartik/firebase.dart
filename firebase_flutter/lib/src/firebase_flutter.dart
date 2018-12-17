@@ -1,7 +1,7 @@
 import 'package:firebase_core/firebase_core.dart' as flutter;
 import 'package:tekartik_firebase/firebase.dart';
 
-class FirebaseFlutter implements FirebaseAsync {
+class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions options, String name}) async {
     flutter.FirebaseOptions fbOptions;
@@ -17,6 +17,17 @@ class FirebaseFlutter implements FirebaseAsync {
 
     return AppFlutter(
         nativeInstance: nativeApp, options: options, isDefault: isDefault);
+  }
+
+  @override
+  App initializeApp({AppOptions options, String name}) {
+    if (options == null && name == null) {
+      var nativeApp = flutter.FirebaseApp.instance;
+      return AppFlutter(
+          nativeInstance: nativeApp, options: options, isDefault: true);
+    } else {
+      throw 'not supported, use async method';
+    }
   }
 }
 
