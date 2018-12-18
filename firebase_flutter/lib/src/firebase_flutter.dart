@@ -1,15 +1,23 @@
 import 'package:firebase_core/firebase_core.dart' as flutter;
 import 'package:tekartik_firebase/firebase.dart';
+import 'dart:async';
 
 class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions options, String name}) async {
-    flutter.FirebaseOptions fbOptions;
     flutter.FirebaseApp nativeApp;
     bool isDefault = false;
     if (options != null) {
-      nativeApp =
-          await flutter.FirebaseApp.configure(name: name, options: fbOptions);
+      // If empty (checking only projectId)
+      // clone the existing options
+      if (options.projectId == null) {
+        flutter.FirebaseOptions fbOptions =
+            await flutter.FirebaseApp.instance.options;
+        nativeApp =
+            await flutter.FirebaseApp.configure(name: name, options: fbOptions);
+      } else {
+        throw 'not supported yet';
+      }
     } else {
       isDefault = true;
       nativeApp = flutter.FirebaseApp.instance;
@@ -40,8 +48,9 @@ class AppFlutter implements App {
   AppFlutter({this.nativeInstance, this.options, this.isDefault});
 
   @override
-  Future delete() {
-    throw 'not supported';
+  Future delete() async {
+    // delete is not supported, simply ignore
+    // throw 'not supported';
   }
 
   @override
