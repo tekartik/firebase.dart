@@ -17,6 +17,11 @@ class FirebaseLocal implements Firebase {
   }
 
   final Map<App, AppLocal> apps = {};
+
+  @override
+  Future<App> initializeAppAsync({AppOptions options, String name}) async {
+    return initializeApp(options: options, name: name);
+  }
 }
 
 class AppLocal implements App {

@@ -75,4 +75,9 @@ class FirebaseSim implements Firebase {
   App initializeApp({AppOptions options, String name}) {
     return AppSim(this, options, name);
   }
+
+  @override
+  Future<App> initializeAppAsync({AppOptions options, String name}) async {
+    return initializeApp(options: options, name: name);
+  }
 }

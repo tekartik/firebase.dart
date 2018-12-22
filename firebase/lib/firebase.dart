@@ -3,7 +3,11 @@ import 'dart:async';
 export 'package:tekartik_firebase/src/firebase.dart'
     show firebaseAppNameDefault;
 
-abstract class Firebase {
+abstract class FirebaseAsync {
+  Future<App> initializeAppAsync({AppOptions options, String name});
+}
+
+abstract class Firebase extends FirebaseAsync {
   App initializeApp({AppOptions options, String name});
 }
 

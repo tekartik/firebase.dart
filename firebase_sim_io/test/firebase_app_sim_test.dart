@@ -9,7 +9,7 @@ import 'test_common.dart';
 
 main() async {
   var testContext = await initTestContextSim();
-  run(testContext.firebase);
+  runApp(testContext.firebase);
 
   group('firebase_app_sim', () {
     AppSim app;

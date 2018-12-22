@@ -5,25 +5,43 @@ import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 
-String firebaseJsVersion = "5.1.0";
+String firebaseJsVersion = "5.5.2";
 
+// 2018-12-05 to deprecate
 JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(
     "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js");
-JavascriptScriptLoader firestoreJsLoader = JavascriptScriptLoader(
-    "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-firestore.js");
 
-Future loadFirebaseCoreJs() async {
-  await firebaseJsLoader.load();
+String getJavascriptAppJsFile({String version}) {
+  version ??= firebaseJsVersion;
+  return "https://www.gstatic.com/firebasejs/$version/firebase-app.js";
 }
 
-Future loadFirebaseFirestoreJs() async {
-  await firestoreJsLoader.load();
+String getJavascriptJsFile({String version}) {
+  version ??= firebaseJsVersion;
+  return "https://www.gstatic.com/firebasejs/$version/firebase.js";
+}
+
+String getJavascriptAuthJsFile({String version}) {
+  version ??= firebaseJsVersion;
+  return "https://www.gstatic.com/firebasejs/$version/firebase-auth.js";
+}
+
+var _firebaseCoreJsLoader = JavascriptScriptLoader(
+    "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js");
+
+/// does not work with build_runner
+Future loadFirebaseCoreJs() async {
+  await _firebaseCoreJsLoader.load();
+}
+
+/// does not work with build_runner
+Future loadFirebaseAuthJs({String version}) async {
+  await loadJavascriptScript(getJavascriptAppJsFile(version: version));
 }
 
 //JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader("https://www.gstatic.com/firebasejs/4.2.0/firebase.js");
-Future loadFirebaseJs() async {
-  await loadFirebaseCoreJs();
-  await loadFirebaseFirestoreJs();
+Future loadFirebaseJs({String version}) async {
+  await loadJavascriptScript(getJavascriptJsFile(version: version));
 }
 
 class FirebaseBrowser implements Firebase {
@@ -42,6 +60,11 @@ class FirebaseBrowser implements Firebase {
       return null;
     }
     return AppBrowser(nativeApp);
+  }
+
+  @override
+  Future<App> initializeAppAsync({AppOptions options, String name}) async {
+    return initializeApp(options: options, name: name);
   }
 }
 

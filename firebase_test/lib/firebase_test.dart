@@ -3,7 +3,8 @@ library tekartik_tekartik_firebase_sembast.admin_test;
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:test/test.dart';
 
-void run(Firebase firebase, {AppOptions options}) {
+/*
+void run(FirebaseAsync firebase, {AppOptions options}) {
   App app = firebase.initializeApp(options: options);
 
   tearDownAll(() {
@@ -12,8 +13,16 @@ void run(Firebase firebase, {AppOptions options}) {
 
   runApp(firebase, app);
 }
+*/
+runApp(FirebaseAsync firebaseAsync, {AppOptions options}) {
+  App app;
+  setUpAll(() async {
+    app = await firebaseAsync.initializeAppAsync(options: options);
+  });
+  tearDownAll(() async {
+    return app.delete();
+  });
 
-runApp(Firebase firebase, App app) {
   group('Firebase', () {
     test('default app name', () {
       expect(app.name, '[DEFAULT]');

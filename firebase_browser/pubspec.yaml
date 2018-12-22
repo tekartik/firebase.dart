@@ -1,6 +1,6 @@
 name: tekartik_firebase_browser
 description: Firebase browser
-version: 0.3.7
+version: 0.3.9+3
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -8,12 +8,13 @@ environment:
   sdk: '>=2.0.0-dev.54 <3.0.0'
 
 dependencies:
+  js:
   tekartik_firebase:
     git:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: 0.3.7
+    version: '>=0.3.9'
   firebase: '>=5.0.2'
   tekartik_browser_utils:
     git:
@@ -28,6 +29,11 @@ dev_dependencies:
   build_runner: ">=0.9.1"
   build_test: ">=0.10.3"
   build_web_compilers: ">=0.4.0+4"
+  tekartik_build_utils:
+    git:
+      url: git://github.com/tekartik/build_utils.dart
+      ref: dart2
+    version: '>=0.5.7'
 
 dependency_overrides:
   tekartik_firebase:
