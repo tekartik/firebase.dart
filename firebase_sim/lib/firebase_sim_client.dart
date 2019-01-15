@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tekartik_firebase_sim/rpc_message.dart';
@@ -8,7 +9,6 @@ import 'package:tekartik_web_socket/web_socket.dart';
 
 export 'package:tekartik_firebase_sim/src/firebase_sim_client.dart'
     show FirebaseSim;
-import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 
 const requestTimeoutDuration = Duration(seconds: 15);
 
@@ -16,6 +16,7 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
   var _notificationController = StreamController<Notification>.broadcast();
 
   Stream<Notification> get notificationStream => _notificationController.stream;
+  @override
   final WebSocketChannel<String> webSocketChannel;
   json_rpc.Client rpcClient;
 
@@ -33,7 +34,7 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
   }
 
   @override
-  close() async {
+  Future close() async {
     await _notificationController.close();
     await closeMixin();
   }

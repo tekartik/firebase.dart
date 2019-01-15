@@ -70,14 +70,14 @@ class Notification extends Message with _RequestMixin {
 class _RequestMixin {
   var _params;
   String _method;
-  get params => _params;
+  dynamic get params => _params;
   String get method => _method;
-  _init(String method, [var params]) {
+  void _init(String method, [var params]) {
     _method = method;
     _params = params;
   }
 
-  _updateMap(Map map) {
+  void _updateMap(Map map) {
     map['method'] = _method;
     if (_params != null) {
       map['params'] = _params;
@@ -125,7 +125,7 @@ class Error {
     return map;
   }
 
-  // override
+  @override
   String toString() {
     return "$code: $message${data != null ? " $data" : ""}";
   }

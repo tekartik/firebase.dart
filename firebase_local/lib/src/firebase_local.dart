@@ -54,7 +54,7 @@ class AppLocal implements App {
   AppLocal(this.firebaseLocal, this.options, this.name);
 
   @override
-  Future<Null> delete() async {
+  Future<void> delete() async {
     deleted = true;
   }
 }

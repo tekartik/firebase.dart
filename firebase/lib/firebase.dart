@@ -16,7 +16,7 @@ abstract class App {
 
   AppOptions get options;
 
-  Future delete();
+  Future<void> delete();
 }
 
 class AppOptions {

@@ -17,7 +17,7 @@ class AppSim implements App {
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
-      webSocketChannel = await admin.clientFactory.connect(admin.url);
+      webSocketChannel = admin.clientFactory.connect(admin.url);
       var simClient = FirebaseSimClient(webSocketChannel);
       var adminInitializeAppData = AdminInitializeAppData()
         ..projectId = options?.projectId
@@ -28,7 +28,6 @@ class AppSim implements App {
         readyCompleter.complete(simClient);
       } catch (e) {
         readyCompleter.completeError(e);
-        ;
       }
     }
     return readyCompleter.future;

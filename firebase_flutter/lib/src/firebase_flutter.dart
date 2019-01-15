@@ -1,6 +1,7 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart' as flutter;
 import 'package:tekartik_firebase/firebase.dart';
-import 'dart:async';
 
 class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
@@ -58,4 +59,5 @@ class AppFlutter implements App {
 }
 
 FirebaseFlutter _firebaseFlutter;
+
 FirebaseFlutter get firebaseFlutter => _firebaseFlutter ??= FirebaseFlutter();

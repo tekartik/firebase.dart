@@ -10,11 +10,11 @@ import 'package:tekartik_web_socket/web_socket.dart';
 
 //import 'package:tekartik_serial_wss_client/channel/channel.dart';
 
-main() {
-  firebase_sim_ping_test_main(webSocketChannelFactoryIo);
+void main() {
+  firebaseSimPingTestMain(webSocketChannelFactoryIo);
 }
 
-firebase_sim_ping_test_main(WebSocketChannelFactory channelFactory) {
+void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
   group("sim", () {
     FirebaseSimServer simServer;
     FirebaseSimClient simClient;

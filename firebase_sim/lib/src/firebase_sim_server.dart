@@ -90,7 +90,7 @@ class FirebaseSimServerChannel {
     // Specific method for getting server info upon start
     _rpcServer.registerMethod(methodAdminInitializeApp,
         (json_rpc.Parameters parameters) async {
-      return await handleAdminInitializeApp(_mapParams(parameters));
+      return handleAdminInitializeApp(_mapParams(parameters));
     });
     _rpcServer.registerMethod(methodAdminGetAppName,
         (json_rpc.Parameters parameters) async {

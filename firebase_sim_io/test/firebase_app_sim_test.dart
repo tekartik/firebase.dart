@@ -1,13 +1,15 @@
 @TestOn('vm')
 library tekartik_firebase_sim_io.admin_sim_test;
 
+import 'dart:async';
+
 import 'package:tekartik_firebase_sim/src/firebase_sim_client.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:test/test.dart';
 
 import 'test_common.dart';
 
-main() async {
+Future main() async {
   var testContext = await initTestContextSim();
   runApp(testContext.firebase);
 
