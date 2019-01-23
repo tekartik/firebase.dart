@@ -3,6 +3,7 @@ import 'dart:html';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_browser/firebase_browser.dart';
 import 'package:tekartik_firebase_browser/src/interop.dart';
+
 import 'example_common.dart';
 import 'example_setup.dart';
 

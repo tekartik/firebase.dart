@@ -16,7 +16,7 @@ abstract class Message {
         if (map.containsKey('result')) {
           return Response(id, map['result']);
         } else {
-          Map errorMap = map['error'];
+          Map errorMap = map['error'] as Map;
           if (errorMap == null) {
             throw FormatException(
                 "missing 'method', 'result' or 'error' in $map");
@@ -44,6 +44,7 @@ abstract class Message {
 
 abstract class _MessageWithId extends Message {
   final id;
+
   _MessageWithId(this.id);
 
   @override
@@ -68,11 +69,14 @@ class Notification extends Message with _RequestMixin {
 }
 
 class _RequestMixin {
-  var _params;
+  dynamic _params;
   String _method;
+
   dynamic get params => _params;
+
   String get method => _method;
-  void _init(String method, [var params]) {
+
+  void _init(String method, [dynamic params]) {
     _method = method;
     _params = params;
   }
@@ -100,6 +104,7 @@ class Request extends _MessageWithId with _RequestMixin {
 
 class Response extends _MessageWithId {
   final result;
+
   Response(id, this.result) : super(id);
 
   @override
@@ -133,7 +138,9 @@ class Error {
 
 class ErrorResponse extends _MessageWithId {
   final Error error;
+
   ErrorResponse(id, this.error) : super(id);
+
   @override
   Map<String, dynamic> toMap() {
     var map = super.toMap();

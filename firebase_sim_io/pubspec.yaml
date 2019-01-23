@@ -23,7 +23,7 @@ dependencies:
       url: git://github.com/tekartik/web_socket.dart
       path: web_socket_io
       ref: dart2
-    version: '>=0.0.2'
+    version: '>=0.2.1'
 
 dev_dependencies:
   test: "^1.0.0"
@@ -40,3 +40,8 @@ dependency_overrides:
     path: ../firebase
   tekartik_firebase_local:
     path: ../firebase_local
+  # tmp
+  # tekartik_web_socket_io:
+  #  path: ../../web_socket.dart/web_socket_io
+  # tekartik_web_socket:
+  #  path: ../../web_socket.dart/web_socket

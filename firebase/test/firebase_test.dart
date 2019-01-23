@@ -1,7 +1,7 @@
 library tekartik_firebase.firebase_test;
 
-import 'package:test/test.dart';
 import 'package:tekartik_firebase/firebase.dart';
+import 'package:test/test.dart';
 
 void main() {
   group('firebase', () {

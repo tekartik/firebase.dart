@@ -5,6 +5,7 @@ import 'package:tekartik_firebase/firebase.dart';
 
 class FirebaseLocal implements Firebase {
   String _localPath;
+
   String get localPath => _localPath;
 
   FirebaseLocal({String localPath}) {
@@ -32,6 +33,7 @@ class AppLocal implements App {
   }
 
   final FirebaseLocal firebaseLocal;
+
   String get localPath {
     var partPath = appPathPart(name);
     // If the name has more than 1 part, it is a path
