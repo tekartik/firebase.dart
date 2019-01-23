@@ -15,7 +15,7 @@ void main() async {
   group('browser', () {
     test('appOptions', () {
       expect(options, isNotNull, reason: "All tests are skipped");
-    });
+    }, skip: options == null);
     if (options == null) {
       return;
     }
