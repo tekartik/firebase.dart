@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 //import 'package:tekartik_serial_wss_client/channel/channel.dart';
 
-main() {
+void main() {
   test('admin', () async {
     /*
     Firebase admin = FirebaseSim(

@@ -14,7 +14,7 @@ void run(FirebaseAsync firebase, {AppOptions options}) {
   runApp(firebase, app);
 }
 */
-runApp(FirebaseAsync firebaseAsync, {AppOptions options}) {
+void runApp(FirebaseAsync firebaseAsync, {AppOptions options}) {
   App app;
   setUpAll(() async {
     app = await firebaseAsync.initializeAppAsync(options: options);

@@ -4,6 +4,7 @@ import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
 import 'package:tekartik_firebase/firebase.dart';
 
 FirebaseNode _firebaseNode;
+
 FirebaseNode get firebaseNode =>
     _firebaseNode ??= FirebaseNode._(native.FirebaseAdmin.instance);
 

@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:grinder/grinder.dart';
 import 'package:process_run/process_run.dart';
 import 'package:tekartik_build_utils/bash/bash.dart';
 
+// ignore_for_file: non_constant_identifier_names
+
 String extraOptions = '';
 
-main(List<String> args) {
+void main(List<String> args) {
   // Handle extra args after --
   // to specify test names
   for (int i = 0; i < args.length; i++) {
@@ -19,7 +23,7 @@ main(List<String> args) {
 }
 
 @Task()
-test_firebase_browser() async {
+Future test_firebase_browser() async {
   await bash('''
 set -xe
 pushd firebase_browser
@@ -28,7 +32,7 @@ pub run build_runner test --fail-on-severe -- -p chrome -r expanded $extraOption
 }
 
 @Task()
-test_firebase_sembast() async {
+Future test_firebase_sembast() async {
   await bash('''
 set -xe
 pushd firebase_sembast
@@ -37,7 +41,7 @@ pub run test $extraOptions
 }
 
 @Task()
-test_firebase_node() async {
+Future test_firebase_node() async {
   await bash('''
 set -xe
 pushd firebase_node
@@ -46,7 +50,7 @@ pub run test -p node $extraOptions
 }
 
 @Task()
-test_firebase_sim() async {
+Future test_firebase_sim() async {
   await bash('''
 set -xe
 pushd firebase_sim
@@ -55,7 +59,7 @@ pub run test -p node,vm $extraOptions
 }
 
 @Task()
-test() async {
+Future test() async {
   await test_firebase_sembast();
   await test_firebase_sim();
   await test_firebase_browser();
@@ -63,7 +67,7 @@ test() async {
 }
 
 @Task()
-fmt() async {
+Future fmt() async {
   await bash('''
 set -xe
 dartfmt . -w
@@ -71,7 +75,7 @@ dartfmt . -w
 }
 
 @DefaultTask()
-help() {
+void help() {
   print('Quick help:');
   print('  fmt: format');
   print('  test_firebase_browser');

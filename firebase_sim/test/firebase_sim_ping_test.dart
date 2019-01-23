@@ -1,18 +1,18 @@
-import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
-import 'package:test/test.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
+import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
+import 'package:test/test.dart';
 
-//import 'package:tekartik_serial_wss_client/channel/channel.dart';
+// ingore_for_file: non_constant_identifier_name
 
-main() {
+void main() {
   // debugSimServerMessage = true;
-  firebase_sim_ping_test_main(webSocketChannelFactoryMemory);
+  firebaseSimPingTestMain(webSocketChannelFactoryMemory);
 }
 
-firebase_sim_ping_test_main(WebSocketChannelFactory channelFactory) {
+void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
   group("sim", () {
     FirebaseSimServer simServer;
     FirebaseSimClient simClient;
