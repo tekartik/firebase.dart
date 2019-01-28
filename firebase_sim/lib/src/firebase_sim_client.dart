@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:tekartik_firebase/firebase.dart';
+import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
@@ -68,7 +69,8 @@ class FirebaseSim implements Firebase {
   final WebSocketChannelClientFactory clientFactory;
   final String url;
 
-  FirebaseSim({this.clientFactory, this.url});
+  FirebaseSim({this.clientFactory, String url})
+      : url = url ?? 'ws://localhost:$firebaseSimDefaultPort';
 
   @override
   App initializeApp({AppOptions options, String name}) {
