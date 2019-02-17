@@ -11,6 +11,14 @@ import 'test_common.dart';
 
 Future main() async {
   var testContext = await initTestContextSim();
+  run(testContext);
+
+  tearDownAll(() async {
+    await close(testContext);
+  });
+}
+
+void run(TestContext testContext) {
   runApp(testContext.firebase);
 
   group('firebase_app_sim', () {
