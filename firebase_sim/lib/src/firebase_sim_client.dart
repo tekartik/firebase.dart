@@ -6,7 +6,10 @@ import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
-class AppSim implements App {
+// ignore: implementation_imports
+import 'package:tekartik_firebase/src/firebase_mixin.dart';
+
+class AppSim with FirebaseAppMixin {
   final FirebaseSim admin;
   bool deleted = false;
   String _name;
@@ -42,7 +45,7 @@ class AppSim implements App {
   Future delete() async {
     if (!deleted) {
       deleted = true;
-      // await _firestore?.close();
+      await closeServices();
     }
   }
 
@@ -65,7 +68,7 @@ class AppSim implements App {
   }
 }
 
-class FirebaseSim implements Firebase {
+class FirebaseSim with FirebaseMixin {
   final WebSocketChannelClientFactory clientFactory;
   final String url;
 
@@ -75,10 +78,5 @@ class FirebaseSim implements Firebase {
   @override
   App initializeApp({AppOptions options, String name}) {
     return AppSim(this, options, name);
-  }
-
-  @override
-  Future<App> initializeAppAsync({AppOptions options, String name}) async {
-    return initializeApp(options: options, name: name);
   }
 }

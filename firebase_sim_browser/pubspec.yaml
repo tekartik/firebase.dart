@@ -1,11 +1,11 @@
 name: tekartik_firebase_sim_browser
 description: Firebase simulation browser client
-version: 0.3.9+1
+version: 0.4.0+0
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.0.0-dev.54 <3.0.0'
+  sdk: '>=2.1.0 <3.0.0'
 
 dependencies:
   tekartik_firebase_sim:
@@ -13,7 +13,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase_sim
       ref: dart2
-    version: '>=0.3.9'
+    version: '>=0.4.0+0'
   tekartik_web_socket_browser:
     git:
       url: git://github.com/tekartik/web_socket.dart

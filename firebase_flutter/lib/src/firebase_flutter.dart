@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_core/firebase_core.dart' as flutter;
 import 'package:tekartik_firebase/firebase.dart';
+// ignore: implementation_imports
+import 'package:tekartik_firebase/src/firebase_mixin.dart';
 
 class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
@@ -40,7 +42,7 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
   }
 }
 
-class AppFlutter implements App {
+class AppFlutter with FirebaseAppMixin {
   final bool isDefault;
   @override
   final AppOptions options;
@@ -50,6 +52,7 @@ class AppFlutter implements App {
 
   @override
   Future delete() async {
+    await closeServices();
     // delete is not supported, simply ignore
     // throw 'not supported';
   }

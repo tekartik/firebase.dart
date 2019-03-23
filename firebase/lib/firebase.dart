@@ -11,12 +11,23 @@ abstract class Firebase extends FirebaseAsync {
   App initializeApp({AppOptions options, String name});
 }
 
+/// Firebase app.
 abstract class App {
+  /// The app name
   String get name;
 
+  /// The app options
   AppOptions get options;
 
+  /// Dispose the app.
+  ///
+  /// Close all added service.
   Future<void> delete();
+
+  /// Add a service and calls its init method.
+  ///
+  /// Upon delete, close will be called
+  Future addService(FirebaseAppService service);
 }
 
 class AppOptions {
@@ -43,4 +54,15 @@ class AppOptions {
     storageBucket = map['storageBucket']?.toString();
     messagingSenderId = map['messagingSenderId']?.toString();
   }
+}
+
+/// Attached firebase service.
+///
+/// Init is called
+abstract class FirebaseAppService {
+  /// Called when [App.addService] is called
+  Future init(App app);
+
+  /// Called when [App.delete] is called
+  Future close(App app);
 }
