@@ -59,6 +59,9 @@ class AppFlutter with FirebaseAppMixin {
 
   @override
   String get name => nativeInstance.name;
+
+  @override
+  String toString() => 'AppFlutter($name)';
 }
 
 FirebaseFlutter _firebaseFlutter;

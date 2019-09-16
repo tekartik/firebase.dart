@@ -96,6 +96,9 @@ class AppBrowser with FirebaseAppMixin {
       return null;
     }
   }
+
+  @override
+  String toString() => 'AppBrowser(${options.projectId}, $name)';
 }
 
 FirebaseBrowser _firebaseBrowser;
