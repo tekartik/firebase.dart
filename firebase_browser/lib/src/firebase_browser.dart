@@ -5,10 +5,8 @@ import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 
-// ignore: implementation_imports
-import 'package:tekartik_firebase/src/firebase_mixin.dart';
-
-String firebaseJsVersion = "5.5.2";
+import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
+import 'package:tekartik_firebase_browser/src/common/firebase_js_version.dart';
 
 // 2018-12-05 to deprecate
 JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(

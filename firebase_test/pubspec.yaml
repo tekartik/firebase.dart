@@ -1,6 +1,6 @@
 name: tekartik_firebase_test
 description: Firebase server test
-version: 0.4.0+0
+version: 0.6.0
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -14,11 +14,11 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: '>=0.4.0+0'
+    version: '>=0.6.0'
   test: ">=1.0.0"
 
 dev_dependencies:
-  dev_test: '>=0.12.0-dev.1'
+  process_run:
 
 dependency_overrides:
   tekartik_firebase:
