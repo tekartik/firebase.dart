@@ -5,7 +5,8 @@ import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 
-String firebaseJsVersion = "5.5.2";
+import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
+import 'package:tekartik_firebase_browser/src/common/firebase_js_version.dart';
 
 // 2018-12-05 to deprecate
 JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(
@@ -44,7 +45,7 @@ Future loadFirebaseJs({String version}) async {
   await loadJavascriptScript(getJavascriptJsFile(version: version));
 }
 
-class FirebaseBrowser implements Firebase {
+class FirebaseBrowser with FirebaseMixin {
   @override
   App initializeApp({AppOptions options, String name}) {
     options ??= AppOptions();
@@ -61,14 +62,9 @@ class FirebaseBrowser implements Firebase {
     }
     return AppBrowser(nativeApp);
   }
-
-  @override
-  Future<App> initializeAppAsync({AppOptions options, String name}) async {
-    return initializeApp(options: options, name: name);
-  }
 }
 
-class AppBrowser implements App {
+class AppBrowser with FirebaseAppMixin {
   final native.App nativeApp;
 
   AppBrowser(this.nativeApp);
@@ -76,6 +72,7 @@ class AppBrowser implements App {
   @override
   Future delete() async {
     await nativeApp.delete();
+    await closeServices();
   }
 
   @override
@@ -97,6 +94,9 @@ class AppBrowser implements App {
       return null;
     }
   }
+
+  @override
+  String toString() => 'AppBrowser(${options.projectId}, $name)';
 }
 
 FirebaseBrowser _firebaseBrowser;

@@ -5,6 +5,18 @@ import 'package:test/test.dart';
 
 void main() {
   group('firebase', () {
+    test('api', () {
+      // ignore: unnecessary_statements
+      Firebase;
+      // ignore: unnecessary_statements
+      FirebaseAppService;
+      // ignore: unnecessary_statements
+      App;
+      // ignore: unnecessary_statements
+      AppOptions;
+      // ignore: unnecessary_statements
+      FirebaseAsync;
+    });
     test('options', () {
       var options = AppOptions.fromMap({
         'apiKey': '1',

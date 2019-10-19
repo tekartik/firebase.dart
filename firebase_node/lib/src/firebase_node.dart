@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
 import 'package:tekartik_firebase/firebase.dart';
+// ignore: implementation_imports
+import 'package:tekartik_firebase/src/firebase_mixin.dart';
 
 FirebaseNode _firebaseNode;
 
@@ -9,7 +11,7 @@ FirebaseNode get firebaseNode =>
     _firebaseNode ??= FirebaseNode._(native.FirebaseAdmin.instance);
 
 //import 'package:firebase_functions_interop/
-class FirebaseNode implements Firebase {
+class FirebaseNode with FirebaseMixin {
   FirebaseNode._(this.nativeInstance);
 
   final native.FirebaseAdmin nativeInstance;
@@ -24,11 +26,6 @@ class FirebaseNode implements Firebase {
     }
     return AppNode(
         nativeInstance.initializeApp(_unwrapAppOptions(options), name));
-  }
-
-  @override
-  Future<App> initializeAppAsync({AppOptions options, String name}) async {
-    return initializeApp(options: options, name: name);
   }
 }
 
@@ -52,7 +49,7 @@ AppOptions _wrapAppOptions(native.AppOptions nativeInstance) {
   return null;
 }
 
-class AppNode implements App {
+class AppNode with FirebaseAppMixin {
   final native.App nativeInstance;
 
   AppNode(this.nativeInstance);
@@ -61,7 +58,10 @@ class AppNode implements App {
   String get name => nativeInstance.name;
 
   @override
-  Future delete() => nativeInstance.delete();
+  Future delete() async {
+    await nativeInstance.delete();
+    await closeServices();
+  }
 
   @override
   AppOptions get options => _wrapAppOptions(nativeInstance.options);
