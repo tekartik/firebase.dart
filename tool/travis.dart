@@ -4,6 +4,7 @@ Future main() async {
   var shell = Shell();
 
   for (var dir in [
+    'firebase_rest',
     'firebase',
     'firebase_browser',
     'firebase_node',
