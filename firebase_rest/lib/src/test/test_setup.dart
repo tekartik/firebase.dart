@@ -13,7 +13,7 @@ class Context {
   AuthClient authClient;
   AccessToken accessToken;
 
-  AppOptionsRestImpl options;
+  AppOptionsRest options;
 
   /// True if it can be used
   bool get valid => authClient != null;
@@ -69,7 +69,7 @@ Future<Context> getContext(Client client,
   var accessToken = accessCreds.accessToken;
 
   var authClient = authenticatedClient(client, accessCreds);
-  var appOptions = AppOptionsRestImpl(authClient: authClient)
+  var appOptions = AppOptionsRest(authClient: authClient)
     ..projectId = jsonData['project_id']?.toString();
   var context = Context()
     ..client = client

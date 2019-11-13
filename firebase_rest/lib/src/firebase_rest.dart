@@ -4,7 +4,9 @@ import 'package:meta/meta.dart';
 import 'package:googleapis_auth/auth.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
 
+/// The app options to use for REST app initialization.
 abstract class AppOptionsRest extends AppOptions {
+  /// Create a new options object.
   factory AppOptionsRest({@required AuthClient authClient}) =>
       AppOptionsRestImpl(authClient: authClient);
 }
