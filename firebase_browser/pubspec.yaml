@@ -14,7 +14,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: '>=0.6.0'
+    version: '>=0.6.2'
   firebase: '>=6.0.0'
   tekartik_browser_utils:
     git:
