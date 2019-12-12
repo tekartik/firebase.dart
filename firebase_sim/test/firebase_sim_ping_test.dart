@@ -13,7 +13,7 @@ void main() {
 }
 
 void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
-  group("sim", () {
+  group('sim', () {
     FirebaseSimServer simServer;
     FirebaseSimClient simClient;
 

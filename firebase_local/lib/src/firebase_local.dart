@@ -11,7 +11,7 @@ class FirebaseLocal with FirebaseMixin {
   String get localPath => _localPath;
 
   FirebaseLocal({String localPath}) {
-    _localPath = localPath ?? join(".dart_tool", "tekartik_firebase_local");
+    _localPath = localPath ?? join('.dart_tool', 'tekartik_firebase_local');
   }
 
   @override
@@ -24,8 +24,8 @@ class FirebaseLocal with FirebaseMixin {
 
 class AppLocal with FirebaseAppMixin {
   static String appPathPart(String name) {
-    return (name == "[DEFAULT]" || name == null || name == '')
-        ? "_default"
+    return (name == '[DEFAULT]' || name == null || name == '')
+        ? '_default'
         : name;
   }
 

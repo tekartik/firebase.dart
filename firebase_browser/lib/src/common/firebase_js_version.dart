@@ -1,1 +1,1 @@
-String firebaseJsVersion = "6.6.1";
+String firebaseJsVersion = '6.6.1';

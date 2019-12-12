@@ -13,7 +13,7 @@ export 'package:tekartik_firebase_sim/src/firebase_sim_client.dart'
 const requestTimeoutDuration = Duration(seconds: 15);
 
 class FirebaseSimClient extends Object with FirebaseSimMixin {
-  var _notificationController = StreamController<Notification>.broadcast();
+  final _notificationController = StreamController<Notification>.broadcast();
 
   Stream<Notification> get notificationStream => _notificationController.stream;
   @override

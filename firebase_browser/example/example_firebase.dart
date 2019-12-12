@@ -8,10 +8,10 @@ import 'example_common.dart';
 import 'example_setup.dart';
 
 void main() async {
-  write("require :${hasRequire}");
+  write('require :${hasRequire}');
   var options = await setup();
-  write("loaded");
-  Firebase firebase = firebaseBrowser;
+  write('loaded');
+  final firebase = firebaseBrowser;
 
   App app;
 
