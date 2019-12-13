@@ -56,7 +56,9 @@ class FirebaseBrowser with FirebaseMixin {
         databaseURL: options.databaseURL,
         authDomain: options.authDomain,
         apiKey: options.apiKey,
-        name: name);
+        name: name,
+        appId: options.appId,
+        measurementId: options.measurementId);
     if (nativeApp == null) {
       return null;
     }

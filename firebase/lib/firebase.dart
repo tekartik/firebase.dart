@@ -37,6 +37,8 @@ class AppOptions {
   String projectId;
   String storageBucket;
   String messagingSenderId;
+  String measurementId;
+  String appId;
 
   AppOptions(
       {this.apiKey,
@@ -44,7 +46,9 @@ class AppOptions {
       this.databaseURL,
       this.projectId,
       this.storageBucket,
-      this.messagingSenderId});
+      this.messagingSenderId,
+      this.appId,
+      this.measurementId});
 
   AppOptions.fromMap(Map<String, dynamic> map) {
     apiKey = map['apiKey']?.toString();
@@ -53,6 +57,8 @@ class AppOptions {
     projectId = map['projectId']?.toString();
     storageBucket = map['storageBucket']?.toString();
     messagingSenderId = map['messagingSenderId']?.toString();
+    measurementId = map['measurementId']?.toString();
+    appId = map['appId']?.toString();
   }
 }
 
