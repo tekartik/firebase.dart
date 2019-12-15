@@ -23,9 +23,19 @@ void main() async {
 
   querySelector('#delete').onClick.listen((_) async {
     if (app != null) {
-      write('deleing...');
+      write('deleting...');
       await app.delete();
       write('deleted');
+    }
+  });
+
+  querySelector('#get_app').onClick.listen((_) async {
+    write('Getting...');
+    try {
+      app = firebase.app();
+      write('Got ${app.name}');
+    } catch (e) {
+      write('error $e');
     }
   });
 }

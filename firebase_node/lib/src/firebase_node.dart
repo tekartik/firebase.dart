@@ -24,8 +24,17 @@ class FirebaseNode with FirebaseMixin {
     if (options == null) {
       name = null;
     }
-    return AppNode(
-        nativeInstance.initializeApp(_unwrapAppOptions(options), name));
+    var app =
+        AppNode(nativeInstance.initializeApp(_unwrapAppOptions(options), name));
+    _apps[name] = app;
+    return app;
+  }
+
+  final _apps = <String, AppNode>{};
+
+  @override
+  App app({String name}) {
+    return _apps[name];
   }
 }
 

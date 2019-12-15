@@ -3,12 +3,21 @@ import 'dart:async';
 export 'package:tekartik_firebase/src/firebase.dart'
     show firebaseAppNameDefault;
 
+/// Async interface, needed for flutter.
 abstract class FirebaseAsync {
+  /// Initialize the app with the given options.
   Future<App> initializeAppAsync({AppOptions options, String name});
+
+  /// Retrieves an existing instance of an App.
+  Future<App> appAsync({String name});
 }
 
 abstract class Firebase extends FirebaseAsync {
+  /// Initialize the app with the given options.
   App initializeApp({AppOptions options, String name});
+
+  /// Retrieves an existing instance of an App.
+  App app({String name});
 }
 
 /// Firebase app.

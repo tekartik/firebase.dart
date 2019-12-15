@@ -4,6 +4,8 @@ import 'package:meta/meta.dart';
 import 'package:googleapis_auth/auth.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
 
+String get _defaultAppName => firebaseAppNameDefault;
+
 /// The app options to use for REST app initialization.
 abstract class AppOptionsRest extends AppOptions {
   /// Create a new options object.
@@ -27,11 +29,21 @@ class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
 class FirebaseRestImpl with FirebaseMixin implements FirebaseRest {
   @override
   App initializeApp({AppOptions options, String name}) {
+    name ??= _defaultAppName;
     var impl = AppRestImpl(
       firebaseRest: this,
       options: options,
     );
+    _apps[impl.name] = impl;
     return impl;
+  }
+
+  final _apps = <String, AppRestImpl>{};
+
+  @override
+  App app({String name}) {
+    name ??= _defaultAppName;
+    return _apps[name];
   }
 }
 
@@ -50,7 +62,7 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
 
   AppRestImpl(
       {@required this.firebaseRest, @required this.options, this.name}) {
-    name ??= '[DEFAULT]';
+    name ??= _defaultAppName;
   }
 
   @override

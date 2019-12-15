@@ -4,10 +4,20 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:test/test.dart';
 
+String get _defaultAppName => firebaseAppNameDefault;
+
 class FirebaseMock with FirebaseMixin {
+  final _apps = <String, App>{};
   @override
   App initializeApp({AppOptions options, String name}) {
-    return FirebaseAppMock(options: options, name: name);
+    name ??= _defaultAppName;
+    var app = FirebaseAppMock(options: options, name: name);
+    return app;
+  }
+
+  @override
+  App app({String name}) {
+    return _apps[name];
   }
 }
 

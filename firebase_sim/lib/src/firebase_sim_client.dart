@@ -68,6 +68,8 @@ class AppSim with FirebaseAppMixin {
   }
 }
 
+String get _defaultAppName => firebaseAppNameDefault;
+
 class FirebaseSim with FirebaseMixin {
   final WebSocketChannelClientFactory clientFactory;
   final String url;
@@ -75,8 +77,18 @@ class FirebaseSim with FirebaseMixin {
   FirebaseSim({this.clientFactory, String url})
       : url = url ?? 'ws://localhost:$firebaseSimDefaultPort';
 
+  final _apps = <String, AppSim>{};
   @override
   App initializeApp({AppOptions options, String name}) {
-    return AppSim(this, options, name);
+    name ??= _defaultAppName;
+    var app = AppSim(this, options, name);
+    _apps[name] = app;
+    return app;
+  }
+
+  @override
+  App app({String name}) {
+    name ??= _defaultAppName;
+    return _apps[name];
   }
 }

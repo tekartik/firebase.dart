@@ -64,6 +64,15 @@ class FirebaseBrowser with FirebaseMixin {
     }
     return AppBrowser(nativeApp);
   }
+
+  @override
+  App app({String name}) {
+    final nativeApp = native.app(name);
+    if (nativeApp == null) {
+      return null;
+    }
+    return AppBrowser(nativeApp);
+  }
 }
 
 class AppBrowser with FirebaseAppMixin {

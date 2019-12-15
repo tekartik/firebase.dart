@@ -40,6 +40,19 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
       throw 'not supported, use async method';
     }
   }
+
+  @override
+  App app({String name}) {
+    if (name == null) {
+      var nativeApp = flutter.FirebaseApp.instance;
+      return AppFlutter(nativeInstance: nativeApp, isDefault: true);
+    }
+    throw UnsupportedError(
+        'Flutter has only a single default app instantiated');
+  }
+
+  @override
+  Future<App> appAsync({String name}) async => app(name: name);
 }
 
 class AppFlutter with FirebaseAppMixin {
