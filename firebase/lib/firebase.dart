@@ -3,12 +3,21 @@ import 'dart:async';
 export 'package:tekartik_firebase/src/firebase.dart'
     show firebaseAppNameDefault;
 
+/// Async interface, needed for flutter.
 abstract class FirebaseAsync {
+  /// Initialize the app with the given options.
   Future<App> initializeAppAsync({AppOptions options, String name});
+
+  /// Retrieves an existing instance of an App.
+  Future<App> appAsync({String name});
 }
 
 abstract class Firebase extends FirebaseAsync {
+  /// Initialize the app with the given options.
   App initializeApp({AppOptions options, String name});
+
+  /// Retrieves an existing instance of an App.
+  App app({String name});
 }
 
 /// Firebase app.
@@ -37,6 +46,8 @@ class AppOptions {
   String projectId;
   String storageBucket;
   String messagingSenderId;
+  String measurementId;
+  String appId;
 
   AppOptions(
       {this.apiKey,
@@ -44,7 +55,9 @@ class AppOptions {
       this.databaseURL,
       this.projectId,
       this.storageBucket,
-      this.messagingSenderId});
+      this.messagingSenderId,
+      this.appId,
+      this.measurementId});
 
   AppOptions.fromMap(Map<String, dynamic> map) {
     apiKey = map['apiKey']?.toString();
@@ -53,6 +66,8 @@ class AppOptions {
     projectId = map['projectId']?.toString();
     storageBucket = map['storageBucket']?.toString();
     messagingSenderId = map['messagingSenderId']?.toString();
+    measurementId = map['measurementId']?.toString();
+    appId = map['appId']?.toString();
   }
 }
 

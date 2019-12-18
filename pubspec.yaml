@@ -5,7 +5,7 @@ version: 0.6.0
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.1.0 <3.0.0'
+  sdk: '>=2.5.0-dev <3.0.0'
 
 dev_dependencies:
   test: ">=1.2.0"
@@ -15,3 +15,18 @@ dev_dependencies:
       url: git://github.com/tekartik/build_utils.dart
       ref: dart2
     version: '>=0.5.8'
+  tekartik_firebase_rest:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_rest
+      ref: dart2
+  tekartik_firebase_browser:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_browser
+      ref: dart2
+  tekartik_firebase:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase
+      ref: dart2

@@ -7,6 +7,8 @@ mixin FirebaseMixin implements Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions options, String name}) async =>
       initializeApp(options: options, name: name);
+  @override
+  Future<App> appAsync({String name}) async => app(name: name);
 }
 mixin FirebaseAppMixin implements App {
   final _servicesLock = Lock();

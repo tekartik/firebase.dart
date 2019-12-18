@@ -11,7 +11,7 @@ String extraOptions = '';
 void main(List<String> args) {
   // Handle extra args after --
   // to specify test names
-  for (int i = 0; i < args.length; i++) {
+  for (var i = 0; i < args.length; i++) {
     if (args[i] == '--') {
       extraOptions = argumentsToString(args.sublist(i + 1));
       // remove the extra args

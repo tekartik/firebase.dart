@@ -5,7 +5,7 @@ import 'package:tekartik_build_utils/android/android_import.dart';
 Future main() async {
   var shell = Shell();
 
-  bool hasNode = whichSync('npm') != null;
+  final hasNode = whichSync('npm') != null;
   // Has node
   if (hasNode) {
     if (!Directory('node_modules').existsSync()) {

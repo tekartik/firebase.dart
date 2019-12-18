@@ -1,11 +1,11 @@
 name: tekartik_firebase_local
 description: Firebase local test
-version: 0.6.0
+version: 0.6.2
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.1.0 <3.0.0'
+  sdk: '>=2.6.0 <3.0.0'
 
 dependencies:
   uuid: '>=1.0.0'

@@ -13,3 +13,4 @@ pubspec.lock
 *.iml/
 android/
 ios/
+/.flutter-plugins-dependencies

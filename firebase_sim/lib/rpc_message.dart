@@ -1,11 +1,11 @@
 abstract class Message {
   Map<String, dynamic> toMap() {
-    return {"jsonrpc": "2.0"};
+    return {'jsonrpc': '2.0'};
   }
 
   // throw or return valid value
   static Message parseMap(Map<String, dynamic> map) {
-    if (map['jsonrpc'] != "2.0") {
+    if (map['jsonrpc'] != '2.0') {
       throw FormatException("missing 'jsonrpc=2.0' in $map");
     }
 
@@ -16,7 +16,7 @@ abstract class Message {
         if (map.containsKey('result')) {
           return Response(id, map['result']);
         } else {
-          Map errorMap = map['error'] as Map;
+          final errorMap = map['error'] as Map;
           if (errorMap == null) {
             throw FormatException(
                 "missing 'method', 'result' or 'error' in $map");
@@ -123,7 +123,7 @@ class Error {
   Error(this.code, this.message, [this.data]);
 
   Map<String, dynamic> toMap() {
-    var map = {"code": code, "message": message};
+    var map = {'code': code, 'message': message};
     if (data != null) {
       map['data'] = data;
     }
@@ -132,7 +132,7 @@ class Error {
 
   @override
   String toString() {
-    return "$code: $message${data != null ? " $data" : ""}";
+    return '$code: $message${data != null ? ' $data' : ''}';
   }
 }
 

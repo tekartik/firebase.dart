@@ -10,25 +10,25 @@ import 'package:tekartik_firebase_browser/src/common/firebase_js_version.dart';
 
 // 2018-12-05 to deprecate
 JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(
-    "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js");
+    'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js');
 
 String getJavascriptAppJsFile({String version}) {
   version ??= firebaseJsVersion;
-  return "https://www.gstatic.com/firebasejs/$version/firebase-app.js";
+  return 'https://www.gstatic.com/firebasejs/$version/firebase-app.js';
 }
 
 String getJavascriptJsFile({String version}) {
   version ??= firebaseJsVersion;
-  return "https://www.gstatic.com/firebasejs/$version/firebase.js";
+  return 'https://www.gstatic.com/firebasejs/$version/firebase.js';
 }
 
 String getJavascriptAuthJsFile({String version}) {
   version ??= firebaseJsVersion;
-  return "https://www.gstatic.com/firebasejs/$version/firebase-auth.js";
+  return 'https://www.gstatic.com/firebasejs/$version/firebase-auth.js';
 }
 
 var _firebaseCoreJsLoader = JavascriptScriptLoader(
-    "https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js");
+    'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js');
 
 /// does not work with build_runner
 Future loadFirebaseCoreJs() async {
@@ -40,7 +40,7 @@ Future loadFirebaseAuthJs({String version}) async {
   await loadJavascriptScript(getJavascriptAppJsFile(version: version));
 }
 
-//JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader("https://www.gstatic.com/firebasejs/4.2.0/firebase.js");
+//JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader('https://www.gstatic.com/firebasejs/4.2.0/firebase.js');
 Future loadFirebaseJs({String version}) async {
   await loadJavascriptScript(getJavascriptJsFile(version: version));
 }
@@ -49,14 +49,25 @@ class FirebaseBrowser with FirebaseMixin {
   @override
   App initializeApp({AppOptions options, String name}) {
     options ??= AppOptions();
-    native.App nativeApp = native.initializeApp(
+    final nativeApp = native.initializeApp(
         projectId: options.projectId,
         storageBucket: options.storageBucket,
         messagingSenderId: options.messagingSenderId,
         databaseURL: options.databaseURL,
         authDomain: options.authDomain,
         apiKey: options.apiKey,
-        name: name);
+        name: name,
+        appId: options.appId,
+        measurementId: options.measurementId);
+    if (nativeApp == null) {
+      return null;
+    }
+    return AppBrowser(nativeApp);
+  }
+
+  @override
+  App app({String name}) {
+    final nativeApp = native.app(name);
     if (nativeApp == null) {
       return null;
     }

@@ -24,8 +24,9 @@ void runApp(FirebaseAsync firebaseAsync, {AppOptions options}) {
   });
 
   group('Firebase', () {
-    test('default app name', () {
+    test('default app name', () async {
       expect(app.name, '[DEFAULT]');
+      expect((await firebaseAsync.appAsync(name: app.name)).name, app.name);
       /*
       expect(app.options.projectId, isNotEmpty);
       devPrint("projectId: ${app.options.projectId}");

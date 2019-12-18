@@ -5,18 +5,32 @@ import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 
+String get _defaultAppName => firebaseAppNameDefault;
+
 class FirebaseLocal with FirebaseMixin {
   String _localPath;
 
   String get localPath => _localPath;
 
   FirebaseLocal({String localPath}) {
-    _localPath = localPath ?? join(".dart_tool", "tekartik_firebase_local");
+    _localPath = localPath ?? join('.dart_tool', 'tekartik_firebase_local');
   }
 
   @override
   App initializeApp({AppOptions options, String name}) {
-    return AppLocal(this, options, name ?? '[DEFAULT]');
+    name ??= _defaultAppName;
+    return AppLocal(this, options, name ?? _defaultAppName);
+  }
+
+  @override
+  App app({String name}) {
+    name ??= _defaultAppName;
+    for (var app in apps.keys) {
+      if (app.name == name) {
+        return app;
+      }
+    }
+    return null;
   }
 
   final Map<App, AppLocal> apps = {};
@@ -24,8 +38,8 @@ class FirebaseLocal with FirebaseMixin {
 
 class AppLocal with FirebaseAppMixin {
   static String appPathPart(String name) {
-    return (name == "[DEFAULT]" || name == null || name == '')
-        ? "_default"
+    return (name == _defaultAppName || name == null || name == '')
+        ? '_default'
         : name;
   }
 
