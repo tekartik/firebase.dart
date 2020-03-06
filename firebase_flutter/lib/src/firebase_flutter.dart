@@ -9,13 +9,12 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions options, String name}) async {
     flutter.FirebaseApp nativeApp;
-    bool isDefault = false;
+    var isDefault = false;
     if (options != null) {
       // If empty (checking only projectId)
       // clone the existing options
       if (options.projectId == null) {
-        flutter.FirebaseOptions fbOptions =
-            await flutter.FirebaseApp.instance.options;
+        var fbOptions = await flutter.FirebaseApp.instance.options;
         nativeApp =
             await flutter.FirebaseApp.configure(name: name, options: fbOptions);
       } else {
