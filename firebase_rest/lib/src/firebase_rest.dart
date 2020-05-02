@@ -31,6 +31,7 @@ class FirebaseRestImpl with FirebaseMixin implements FirebaseRest {
   App initializeApp({AppOptions options, String name}) {
     name ??= _defaultAppName;
     var impl = AppRestImpl(
+      name: name,
       firebaseRest: this,
       options: options,
     );
