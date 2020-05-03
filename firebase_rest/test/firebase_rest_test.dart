@@ -21,7 +21,7 @@ Future main() async {
         scopes: firebaseBaseScopes);
     // expect(accessTokenContext.authClient, isNotNull);
 
-    accessTokenAppOptions = await getAppOptionsFromAccessToken(
+    accessTokenAppOptions = getAppOptionsFromAccessToken(
         Client(), accessTokenContext.accessToken.data,
         projectId: context.options.projectId, scopes: firebaseBaseScopes);
   }

@@ -6,7 +6,6 @@ import 'package:googleapis_auth/auth.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
-import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
 import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
 
@@ -67,15 +66,6 @@ Future<Context> getContext(Client client,
     ..authClient = authClient
     ..options = appOptions;
   return context;
-}
-
-Future<AppOptions> getAppOptionsFromAccessCredentials(
-    Client client, AccessCredentials accessCredentials,
-    {List<String> scopes, String projectId}) async {
-  var authClient = authenticatedClient(client, accessCredentials);
-  var appOptions = AppOptionsRest(authClient: authClient)
-    ..projectId = projectId;
-  return appOptions;
 }
 
 Future<Context> getContextFromAccessCredentials(
