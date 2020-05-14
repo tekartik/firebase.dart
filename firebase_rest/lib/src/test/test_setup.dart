@@ -42,10 +42,10 @@ Future<AccessToken> getAccessToken(Client client) async {
   return accessCreds.accessToken;
 }
 
+/// Get the context from a json file or local.service_account.json file
 Future<Context> getContext(Client client,
-    {List<String> scopes, String dir}) async {
-  var serviceAccountJsonPath =
-      join(dir ?? 'test', 'local.service_account.json');
+    {List<String> scopes, String dir, String serviceAccountJsonPath}) async {
+  serviceAccountJsonPath ??= join(dir ?? 'test', 'local.service_account.json');
 
   var serviceAccountJsonString =
       File(serviceAccountJsonPath).readAsStringSync();
@@ -113,12 +113,18 @@ Future<Context> getContextFromJsonAccount(Client client,
   return context;
 }
 */
-Future<Context> setup({List<String> scopes, String dir = 'test'}) async {
+Future<Context> setup(
+    {List<String> scopes,
+    String dir = 'test',
+    String serviceAccountJsonPath}) async {
   dir ??= 'test';
   var client = Client();
   // Load client info
   try {
-    return await getContext(client, scopes: scopes, dir: dir);
+    return await getContext(client,
+        scopes: scopes,
+        dir: dir,
+        serviceAccountJsonPath: serviceAccountJsonPath);
   } catch (e) {
     client.close();
     print(e);
