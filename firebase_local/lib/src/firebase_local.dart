@@ -2,8 +2,7 @@ import 'dart:async';
 
 import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase.dart';
-// ignore: implementation_imports
-import 'package:tekartik_firebase/src/firebase_mixin.dart';
+import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
 
 String get _defaultAppName => firebaseAppNameDefault;
 
@@ -19,6 +18,8 @@ class FirebaseLocal with FirebaseMixin {
   @override
   App initializeApp({AppOptions options, String name}) {
     name ??= _defaultAppName;
+    options ??= AppOptions();
+
     return AppLocal(this, options, name ?? _defaultAppName);
   }
 
@@ -57,14 +58,17 @@ class AppLocal with FirebaseAppMixin {
 
   String get pathPart => appPathPart(name);
 
+  // Updated on init
+  AppOptions _options;
+
   @override
-  final AppOptions options;
+  AppOptions get options => _options;
 
   bool deleted = false;
   @override
   String name;
 
-  AppLocal(this.firebaseLocal, this.options, this.name);
+  AppLocal(this.firebaseLocal, _options, this.name);
 
   @override
   Future<void> delete() async {

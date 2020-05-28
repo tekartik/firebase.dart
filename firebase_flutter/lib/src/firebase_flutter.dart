@@ -23,6 +23,12 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
     } else {
       isDefault = true;
       nativeApp = flutter.FirebaseApp.instance;
+      var nativeOptions = await nativeApp.options;
+      options = AppOptions(
+          apiKey: nativeOptions.apiKey,
+          storageBucket: nativeOptions.storageBucket,
+          projectId: nativeOptions.projectID,
+          databaseURL: nativeOptions.databaseURL);
     }
 
     return AppFlutter(

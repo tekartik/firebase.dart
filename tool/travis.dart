@@ -8,6 +8,7 @@ Future main() async {
     'firebase_rest',
     'firebase',
     'firebase_browser',
+    'firebase_local',
     // 'firebase_node',
     'firebase_sim',
     'firebase_sim_browser',
