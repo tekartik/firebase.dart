@@ -20,21 +20,23 @@ class FirebaseLocal with FirebaseMixin {
     name ??= _defaultAppName;
     options ??= AppOptions();
 
-    return AppLocal(this, options, name ?? _defaultAppName);
+    var app = AppLocal(this, options, name);
+    apps[name] = app;
+    return app;
   }
 
   @override
   App app({String name}) {
     name ??= _defaultAppName;
-    for (var app in apps.keys) {
-      if (app.name == name) {
-        return app;
+    for (var appName in apps.keys) {
+      if (appName == name) {
+        return apps[appName];
       }
     }
-    return null;
+    return initializeApp(name: name);
   }
 
-  final Map<App, AppLocal> apps = {};
+  final Map<String, AppLocal> apps = {};
 }
 
 class AppLocal with FirebaseAppMixin {
@@ -68,7 +70,10 @@ class AppLocal with FirebaseAppMixin {
   @override
   String name;
 
-  AppLocal(this.firebaseLocal, _options, this.name);
+  AppLocal(this.firebaseLocal, _options, this.name) {
+    // never null
+    _options ??= AppOptions();
+  }
 
   @override
   Future<void> delete() async {
