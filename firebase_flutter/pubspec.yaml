@@ -1,6 +1,6 @@
 name: tekartik_firebase_flutter
 description: Firebase flutter
-version: 0.7.1
+version: 0.7.3
 environment:
   sdk: ">=2.6.0 <3.0.0"
 

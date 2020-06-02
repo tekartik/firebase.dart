@@ -5,6 +5,15 @@ import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 
+AppOptions _fromNativeOption(flutter.FirebaseOptions fbOptions) {
+  var options = AppOptions(
+      apiKey: fbOptions.apiKey,
+      storageBucket: fbOptions.storageBucket,
+      projectId: fbOptions.projectID,
+      databaseURL: fbOptions.databaseURL);
+  return options;
+}
+
 class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions options, String name}) async {
@@ -23,6 +32,7 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
     } else {
       isDefault = true;
       nativeApp = flutter.FirebaseApp.instance;
+      options = _fromNativeOption(await nativeApp.options);
     }
 
     return AppFlutter(
@@ -51,7 +61,7 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
   }
 
   @override
-  Future<App> appAsync({String name}) async => app(name: name);
+  Future<App> appAsync({String name}) async => initializeAppAsync(name: name);
 }
 
 class AppFlutter with FirebaseAppMixin {

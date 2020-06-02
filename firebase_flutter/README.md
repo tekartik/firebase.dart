@@ -1,8 +1,17 @@
-# firebase_shim_flutter
+# firebase_flutter
 
-A new Flutter project.
+Firebase on flutter
 
 ## Getting Started
 
-For help getting started with Flutter, view our online
-[documentation](https://flutter.io/).
+`pubspec.yaml`:
+
+```yaml
+dependencies:
+  tekartik_firebase_flutter:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_flutter
+      ref: dart2
+    version: '>=0.7.2'
+```

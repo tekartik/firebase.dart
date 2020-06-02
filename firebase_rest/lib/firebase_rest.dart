@@ -5,6 +5,13 @@ import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
 export 'package:tekartik_firebase_rest/src/firebase_rest.dart'
     show AppOptionsRest;
 
+export 'src/app_options_access_token.dart' show getAppOptionsFromAccessToken;
+export 'src/scopes.dart'
+    show
+        firebaseBaseScopes,
+        firebaseGoogleApisCloudPlatformScope,
+        firebaseGoogleApisUserEmailScope;
+
 /// Rest extension (if any)
 abstract class FirebaseRest implements Firebase {}
 

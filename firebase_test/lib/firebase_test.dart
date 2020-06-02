@@ -14,10 +14,10 @@ void run(FirebaseAsync firebase, {AppOptions options}) {
   runApp(firebase, app);
 }
 */
-void runApp(FirebaseAsync firebaseAsync, {AppOptions options}) {
+void runApp(FirebaseAsync firebaseAsync, {AppOptions options, String name}) {
   App app;
   setUpAll(() async {
-    app = await firebaseAsync.initializeAppAsync(options: options);
+    app = await firebaseAsync.initializeAppAsync(options: options, name: name);
   });
   tearDownAll(() async {
     return app.delete();
@@ -25,8 +25,10 @@ void runApp(FirebaseAsync firebaseAsync, {AppOptions options}) {
 
   group('Firebase', () {
     test('default app name', () async {
-      expect(app.name, '[DEFAULT]');
+      expect(app.name, name ?? '[DEFAULT]');
       expect((await firebaseAsync.appAsync(name: app.name)).name, app.name);
+      expect((await firebaseAsync.appAsync(name: app.name)).options?.projectId,
+          app.options?.projectId);
       /*
       expect(app.options.projectId, isNotEmpty);
       devPrint("projectId: ${app.options.projectId}");
