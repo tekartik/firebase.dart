@@ -70,7 +70,7 @@ class AppLocal with FirebaseAppMixin {
   @override
   String name;
 
-  AppLocal(this.firebaseLocal, _options, this.name) {
+  AppLocal(this.firebaseLocal, this._options, this.name) {
     // never null
     _options ??= AppOptions();
   }
