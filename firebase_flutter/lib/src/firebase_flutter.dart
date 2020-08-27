@@ -9,7 +9,7 @@ AppOptions _fromNativeOption(flutter.FirebaseOptions fbOptions) {
   var options = AppOptions(
       apiKey: fbOptions.apiKey,
       storageBucket: fbOptions.storageBucket,
-      projectId: fbOptions.projectID,
+      projectId: fbOptions.projectId,
       databaseURL: fbOptions.databaseURL);
   return options;
 }
@@ -23,17 +23,15 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
       // If empty (checking only projectId)
       // clone the existing options
       if (options.projectId == null) {
-        var fbOptions = await flutter.FirebaseApp.instance.options;
-        nativeApp =
-            await flutter.FirebaseApp.configure(name: name, options: fbOptions);
+        nativeApp = await flutter.Firebase.initializeApp(name: name);
       } else {
         throw 'not supported yet';
       }
     } else {
       isDefault = true;
-      nativeApp = flutter.FirebaseApp.instance;
-      options = _fromNativeOption(await nativeApp.options);
+      nativeApp = await flutter.Firebase.initializeApp(name: name);
     }
+    options = _fromNativeOption(nativeApp.options);
 
     return AppFlutter(
         nativeInstance: nativeApp, options: options, isDefault: isDefault);
@@ -42,7 +40,8 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
   App initializeApp({AppOptions options, String name}) {
     if (options == null && name == null) {
-      var nativeApp = flutter.FirebaseApp.instance;
+      // TODO 2020-08-26 if this fail, consider calling async method only
+      var nativeApp = flutter.Firebase.app();
       return AppFlutter(
           nativeInstance: nativeApp, options: options, isDefault: true);
     } else {
@@ -53,7 +52,7 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
   @override
   App app({String name}) {
     if (name == null) {
-      var nativeApp = flutter.FirebaseApp.instance;
+      var nativeApp = flutter.Firebase.app();
       return AppFlutter(nativeInstance: nativeApp, isDefault: true);
     }
     throw UnsupportedError(
