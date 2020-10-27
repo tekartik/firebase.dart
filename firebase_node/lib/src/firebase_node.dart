@@ -1,17 +1,58 @@
 import 'dart:async';
 
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
+import 'package:firebase_admin_interop/js.dart' as native_js;
 import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
+
+import '../firebase_node.dart';
 
 FirebaseNode _firebaseNode;
 
 FirebaseNode get firebaseNode =>
     _firebaseNode ??= FirebaseNode._(native.FirebaseAdmin.instance);
 
+class FirebaseAdminCredentialServiceNode
+    implements FirebaseAdminCredentialService {
+  final native_js.Credentials nativeInstance;
+
+  FirebaseAdminCredentialServiceNode(this.nativeInstance);
+
+  @override
+  FirebaseAdminCredential applicationDefault() {
+    var credential = nativeInstance.applicationDefault();
+    return credential != null ? FirebaseAdminCredentialNode(credential) : null;
+  }
+}
+
+class FirebaseAdminCredentialNode implements FirebaseAdminCredential {
+  final native_js.Credential nativeInstance;
+
+  FirebaseAdminCredentialNode(this.nativeInstance);
+
+  @override
+  Future<FirebaseAdminAccessToken> getAccessToken() async {
+    var nativeToken = nativeInstance.getAccessToken();
+    return nativeToken != null
+        ? FirebaseAdminAccessTokenNode(nativeToken)
+        : null;
+  }
+}
+
+class FirebaseAdminAccessTokenNode implements FirebaseAdminAccessToken {
+  final native_js.AccessToken nativeInstance;
+
+  FirebaseAdminAccessTokenNode(this.nativeInstance);
+  @override
+  String get data => nativeInstance.access_token;
+
+  @override
+  int get expiresIn => nativeInstance.expires_in?.toInt();
+}
+
 //import 'package:firebase_functions_interop/
-class FirebaseNode with FirebaseMixin {
+class FirebaseNode with FirebaseMixin implements FirebaseAdmin {
   FirebaseNode._(this.nativeInstance);
 
   final native.FirebaseAdmin nativeInstance;
@@ -36,6 +77,11 @@ class FirebaseNode with FirebaseMixin {
   App app({String name}) {
     return _apps[name];
   }
+
+  FirebaseAdminCredentialServiceNode _credentialService;
+  @override
+  FirebaseAdminCredentialService get credential => _credentialService ??=
+      FirebaseAdminCredentialServiceNode(native_js.admin.credential);
 }
 
 native.AppOptions _unwrapAppOptions(AppOptions appOptions) {
