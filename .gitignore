@@ -19,3 +19,5 @@ doc/api/
 # VSCode
 .vscode
 
+# local files
+local.*

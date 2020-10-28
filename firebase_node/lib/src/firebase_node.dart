@@ -3,10 +3,13 @@ import 'dart:async';
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
 import 'package:firebase_admin_interop/js.dart' as native_js;
 import 'package:tekartik_firebase/firebase.dart';
+import 'package:js/js_util.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 
-import '../firebase_node.dart';
+import 'package:node_interop/util.dart';
+import 'package:tekartik_firebase_node/firebase_node.dart';
+import 'package:node_interop/node.dart';
 
 FirebaseNode _firebaseNode;
 
@@ -33,7 +36,10 @@ class FirebaseAdminCredentialNode implements FirebaseAdminCredential {
 
   @override
   Future<FirebaseAdminAccessToken> getAccessToken() async {
-    var nativeToken = nativeInstance.getAccessToken();
+    // Don't use admin interop implementation (missing Future)
+    var future = promiseToFuture(
+        callMethod(nativeInstance, 'getAccessToken', []) as Promise);
+    var nativeToken = (await future) as native_js.AccessToken;
     return nativeToken != null
         ? FirebaseAdminAccessTokenNode(nativeToken)
         : null;
@@ -44,6 +50,7 @@ class FirebaseAdminAccessTokenNode implements FirebaseAdminAccessToken {
   final native_js.AccessToken nativeInstance;
 
   FirebaseAdminAccessTokenNode(this.nativeInstance);
+
   @override
   String get data => nativeInstance.access_token;
 
@@ -79,6 +86,7 @@ class FirebaseNode with FirebaseMixin implements FirebaseAdmin {
   }
 
   FirebaseAdminCredentialServiceNode _credentialService;
+
   @override
   FirebaseAdminCredentialService get credential => _credentialService ??=
       FirebaseAdminCredentialServiceNode(native_js.admin.credential);
