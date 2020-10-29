@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:firebase_admin_interop/firebase_admin_interop.dart' as native;
 import 'package:firebase_admin_interop/js.dart' as native_js;
-import 'package:tekartik_firebase/firebase.dart';
 import 'package:js/js_util.dart';
+import 'package:node_interop/node.dart';
+import 'package:node_interop/util.dart';
+import 'package:tekartik_firebase/firebase.dart';
+import 'package:tekartik_firebase/firebase_admin.dart';
+
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
-
-import 'package:node_interop/util.dart';
-import 'package:tekartik_firebase_node/firebase_node.dart';
-import 'package:node_interop/node.dart';
 
 FirebaseNode _firebaseNode;
 
@@ -26,6 +26,11 @@ class FirebaseAdminCredentialServiceNode
   FirebaseAdminCredential applicationDefault() {
     var credential = nativeInstance.applicationDefault();
     return credential != null ? FirebaseAdminCredentialNode(credential) : null;
+  }
+
+  @override
+  void setApplicationDefault(FirebaseAdminCredential credential) {
+    throw UnsupportedError('setApplicationDefault not supported on node');
   }
 }
 
