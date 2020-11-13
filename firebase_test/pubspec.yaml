@@ -5,7 +5,7 @@ version: 0.6.3
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.10.0-0 <3.0.0'
 
 dependencies:
   uuid: '>=1.0.0'

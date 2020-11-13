@@ -42,7 +42,7 @@ class FirebaseRestImpl
       firebaseRest: this,
       options: options ??
           (credential.applicationDefault() as FirebaseAdminCredentialRestImpl)
-              .appOptions,
+              ?.appOptions,
     );
     _apps[impl.name] = impl;
     return impl;

@@ -53,7 +53,10 @@ class FirebaseFlutter implements FirebaseAsync, Firebase {
   App app({String name}) {
     if (name == null) {
       var nativeApp = flutter.Firebase.app();
-      return AppFlutter(nativeInstance: nativeApp, isDefault: true);
+      return AppFlutter(
+          nativeInstance: nativeApp,
+          options: _fromNativeOption(nativeApp.options),
+          isDefault: true);
     }
     throw UnsupportedError(
         'Flutter has only a single default app instantiated');
