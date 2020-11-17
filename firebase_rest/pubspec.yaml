@@ -1,6 +1,7 @@
 name: tekartik_firebase_rest
 description: Firebase rest
 version: 0.7.3
+publish_to: none
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -20,6 +21,7 @@ dependencies:
   test: ">=1.0.0"
 
 dev_dependencies:
+  dev_test:
   tekartik_firebase_test:
     path: ../firebase_test
   process_run:

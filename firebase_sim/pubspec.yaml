@@ -1,6 +1,7 @@
 name: tekartik_firebase_sim
 description: Firebase simulation
 version: 0.6.0
+publish_to: none
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
@@ -26,6 +27,7 @@ dependencies:
   json_rpc_2:
 
 dev_dependencies:
+  dev_test:
   test: "^1.0.0"
   build_runner: ">=0.9.1"
   build_web_compilers: ">=0.4.0+4"
