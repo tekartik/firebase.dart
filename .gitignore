@@ -21,3 +21,4 @@ doc/api/
 
 # local files
 local.*
+.local/

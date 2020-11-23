@@ -1,0 +1,10 @@
+# Local Environment path and variable for `Shell.run` calls.
+# See <https://github.com/tekartik/process_run.dart/blob/master/doc/user_config.md> for more information
+# To copy as `ds_env.yaml` in the same folder `.local`, excluded from source control by default
+#
+var:
+  # Google credentials
+  GOOGLE_APPLICATION_CREDENTIALS: /path/to/credentials
+  # Firebase config
+  FIREBASE_CONFIG: /path/to/service_account
+
