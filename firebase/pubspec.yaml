@@ -1,11 +1,12 @@
 name: tekartik_firebase
 description: Firebase core
-version: 0.7.1
+version: 0.7.3
+publish_to: none
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.10.0-0 <3.0.0'
 
 dependencies:
   tekartik_common_utils:
@@ -16,6 +17,7 @@ dependencies:
   path: '^1.6.1'
   collection: '^1.14.10'
 dev_dependencies:
+  dev_test:
   test: "^1.0.0"
   build_runner:
   build_test:

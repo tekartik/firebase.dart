@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:tekartik_firebase/src/utils.dart';
+
 export 'package:tekartik_firebase/src/firebase.dart'
     show firebaseAppNameDefault;
 
@@ -14,6 +16,7 @@ abstract class FirebaseAsync {
 
 abstract class Firebase extends FirebaseAsync {
   /// Initialize the app with the given options.
+  // @deprecated use async version
   App initializeApp({AppOptions options, String name});
 
   /// Retrieves an existing instance of an App.
@@ -69,6 +72,13 @@ class AppOptions {
     measurementId = map['measurementId']?.toString();
     appId = map['appId']?.toString();
   }
+
+  Map<String, dynamic> toDebugMap() {
+    return {'apiKey': obfuscate(apiKey), projectId: projectId};
+  }
+
+  @override
+  String toString() => toDebugMap().toString();
 }
 
 /// Attached firebase service.

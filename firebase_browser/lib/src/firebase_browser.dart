@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:firebase/firebase.dart' as native;
-import 'package:firebase/firestore.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 

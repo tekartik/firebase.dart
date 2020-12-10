@@ -1,11 +1,12 @@
 name: tekartik_firebase_node
 description: Firebase server node
-version: 0.6.1
+version: 0.7.3
+publish_to: none
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.6.0 <3.0.0'
+  sdk: '>=2.10.0-0 <3.0.0'
 
 dependencies:
   collection: '>=1.14.10'
@@ -16,7 +17,7 @@ dependencies:
       url: git://github.com/tekartik/firebase.dart
       path: firebase
       ref: dart2
-    version: '>=0.6.0'
+    version: '>=0.7.3'
   tekartik_firebase_local:
     git:
       url: git://github.com/tekartik/firebase.dart
@@ -39,6 +40,12 @@ dev_dependencies:
   tekartik_firebase_test:
     path: ../firebase_test
   process_run:
+  tekartik_app_node_build:
+    git:
+      url: git://github.com/tekartik/app_node_utils.dart
+      path: app_build
+      ref: dart2
+    version: '>=0.1.0'
 
 dependency_overrides:
   tekartik_firebase:

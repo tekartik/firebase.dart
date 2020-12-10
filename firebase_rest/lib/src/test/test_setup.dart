@@ -6,7 +6,7 @@ import 'package:googleapis_auth/auth.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
-import 'package:tekartik_firebase_rest/firebase_rest.dart';
+import 'package:tekartik_firebase_rest/firebase_rest.dart' hide firebaseRest;
 import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
 
 export 'package:tekartik_firebase_rest/firebase_rest.dart';
@@ -125,6 +125,36 @@ Future<Context> setup(
         scopes: scopes,
         dir: dir,
         serviceAccountJsonPath: serviceAccountJsonPath);
+  } catch (e) {
+    client.close();
+    print(e);
+    print('Cannot find ${dir}/sample.local.config.yaml');
+    print('Make sure to run the test using something like: ');
+    print('  pub run build_runner test --fail-on-severe -- -p chrome');
+  }
+  return null;
+}
+
+/// if [serviceAccountJsonPath] is not set, look for [dir]/local.service_account.json
+Future<FirebaseRest> firebaseRestSetup(
+    {List<String> scopes,
+    String dir = 'test',
+    String serviceAccountJsonPath}) async {
+  dir ??= 'test';
+  var client = Client();
+  // Load client info
+  try {
+    serviceAccountJsonPath ??=
+        join(dir ?? 'test', 'local.service_account.json');
+
+    var serviceAccountJsonString =
+        File(serviceAccountJsonPath).readAsStringSync();
+    firebaseRest.credential.setApplicationDefault(
+        FirebaseAdminCredentialRest.fromServiceAccountJson(
+            serviceAccountJsonString,
+            scopes: scopes));
+    await firebaseRest.credential.applicationDefault().getAccessToken();
+    return firebaseRest;
   } catch (e) {
     client.close();
     print(e);
