@@ -13,9 +13,12 @@ String get _defaultAppName => firebaseAppNameDefault;
 
 /// The app options to use for REST app initialization.
 abstract class AppOptionsRest extends AppOptions {
+  /// The http client
+  Client get client;
+
   /// Create a new options object.
-  factory AppOptionsRest({@required AuthClient authClient}) =>
-      AppOptionsRestImpl(authClient: authClient);
+  factory AppOptionsRest({AuthClient authClient, Client client}) =>
+      AppOptionsRestImpl(authClient: authClient, client: client);
 }
 
 var firebaseRest = FirebaseRestImpl();
@@ -26,9 +29,19 @@ const String googleApisAuthCloudPlatformScope =
     'https://www.googleapis.com/auth/cloud-platform';
 
 class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
-  final AuthClient authClient;
+  @deprecated
+  AuthClient get authClient =>
+      (client is AuthClient) ? (client as AuthClient) : null;
+  @override
+  final Client client;
 
-  AppOptionsRestImpl({@required this.authClient});
+  AppOptionsRestImpl({AuthClient authClient, Client client})
+      : client = client ?? authClient {
+    if (client != null) {
+      assert(authClient == null);
+    }
+    assert(client != null);
+  }
 }
 
 class FirebaseRestImpl
@@ -95,7 +108,11 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
   }
 
   @override
+  @deprecated
   AuthClient get authClient => (options as AppOptionsRestImpl)?.authClient;
+
+  @override
+  Client get client => (options as AppOptionsRestImpl)?.client;
 }
 
 class FirebaseAdminAccessTokenRest implements FirebaseAdminAccessToken {
