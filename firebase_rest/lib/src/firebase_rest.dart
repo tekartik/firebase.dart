@@ -17,7 +17,8 @@ abstract class AppOptionsRest extends AppOptions {
   Client get client;
 
   /// Create a new options object.
-  factory AppOptionsRest({AuthClient authClient, Client client}) =>
+  factory AppOptionsRest({@deprecated AuthClient authClient, Client client}) =>
+      // ignore: deprecated_member_use_from_same_package
       AppOptionsRestImpl(authClient: authClient, client: client);
 }
 
@@ -35,12 +36,13 @@ class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
   @override
   final Client client;
 
-  AppOptionsRestImpl({AuthClient authClient, Client client})
+  /// authClient will be deprecated.
+  AppOptionsRestImpl({@deprecated AuthClient authClient, Client client})
       : client = client ?? authClient {
     if (client != null) {
       assert(authClient == null);
     }
-    assert(client != null);
+    assert(this.client != null);
   }
 }
 
@@ -149,8 +151,7 @@ class FirebaseAdminCredentialRestImpl implements FirebaseAdminCredentialRest {
             serviceAccountCredentials, scopes, client);
         var accessToken = accessCreds.accessToken;
         authClient = authenticatedClient(client, accessCreds);
-        appOptions = AppOptionsRest(authClient: authClient)
-          ..projectId = projectId;
+        appOptions = AppOptionsRest(client: authClient)..projectId = projectId;
         return FirebaseAdminAccessTokenRest(data: accessToken.data);
       }();
 /*

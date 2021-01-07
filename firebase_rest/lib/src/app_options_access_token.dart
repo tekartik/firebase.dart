@@ -10,8 +10,7 @@ AppOptions getAppOptionsFromAccessCredentials(
     Client client, AccessCredentials accessCredentials,
     {List<String> scopes, String projectId}) {
   var authClient = authenticatedClient(client, accessCredentials);
-  var appOptions = AppOptionsRest(authClient: authClient)
-    ..projectId = projectId;
+  var appOptions = AppOptionsRest(client: authClient)..projectId = projectId;
   return appOptions;
 }
 
