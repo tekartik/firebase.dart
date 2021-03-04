@@ -128,7 +128,7 @@ Future<Context> setup(
   } catch (e) {
     client.close();
     print(e);
-    print('Cannot find ${dir}/sample.local.config.yaml');
+    print('Cannot find $dir/sample.local.config.yaml');
     print('Make sure to run the test using something like: ');
     print('  pub run build_runner test --fail-on-severe -- -p chrome');
   }
@@ -158,7 +158,7 @@ Future<FirebaseRest> firebaseRestSetup(
   } catch (e) {
     client.close();
     print(e);
-    print('Cannot find ${dir}/sample.local.config.yaml');
+    print('Cannot find $dir/sample.local.config.yaml');
     print('Make sure to run the test using something like: ');
     print('  pub run build_runner test --fail-on-severe -- -p chrome');
   }

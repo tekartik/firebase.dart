@@ -1,6 +1,9 @@
 //@dart=2.9
 
 import 'package:dev_test/package.dart';
+import 'package:path/path.dart';
+
+var topDir = '..';
 
 Future<void> main() async {
   for (var dir in [
@@ -14,6 +17,6 @@ Future<void> main() async {
     'firebase_sim_io',
     'firebase_test',
   ]) {
-    await packageRunCi(dir);
+    await packageRunCi(join(topDir, dir));
   }
 }
