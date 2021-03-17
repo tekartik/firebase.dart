@@ -1,12 +1,12 @@
 name: tekartik_firebase
 description: Firebase core
-version: 0.7.3
+version: 0.8.0
 publish_to: none
 #homepage: https://www.example.com
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.12.0-0 <3.0.0'
 
 dependencies:
   tekartik_common_utils:
