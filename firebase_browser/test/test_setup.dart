@@ -13,7 +13,7 @@ Future<AppOptions?> setup() async {
 
     try {
       var local = await client.read(Uri.parse('local.config.yaml'));
-      var map = (loadYaml(local) as Map).cast<String, dynamic>();
+      var map = (loadYaml(local) as Map).cast<String, Object?>();
       var options = AppOptions.fromMap(map);
       if (options.projectId == null) {
         print('Missing "projectId" in local.config.yaml');

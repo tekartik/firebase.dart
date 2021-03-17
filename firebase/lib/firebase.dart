@@ -62,7 +62,7 @@ class AppOptions {
       this.appId,
       this.measurementId});
 
-  AppOptions.fromMap(Map<String, dynamic> map) {
+  AppOptions.fromMap(Map<String, Object?> map) {
     apiKey = map['apiKey']?.toString();
     authDomain = map['authDomain']?.toString();
     databaseURL = map['databaseURL']?.toString();
@@ -73,7 +73,7 @@ class AppOptions {
     appId = map['appId']?.toString();
   }
 
-  Map<String, dynamic> toDebugMap() {
+  Map<String, Object?> toDebugMap() {
     return {'apiKey': obfuscate(apiKey), projectId!: projectId};
   }
 
