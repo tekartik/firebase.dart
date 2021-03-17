@@ -8,28 +8,28 @@ export 'package:tekartik_firebase/src/firebase.dart'
 /// Async interface, needed for flutter.
 abstract class FirebaseAsync {
   /// Initialize the app with the given options.
-  Future<App> initializeAppAsync({AppOptions options, String name});
+  Future<App> initializeAppAsync({AppOptions? options, String? name});
 
   /// Retrieves an existing instance of an App.
-  Future<App> appAsync({String name});
+  Future<App> appAsync({String? name});
 }
 
 abstract class Firebase extends FirebaseAsync {
   /// Initialize the app with the given options.
   // @deprecated use async version
-  App initializeApp({AppOptions options, String name});
+  App initializeApp({AppOptions? options, String? name});
 
   /// Retrieves an existing instance of an App.
-  App app({String name});
+  App app({String? name});
 }
 
 /// Firebase app.
 abstract class App {
   /// The app name
-  String get name;
+  String? get name;
 
   /// The app options
-  AppOptions get options;
+  AppOptions? get options;
 
   /// Dispose the app.
   ///
@@ -43,14 +43,14 @@ abstract class App {
 }
 
 class AppOptions {
-  String apiKey;
-  String authDomain;
-  String databaseURL;
-  String projectId;
-  String storageBucket;
-  String messagingSenderId;
-  String measurementId;
-  String appId;
+  String? apiKey;
+  String? authDomain;
+  String? databaseURL;
+  String? projectId;
+  String? storageBucket;
+  String? messagingSenderId;
+  String? measurementId;
+  String? appId;
 
   AppOptions(
       {this.apiKey,
@@ -74,7 +74,7 @@ class AppOptions {
   }
 
   Map<String, dynamic> toDebugMap() {
-    return {'apiKey': obfuscate(apiKey), projectId: projectId};
+    return {'apiKey': obfuscate(apiKey), projectId!: projectId};
   }
 
   @override
