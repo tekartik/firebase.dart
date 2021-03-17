@@ -9,23 +9,29 @@ import 'package:test/test.dart';
 Future main() async {
   var firebaseRest = await firebaseRestSetup();
 
-  group('rest', () {
-    // there is no name on node
-    runApp(firebaseRest!);
+  if (firebaseRest == null) {
+    test('no setup available', () {});
+  } else {
+    group('rest', () {
+      // there is no name on node
+      runApp(firebaseRest);
 
-    test('authClient', () {
-      expect(
-          (firebaseRest.credential.applicationDefault()
-                  as FirebaseAdminCredentialRestImpl)
-              .authClient,
-          isNotNull);
-    });
+      test('authClient', () {
+        expect(
+            (firebaseRest.credential.applicationDefault()
+                    as FirebaseAdminCredentialRestImpl)
+                .authClient,
+            isNotNull);
+      });
 
-    test('admin', () async {
-      expect(
-          (await firebaseRest.credential.applicationDefault().getAccessToken())
-              .data,
-          isNotNull);
+      test('admin', () async {
+        expect(
+            (await firebaseRest.credential
+                    .applicationDefault()
+                    .getAccessToken())
+                .data,
+            isNotNull);
+      });
     });
-  }, skip: firebaseRest == null);
+  }
 }
