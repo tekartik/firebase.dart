@@ -11,7 +11,7 @@ Future main() async {
 
   group('rest', () {
     // there is no name on node
-    runApp(firebaseRest);
+    runApp(firebaseRest!);
 
     test('authClient', () {
       expect(

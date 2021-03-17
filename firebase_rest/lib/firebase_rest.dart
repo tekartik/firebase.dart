@@ -1,4 +1,4 @@
-import 'package:googleapis_auth/auth.dart';
+import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:http/http.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firebase_admin.dart';
@@ -24,7 +24,7 @@ FirebaseRest get firebaseRest => impl;
 abstract class AppRest implements App {
   // Compat
   @deprecated
-  AuthClient get authClient;
+  AuthClient? get authClient;
 
-  Client get client;
+  Client? get client;
 }

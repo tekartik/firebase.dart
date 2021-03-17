@@ -12,7 +12,7 @@ Future main() async {
     var serviceAccountJsonPath = join('test', 'local.service_account.json');
     if (File(serviceAccountJsonPath).existsSync()) {
       var context = await setup(serviceAccountJsonPath: serviceAccountJsonPath);
-      expect(context.accessToken, isNotNull);
+      expect(context!.accessToken, isNotNull);
     }
   });
 }
