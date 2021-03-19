@@ -33,5 +33,6 @@ dev_dependencies:
 dependency_overrides:
   tekartik_firebase_sim:
     path: ../firebase_sim
-  tekartik_firebase:
-    path: ../firebase
+# Temp non nnbd
+#  tekartik_firebase:
+#    path: ../firebase

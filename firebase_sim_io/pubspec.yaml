@@ -34,14 +34,15 @@ dev_dependencies:
   process_run:
 
 dependency_overrides:
-  tekartik_firebase_test:
-    path: ../firebase_test
   tekartik_firebase_sim:
     path: ../firebase_sim
-  tekartik_firebase:
-    path: ../firebase
-  tekartik_firebase_local:
-    path: ../firebase_local
+# temp non nnbd
+#  tekartik_firebase_test:
+#    path: ../firebase_test
+#  tekartik_firebase:
+#    path: ../firebase
+#  tekartik_firebase_local:
+#    path: ../firebase_local
   # tmp
   # tekartik_web_socket_io:
   #  path: ../../web_socket.dart/web_socket_io
