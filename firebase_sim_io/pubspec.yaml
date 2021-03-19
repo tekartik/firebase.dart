@@ -27,6 +27,11 @@ dependencies:
     version: '>=0.2.1'
 
 dev_dependencies:
+  tekartik_firebase_test:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_test
+      ref: dart2
   dev_test:
   test: "^1.0.0"
   build_runner: ">=0.9.1"
@@ -34,14 +39,15 @@ dev_dependencies:
   process_run:
 
 dependency_overrides:
-  tekartik_firebase_test:
-    path: ../firebase_test
   tekartik_firebase_sim:
     path: ../firebase_sim
-  tekartik_firebase:
-    path: ../firebase
-  tekartik_firebase_local:
-    path: ../firebase_local
+# temp non nnbd
+#  tekartik_firebase_test:
+#    path: ../firebase_test
+#  tekartik_firebase:
+#    path: ../firebase
+#  tekartik_firebase_local:
+#    path: ../firebase_local
   # tmp
   # tekartik_web_socket_io:
   #  path: ../../web_socket.dart/web_socket_io

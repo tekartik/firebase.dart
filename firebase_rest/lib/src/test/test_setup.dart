@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:googleapis_auth/auth.dart';
+import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
@@ -12,19 +12,19 @@ import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
 export 'package:tekartik_firebase_rest/firebase_rest.dart';
 
 class Context {
-  Client client;
-  AuthClient authClient;
-  AccessToken accessToken;
+  Client? client;
+  AuthClient? authClient;
+  AccessToken? accessToken;
 
-  AppOptionsRest options;
+  AppOptionsRest? options;
 
   /// True if it can be used
   bool get valid => authClient != null;
 }
 
 class ServiceAccount {
-  Map jsonData;
-  AccessToken accessToken;
+  Map? jsonData;
+  AccessToken? accessToken;
 }
 
 @deprecated
@@ -44,7 +44,7 @@ Future<AccessToken> getAccessToken(Client client) async {
 
 /// Get the context from a json file or local.service_account.json file
 Future<Context> getContext(Client client,
-    {List<String> scopes, String dir, String serviceAccountJsonPath}) async {
+    {List<String>? scopes, String? dir, String? serviceAccountJsonPath}) async {
   serviceAccountJsonPath ??= join(dir ?? 'test', 'local.service_account.json');
 
   var serviceAccountJsonString =
@@ -58,7 +58,7 @@ Future<Context> getContext(Client client,
   var accessToken = accessCreds.accessToken;
 
   var authClient = authenticatedClient(client, accessCreds);
-  var appOptions = AppOptionsRest(authClient: authClient)
+  var appOptions = AppOptionsRest(client: authClient)
     ..projectId = jsonData['project_id']?.toString();
   var context = Context()
     ..client = client
@@ -70,11 +70,11 @@ Future<Context> getContext(Client client,
 
 Future<Context> getContextFromAccessCredentials(
     Client client, AccessCredentials accessCredentials,
-    {List<String> scopes}) async {
+    {List<String>? scopes}) async {
   var accessToken = accessCredentials.accessToken;
 
   var authClient = authenticatedClient(client, accessCredentials);
-  var appOptions = AppOptionsRest(authClient: authClient);
+  var appOptions = AppOptionsRest(client: authClient);
   // ..projectId = jsonData['project_id']?.toString();
   var context = Context()
     ..client = client
@@ -85,7 +85,7 @@ Future<Context> getContextFromAccessCredentials(
 }
 
 Future<Context> getContextFromAccessToken(Client client, String token,
-    {List<String> scopes}) async {
+    {required List<String> scopes}) async {
   // expiry is ignored in request
   var accessToken = AccessToken('Bearer', token, DateTime.now().toUtc());
   var accessCredentials = AccessCredentials(accessToken, null, scopes);
@@ -113,11 +113,10 @@ Future<Context> getContextFromJsonAccount(Client client,
   return context;
 }
 */
-Future<Context> setup(
-    {List<String> scopes,
+Future<Context?> setup(
+    {List<String>? scopes,
     String dir = 'test',
-    String serviceAccountJsonPath}) async {
-  dir ??= 'test';
+    String? serviceAccountJsonPath}) async {
   var client = Client();
   // Load client info
   try {
@@ -128,7 +127,7 @@ Future<Context> setup(
   } catch (e) {
     client.close();
     print(e);
-    print('Cannot find ${dir}/sample.local.config.yaml');
+    print('Cannot find $dir/sample.local.config.yaml');
     print('Make sure to run the test using something like: ');
     print('  pub run build_runner test --fail-on-severe -- -p chrome');
   }
@@ -136,16 +135,14 @@ Future<Context> setup(
 }
 
 /// if [serviceAccountJsonPath] is not set, look for [dir]/local.service_account.json
-Future<FirebaseRest> firebaseRestSetup(
-    {List<String> scopes,
+Future<FirebaseRest?> firebaseRestSetup(
+    {List<String>? scopes,
     String dir = 'test',
-    String serviceAccountJsonPath}) async {
-  dir ??= 'test';
+    String? serviceAccountJsonPath}) async {
   var client = Client();
   // Load client info
   try {
-    serviceAccountJsonPath ??=
-        join(dir ?? 'test', 'local.service_account.json');
+    serviceAccountJsonPath ??= join(dir, 'local.service_account.json');
 
     var serviceAccountJsonString =
         File(serviceAccountJsonPath).readAsStringSync();
@@ -158,7 +155,7 @@ Future<FirebaseRest> firebaseRestSetup(
   } catch (e) {
     client.close();
     print(e);
-    print('Cannot find ${dir}/sample.local.config.yaml');
+    print('Cannot find $dir/sample.local.config.yaml');
     print('Make sure to run the test using something like: ');
     print('  pub run build_runner test --fail-on-severe -- -p chrome');
   }

@@ -9,7 +9,9 @@ addons:
   chrome: stable
 
 script:
-  - dart tool/travis.dart
+  - cd repo_support
+  - dart pub get
+  - dart run tool/travis.dart
 
 cache:
   directories:

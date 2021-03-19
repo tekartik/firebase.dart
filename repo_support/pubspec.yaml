@@ -1,0 +1,22 @@
+name: firebase_repo_support
+description: Firebase repo (tools)
+version: 0.3.0
+publish_to: none
+
+environment:
+  sdk: '>=2.12.0-0 <3.0.0'
+
+dev_dependencies:
+  path:
+  pub_semver:
+  tekartik_travis_ci_flutter:
+    git:
+      url: git://github.com/tekartik/travis_ci_flutter.dart
+      ref: null_safety
+    version: '>=0.1.0'
+  process_run: '>=0.10.3'
+  test:
+  dev_test:
+  pedantic:
+
+

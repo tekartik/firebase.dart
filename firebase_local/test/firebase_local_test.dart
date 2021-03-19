@@ -14,7 +14,7 @@ void main() {
       var firebase = FirebaseLocal();
       var app = await firebase.initializeAppAsync(
           options: AppOptions(projectId: 'test'));
-      expect(app.options.projectId, 'test');
+      expect(app.options!.projectId, 'test');
       await app.delete();
     });
   });

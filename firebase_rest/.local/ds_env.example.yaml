@@ -3,8 +3,9 @@
 # To copy as `ds_env.yaml` in the same folder `.local`, excluded from source control by default
 #
 var:
-  # Google credentials
-  GOOGLE_APPLICATION_CREDENTIALS: /path/to/credentials
-  # Firebase config
-  FIREBASE_CONFIG: /path/to/service_account
+  # No auth project id
+  TEKARTIK_FIRESTORE_REST_NO_AUTH_PROJECT_ID: <your-project-id>
+
+  # No auth project id
+  TEKARTIK_FIRESTORE_REST_NO_AUTH_ROOT_PATH: /your/safe/path/to_write
 

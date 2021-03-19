@@ -8,32 +8,32 @@ import 'example_common.dart';
 import 'example_setup.dart';
 
 void main() async {
-  write('require :${hasRequire}');
+  write('require :$hasRequire');
   var options = await setup();
   write('loaded');
   final firebase = firebaseBrowser;
 
-  App app;
+  App? app;
 
-  querySelector('#initialize').onClick.listen((_) async {
+  querySelector('#initialize')!.onClick.listen((_) async {
     write('initializing...');
     app = firebase.initializeApp(options: options);
-    write('initialized ${app.name}');
+    write('initialized ${app!.name}');
   });
 
-  querySelector('#delete').onClick.listen((_) async {
+  querySelector('#delete')!.onClick.listen((_) async {
     if (app != null) {
       write('deleting...');
-      await app.delete();
+      await app!.delete();
       write('deleted');
     }
   });
 
-  querySelector('#get_app').onClick.listen((_) async {
+  querySelector('#get_app')!.onClick.listen((_) async {
     write('Getting...');
     try {
       app = firebase.app();
-      write('Got ${app.name}');
+      write('Got ${app!.name}');
     } catch (e) {
       write('error $e');
     }

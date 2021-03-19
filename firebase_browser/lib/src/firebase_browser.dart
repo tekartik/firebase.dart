@@ -11,17 +11,17 @@ import 'package:tekartik_firebase_browser/src/common/firebase_js_version.dart';
 JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(
     'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js');
 
-String getJavascriptAppJsFile({String version}) {
+String getJavascriptAppJsFile({String? version}) {
   version ??= firebaseJsVersion;
   return 'https://www.gstatic.com/firebasejs/$version/firebase-app.js';
 }
 
-String getJavascriptJsFile({String version}) {
+String getJavascriptJsFile({String? version}) {
   version ??= firebaseJsVersion;
   return 'https://www.gstatic.com/firebasejs/$version/firebase.js';
 }
 
-String getJavascriptAuthJsFile({String version}) {
+String getJavascriptAuthJsFile({String? version}) {
   version ??= firebaseJsVersion;
   return 'https://www.gstatic.com/firebasejs/$version/firebase-auth.js';
 }
@@ -35,18 +35,18 @@ Future loadFirebaseCoreJs() async {
 }
 
 /// does not work with build_runner
-Future loadFirebaseAuthJs({String version}) async {
+Future loadFirebaseAuthJs({String? version}) async {
   await loadJavascriptScript(getJavascriptAppJsFile(version: version));
 }
 
 //JavascriptScriptLoader firebaseJsLoader = new JavascriptScriptLoader('https://www.gstatic.com/firebasejs/4.2.0/firebase.js');
-Future loadFirebaseJs({String version}) async {
+Future loadFirebaseJs({String? version}) async {
   await loadJavascriptScript(getJavascriptJsFile(version: version));
 }
 
 class FirebaseBrowser with FirebaseMixin {
   @override
-  App initializeApp({AppOptions options, String name}) {
+  App initializeApp({AppOptions? options, String? name}) {
     options ??= AppOptions();
     final nativeApp = native.initializeApp(
         projectId: options.projectId,
@@ -58,18 +58,12 @@ class FirebaseBrowser with FirebaseMixin {
         name: name,
         appId: options.appId,
         measurementId: options.measurementId);
-    if (nativeApp == null) {
-      return null;
-    }
     return AppBrowser(nativeApp);
   }
 
   @override
-  App app({String name}) {
+  App app({String? name}) {
     final nativeApp = native.app(name);
-    if (nativeApp == null) {
-      return null;
-    }
     return AppBrowser(nativeApp);
   }
 }
@@ -91,24 +85,19 @@ class AppBrowser with FirebaseAppMixin {
   @override
   AppOptions get options {
     var nativeOptions = nativeApp.options;
-
-    if (nativeOptions != null) {
-      return AppOptions(
-          apiKey: nativeOptions.apiKey,
-          authDomain: nativeOptions.authDomain,
-          messagingSenderId: nativeOptions.messagingSenderId,
-          storageBucket: nativeOptions.storageBucket,
-          projectId: nativeOptions.projectId,
-          databaseURL: nativeOptions.databaseURL);
-    } else {
-      return null;
-    }
+    return AppOptions(
+        apiKey: nativeOptions.apiKey,
+        authDomain: nativeOptions.authDomain,
+        messagingSenderId: nativeOptions.messagingSenderId,
+        storageBucket: nativeOptions.storageBucket,
+        projectId: nativeOptions.projectId,
+        databaseURL: nativeOptions.databaseURL);
   }
 
   @override
   String toString() => 'AppBrowser(${options.projectId}, $name)';
 }
 
-FirebaseBrowser _firebaseBrowser;
+FirebaseBrowser? _firebaseBrowser;
 
 FirebaseBrowser get firebaseBrowser => _firebaseBrowser ??= FirebaseBrowser();

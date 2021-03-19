@@ -7,17 +7,17 @@ import 'package:test/test.dart';
 String get _defaultAppName => firebaseAppNameDefault;
 
 class FirebaseMock with FirebaseMixin {
-  final _apps = <String, App>{};
+  final _apps = <String, App?>{};
   @override
-  App initializeApp({AppOptions options, String name}) {
+  App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
     var app = FirebaseAppMock(options: options, name: name);
     return app;
   }
 
   @override
-  App app({String name}) {
-    return _apps[name];
+  App app({String? name}) {
+    return _apps[name!]!;
   }
 }
 
@@ -30,10 +30,10 @@ class FirebaseAppMock with FirebaseAppMixin {
   }
 
   @override
-  final String name;
+  final String? name;
 
   @override
-  final AppOptions options;
+  final AppOptions? options;
 }
 
 class FirebaseAppServiceMock implements FirebaseAppService {

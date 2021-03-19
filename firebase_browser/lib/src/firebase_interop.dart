@@ -10,9 +10,9 @@ import 'package:js/js.dart';
 @JS()
 @anonymous
 class FirebaseJs {
-  external AppJsImpl initializeApp(FirebaseOptions options, [String name]);
+  external AppJsImpl initializeApp(FirebaseOptions options, [String? name]);
 }
 
 // Global object when loading the js in a simple way
 @JS('firebase')
-FirebaseJs firebaseJs;
+FirebaseJs? firebaseJs;

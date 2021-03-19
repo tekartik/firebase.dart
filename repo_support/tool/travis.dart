@@ -1,5 +1,8 @@
+import 'package:path/path.dart';
 import 'package:process_run/shell.dart';
 import 'package:process_run/which.dart';
+
+import 'run_ci.dart';
 
 Future main() async {
   var shell = Shell();
@@ -15,7 +18,7 @@ Future main() async {
     'firebase_sim_io',
     'firebase_test',
   ]) {
-    shell = shell.pushd(dir);
+    shell = shell.pushd(join(topDir, dir));
     await shell.run('''
     
   pub get
@@ -29,7 +32,7 @@ Future main() async {
     for (var dir in [
       'firebase_flutter',
     ]) {
-      shell = shell.pushd(dir);
+      shell = shell.pushd(join(topDir, dir));
       await shell.run('''
     
   pub get

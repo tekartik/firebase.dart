@@ -1,6 +1,6 @@
 import 'dart:math';
 
-String obfuscate(String text) {
+String? obfuscate(String? text) {
   if (text == null) {
     return null;
   }
