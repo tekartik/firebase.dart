@@ -27,6 +27,11 @@ dependencies:
     version: '>=0.2.1'
 
 dev_dependencies:
+  tekartik_firebase_test:
+    git:
+      url: git://github.com/tekartik/firebase.dart
+      path: firebase_test
+      ref: dart2
   dev_test:
   test: "^1.0.0"
   build_runner: ">=0.9.1"
