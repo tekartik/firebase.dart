@@ -139,7 +139,7 @@ class FirebaseAdminCredentialRestImpl implements FirebaseAdminCredentialRest {
       String serviceAccountJson,
       {List<String>? scopes})
       : scopes = scopes ?? firebaseBaseScopes {
-    var jsonData = jsonDecode(serviceAccountJson);
+    var jsonData = jsonDecode(serviceAccountJson) as Map;
     projectId = jsonData['project_id']?.toString();
     serviceAccountCredentials = ServiceAccountCredentials.fromJson(jsonData);
   }

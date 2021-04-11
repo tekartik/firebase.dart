@@ -59,7 +59,7 @@ Future<Context> getContext(Client client,
 
   var authClient = authenticatedClient(client, accessCreds);
   var appOptions = AppOptionsRest(client: authClient)
-    ..projectId = jsonData['project_id']?.toString();
+    ..projectId = (jsonData as Map)['project_id']?.toString();
   var context = Context()
     ..client = client
     ..accessToken = accessToken
