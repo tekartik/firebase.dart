@@ -43,7 +43,7 @@ abstract class Message {
 }
 
 abstract class _MessageWithId extends Message {
-  final id;
+  final dynamic /*String | int*/ id;
 
   _MessageWithId(this.id);
 
@@ -90,7 +90,8 @@ class _RequestMixin {
 }
 
 class Request extends _MessageWithId with _RequestMixin {
-  Request(id, String method, [var params]) : super(id) {
+  Request(dynamic /*String | int*/ id, String method, [var params])
+      : super(id) {
     _init(method, params);
   }
 
@@ -103,7 +104,7 @@ class Request extends _MessageWithId with _RequestMixin {
 }
 
 class Response extends _MessageWithId {
-  final result;
+  final dynamic result;
 
   Response(id, this.result) : super(id);
 
@@ -118,7 +119,7 @@ class Response extends _MessageWithId {
 class Error {
   final int code;
   final String message;
-  final data;
+  final dynamic data;
 
   Error(this.code, this.message, [this.data]);
 
