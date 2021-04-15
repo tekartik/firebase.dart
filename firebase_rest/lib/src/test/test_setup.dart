@@ -150,7 +150,7 @@ Future<FirebaseRest?> firebaseRestSetup(
         FirebaseAdminCredentialRest.fromServiceAccountJson(
             serviceAccountJsonString,
             scopes: scopes));
-    await firebaseRest.credential.applicationDefault().getAccessToken();
+    await firebaseRest.credential.applicationDefault()?.getAccessToken();
     return firebaseRest;
   } catch (e) {
     client.close();

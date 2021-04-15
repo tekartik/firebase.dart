@@ -24,8 +24,8 @@ abstract class FirebaseAdminCredential {
 abstract class FirebaseAdminCredentialService {
   /// Default accessible in node in firebase functions or with
   /// GOOGLE_APPLICATION_CREDENTIALS env variable.
-  FirebaseAdminCredential applicationDefault();
+  FirebaseAdminCredential? applicationDefault();
 
   /// To set on setup if needed (needed for rest).
-  void setApplicationDefault(FirebaseAdminCredential credential);
+  void setApplicationDefault(FirebaseAdminCredential? credential);
 }

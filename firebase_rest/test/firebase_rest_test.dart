@@ -27,7 +27,7 @@ Future main() async {
       test('admin', () async {
         expect(
             (await firebaseRest.credential
-                    .applicationDefault()
+                    .applicationDefault()!
                     .getAccessToken())
                 .data,
             isNotNull);

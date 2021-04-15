@@ -67,7 +67,7 @@ class FirebaseRestImpl
   Future<App> initializeAppAsync({AppOptions? options, String? name}) async {
     var app = initializeApp(options: options, name: name);
     // initialize client
-    await credential.applicationDefault().getAccessToken();
+    await credential.applicationDefault()?.getAccessToken();
     return app;
   }
 
@@ -189,14 +189,14 @@ class FirebaseAdminCredentialServiceRest
 
   FirebaseAdminCredentialServiceRest(this.firebaseRest);
 
-  late FirebaseAdminCredentialRest _applicationDefault;
+  FirebaseAdminCredentialRest? _applicationDefault;
 
   @override
-  FirebaseAdminCredential applicationDefault() => _applicationDefault;
+  FirebaseAdminCredential? applicationDefault() => _applicationDefault;
 
   // Must be called on setup
   @override
-  void setApplicationDefault(FirebaseAdminCredential credential) {
-    _applicationDefault = credential as FirebaseAdminCredentialRest;
+  void setApplicationDefault(FirebaseAdminCredential? credential) {
+    _applicationDefault = credential as FirebaseAdminCredentialRest?;
   }
 }
