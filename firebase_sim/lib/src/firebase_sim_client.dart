@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:tekartik_firebase/firebase.dart';
+
+// ignore: implementation_imports
+import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
-
-// ignore: implementation_imports
-import 'package:tekartik_firebase/src/firebase_mixin.dart';
 
 class AppSim with FirebaseAppMixin {
   final FirebaseSim admin;
@@ -78,6 +78,7 @@ class FirebaseSim with FirebaseMixin {
       : url = url ?? 'ws://localhost:$firebaseSimDefaultPort';
 
   final _apps = <String, AppSim>{};
+
   @override
   App initializeApp({AppOptions options, String name}) {
     name ??= _defaultAppName;
