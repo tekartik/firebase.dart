@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:googleapis_auth/auth_io.dart';
+import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart' hide firebaseRest;
@@ -150,7 +150,7 @@ Future<FirebaseRest?> firebaseRestSetup(
         FirebaseAdminCredentialRest.fromServiceAccountJson(
             serviceAccountJsonString,
             scopes: scopes));
-    await firebaseRest.credential.applicationDefault().getAccessToken();
+    await firebaseRest.credential.applicationDefault()?.getAccessToken();
     return firebaseRest;
   } catch (e) {
     client.close();

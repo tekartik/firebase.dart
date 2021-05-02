@@ -1,7 +1,7 @@
 // This file is use by the implementation, should be considerd like a public api
 // although not exposed.
-import 'package:tekartik_firebase/firebase.dart';
 import 'package:synchronized/synchronized.dart';
+import 'package:tekartik_firebase/firebase.dart';
 
 mixin FirebaseMixin implements Firebase {
   @override
