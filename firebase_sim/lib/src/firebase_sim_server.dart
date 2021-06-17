@@ -15,7 +15,7 @@ import 'package:tekartik_web_socket/web_socket.dart';
 
 Future<FirebaseSimServer> serve(
     Firebase firebase, WebSocketChannelFactory channelFactory,
-    {int port}) async {
+    {int? port}) async {
   var server = await channelFactory.server.serve<String>(port: port);
   var simServer = FirebaseSimServer(firebase, server);
   return simServer;
@@ -23,7 +23,7 @@ Future<FirebaseSimServer> serve(
 
 class FirebaseSimServer {
   int lastAppId = 0;
-  final Firebase firebase;
+  final Firebase? firebase;
 
   final List<FirebaseSimPlugin> _plugins = [];
   final List<FirebaseSimServerChannel> _channels = [];
@@ -53,7 +53,7 @@ class FirebaseSimServer {
 }
 
 abstract class FirebaseSimMixin {
-  WebSocketChannel<String> get webSocketChannel;
+  WebSocketChannel<String>? get webSocketChannel;
 
   // default
   // check overrides if this changes
@@ -62,7 +62,7 @@ abstract class FirebaseSimMixin {
   }
 
   Future closeMixin() async {
-    await webSocketChannel.sink.close();
+    await webSocketChannel!.sink.close();
   }
 
   // called internally
@@ -77,12 +77,12 @@ abstract class FirebaseSimMixin {
   }
 }
 
-Map<String, dynamic> _mapParams(json_rpc.Parameters parameters) {
-  return (parameters.value as Map)?.cast<String, dynamic>();
+Map<String, dynamic>? _mapParams(json_rpc.Parameters parameters) {
+  return (parameters.value as Map?)?.cast<String, dynamic>();
 }
 
 class FirebaseSimServerChannel {
-  App _app;
+  App? _app;
   final List<FirebaseSimPluginClient> _pluginClients = [];
 
   FirebaseSimServerChannel(this._server, WebSocketChannel<String> channel)
@@ -90,11 +90,11 @@ class FirebaseSimServerChannel {
     // Specific method for getting server info upon start
     _rpcServer.registerMethod(methodAdminInitializeApp,
         (json_rpc.Parameters parameters) async {
-      return handleAdminInitializeApp(_mapParams(parameters));
+      return handleAdminInitializeApp(_mapParams(parameters)!);
     });
     _rpcServer.registerMethod(methodAdminGetAppName,
         (json_rpc.Parameters parameters) async {
-      return _app.name;
+      return _app!.name;
     });
     _rpcServer.registerMethod(methodPing, (json_rpc.Parameters parameters) {
       return _mapParams(parameters);
@@ -158,21 +158,19 @@ class FirebaseSimServerChannel {
     _rpcServer.listen();
   }
 
-  Map<String, dynamic> handleAdminInitializeApp(Map<String, dynamic> param) {
+  Map<String, dynamic>? handleAdminInitializeApp(Map<String, dynamic> param) {
     var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
     var options = AppOptions(
       projectId: adminInitializeAppData.projectId,
     );
-    _app = _server.firebase
+    _app = _server.firebase!
         .initializeApp(options: options, name: adminInitializeAppData.name);
     // app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
     // var snapshot = app.firestore().doc(firestoreSetData.path).get();
 
     for (var plugin in _server._plugins) {
       var client = plugin.register(_app, _rpcServer);
-      if (client != null) {
-        _pluginClients.add(client);
-      }
+      _pluginClients.add(client);
     }
     return null;
   }
@@ -192,5 +190,5 @@ abstract class FirebaseSimPluginClient {
 }
 
 abstract class FirebaseSimPlugin {
-  FirebaseSimPluginClient register(App app, json_rpc.Server rpcServer);
+  FirebaseSimPluginClient register(App? app, json_rpc.Server rpcServer);
 }

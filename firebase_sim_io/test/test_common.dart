@@ -8,8 +8,8 @@ import 'package:tekartik_web_socket/web_socket.dart';
 import 'package:tekartik_web_socket_io/web_socket_io.dart';
 
 class TestContext {
-  FirebaseSimServer simServer;
-  Firebase firebase;
+  late FirebaseSimServer simServer;
+  late Firebase firebase;
 }
 
 // using real websocker
@@ -36,5 +36,5 @@ Future<TestContext> initTestContextSim() async {
 }
 
 Future close(TestContext testContext) async {
-  await testContext.simServer?.close();
+  await testContext.simServer.close();
 }

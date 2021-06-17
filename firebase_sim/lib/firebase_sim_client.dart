@@ -17,17 +17,17 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
 
   Stream<Notification> get notificationStream => _notificationController.stream;
   @override
-  final WebSocketChannel<String> webSocketChannel;
-  json_rpc.Client rpcClient;
+  final WebSocketChannel<String>? webSocketChannel;
+  late json_rpc.Client rpcClient;
 
   static FirebaseSimClient connect(String url,
-      {WebSocketChannelClientFactory webSocketChannelClientFactory}) {
+      {required WebSocketChannelClientFactory webSocketChannelClientFactory}) {
     var client = webSocketChannelClientFactory.connect<String>(url);
     return FirebaseSimClient(client);
   }
 
   FirebaseSimClient(this.webSocketChannel) {
-    rpcClient = json_rpc.Client(webSocketChannel);
+    rpcClient = json_rpc.Client(webSocketChannel!);
     init();
     // starting listening
     rpcClient.listen();
@@ -39,10 +39,10 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
     await closeMixin();
   }
 
-  Future<T> sendRequest<T>(String method, [dynamic param]) async {
-    T t;
+  Future<T?> sendRequest<T>(String method, [dynamic param]) async {
+    T? t;
     try {
-      t = await rpcClient.sendRequest(method, param) as T;
+      t = await rpcClient.sendRequest(method, param) as T?;
     } on json_rpc.RpcException catch (e) {
       // devPrint('ERROR ${e.runtimeType} $e ${e.message} ${e.data}');
       if (isDebug) {

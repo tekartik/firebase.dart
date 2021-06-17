@@ -28,13 +28,13 @@ class BaseData {
 }
 
 class AdminInitializeAppData extends BaseData {
-  String projectId;
-  String name;
+  String? projectId;
+  String? name;
 
   @override
   void fromMap(Map<String, dynamic> map) {
-    projectId = map['projectId'] as String;
-    name = map['name'] as String;
+    projectId = map['projectId'] as String?;
+    name = map['name'] as String?;
   }
 
   @override
@@ -45,11 +45,11 @@ class AdminInitializeAppData extends BaseData {
 }
 
 class FirebaseInitializeAppResponseData extends BaseData {
-  int appId;
+  int? appId;
 
   @override
   void fromMap(Map<String, dynamic> map) {
-    appId = map['appId'] as int;
+    appId = map['appId'] as int?;
   }
 
   @override
