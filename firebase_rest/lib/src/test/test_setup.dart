@@ -27,7 +27,7 @@ class ServiceAccount {
   AccessToken? accessToken;
 }
 
-@deprecated
+@Deprecated('Use getContext')
 Future<AccessToken> getAccessToken(Client client) async {
   var serviceAccountJsonPath = join('test', 'local.service_account.json');
 
