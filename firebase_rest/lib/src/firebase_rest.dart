@@ -17,7 +17,7 @@ abstract class AppOptionsRest extends AppOptions {
 
   /// Create a new options object.
   factory AppOptionsRest(
-          {@deprecated AuthClient? authClient, Client? client}) =>
+          {@Deprecated('Use client') AuthClient? authClient, Client? client}) =>
       // ignore: deprecated_member_use_from_same_package
       AppOptionsRestImpl(authClient: authClient, client: client);
 }
@@ -30,14 +30,15 @@ const String googleApisAuthCloudPlatformScope =
     'https://www.googleapis.com/auth/cloud-platform';
 
 class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
-  @deprecated
+  @Deprecated('Use client')
   AuthClient? get authClient =>
       (client is AuthClient) ? (client as AuthClient?) : null;
   @override
   final Client? client;
 
   /// authClient will be deprecated.
-  AppOptionsRestImpl({@deprecated AuthClient? authClient, Client? client})
+  AppOptionsRestImpl(
+      {@Deprecated('Use client') AuthClient? authClient, Client? client})
       : client = client ?? authClient {
     if (client != null) {
       assert(authClient == null);
@@ -111,7 +112,7 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
   }
 
   @override
-  @deprecated
+  @Deprecated('Use client')
   AuthClient? get authClient => (options as AppOptionsRestImpl?)?.authClient;
 
   @override

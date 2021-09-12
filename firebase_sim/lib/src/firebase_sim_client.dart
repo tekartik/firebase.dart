@@ -12,16 +12,16 @@ import 'package:tekartik_web_socket/web_socket.dart';
 class AppSim with FirebaseAppMixin {
   final FirebaseSim admin;
   bool deleted = false;
-  String _name;
+  final String _name;
 
   // when ready
-  WebSocketChannel<String> webSocketChannel;
-  Completer<FirebaseSimClient> readyCompleter;
+  WebSocketChannel<String>? webSocketChannel;
+  Completer<FirebaseSimClient>? readyCompleter;
 
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
-      webSocketChannel = admin.clientFactory.connect(admin.url);
+      webSocketChannel = admin.clientFactory!.connect(admin.url);
       var simClient = FirebaseSimClient(webSocketChannel);
       var adminInitializeAppData = AdminInitializeAppData()
         ..projectId = options?.projectId
@@ -29,16 +29,16 @@ class AppSim with FirebaseAppMixin {
       try {
         await simClient.sendRequest(
             methodAdminInitializeApp, adminInitializeAppData.toMap());
-        readyCompleter.complete(simClient);
+        readyCompleter!.complete(simClient);
       } catch (e) {
-        readyCompleter.completeError(e);
+        readyCompleter!.completeError(e);
       }
     }
-    return readyCompleter.future;
+    return readyCompleter!.future;
   }
 
   AppSim(this.admin, this.options, this._name) {
-    _name ??= firebaseAppNameDefault;
+    //_name ??= firebaseAppNameDefault;
   }
 
   @override
@@ -53,7 +53,7 @@ class AppSim with FirebaseAppMixin {
   String get name => _name;
 
   @override
-  final AppOptions options;
+  final AppOptions? options;
 
   // basic ping feature with console display
   Future ping() async {
@@ -62,7 +62,7 @@ class AppSim with FirebaseAppMixin {
   }
 
   // use the rpc
-  Future<String> getAppName() async {
+  Future<String?> getAppName() async {
     var simClient = await this.simClient;
     return await simClient.sendRequest(methodAdminGetAppName);
   }
@@ -71,16 +71,16 @@ class AppSim with FirebaseAppMixin {
 String get _defaultAppName => firebaseAppNameDefault;
 
 class FirebaseSim with FirebaseMixin {
-  final WebSocketChannelClientFactory clientFactory;
+  final WebSocketChannelClientFactory? clientFactory;
   final String url;
 
-  FirebaseSim({this.clientFactory, String url})
+  FirebaseSim({this.clientFactory, String? url})
       : url = url ?? 'ws://localhost:$firebaseSimDefaultPort';
 
   final _apps = <String, AppSim>{};
 
   @override
-  App initializeApp({AppOptions options, String name}) {
+  App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
     var app = AppSim(this, options, name);
     _apps[name] = app;
@@ -88,8 +88,8 @@ class FirebaseSim with FirebaseMixin {
   }
 
   @override
-  App app({String name}) {
+  App app({String? name}) {
     name ??= _defaultAppName;
-    return _apps[name];
+    return _apps[name]!;
   }
 }

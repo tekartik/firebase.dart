@@ -22,7 +22,7 @@ void run(TestContext testContext) {
   runApp(testContext.firebase);
 
   group('firebase_app_sim', () {
-    AppSim app;
+    late AppSim app;
     setUpAll(() {
       app = testContext.firebase.initializeApp(name: 'test_sim') as AppSim;
     });

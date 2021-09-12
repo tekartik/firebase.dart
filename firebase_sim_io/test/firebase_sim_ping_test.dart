@@ -16,8 +16,8 @@ void main() {
 
 void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
   group('sim', () {
-    FirebaseSimServer simServer;
-    FirebaseSimClient simClient;
+    late FirebaseSimServer simServer;
+    late FirebaseSimClient simClient;
 
     setUpAll(() async {
       var server = await channelFactory.server.serve<String>();

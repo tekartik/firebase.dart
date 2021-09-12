@@ -16,7 +16,7 @@ Future main() async {
   runApp(testContext.firebase);
 
   group('firebase_sim_client', () {
-    FirebaseSimClient simClient;
+    late FirebaseSimClient simClient;
     setUp(() {
       var client = webSocketChannelFactoryMemory.client
           .connect<String>(testContext.simServer.url);

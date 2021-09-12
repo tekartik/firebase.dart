@@ -16,25 +16,25 @@ abstract class Message {
         if (map.containsKey('result')) {
           return Response(id, map['result']);
         } else {
-          final errorMap = map['error'] as Map;
+          final errorMap = map['error'] as Map?;
           if (errorMap == null) {
             throw FormatException(
                 "missing 'method', 'result' or 'error' in $map");
           }
           return ErrorResponse(
               id,
-              Error(errorMap['code'] as int, errorMap['message'] as String,
+              Error(errorMap['code'] as int?, errorMap['message'] as String?,
                   errorMap['data']));
         }
       } else {
-        return Request(id, map['method'] as String, map['params']);
+        return Request(id, map['method'] as String?, map['params']);
       }
     } else {
       // notification
       if (map['method'] == null) {
         throw FormatException("missing 'method' or 'id' in $map");
       }
-      return Notification(map['method'] as String, map['params']);
+      return Notification(map['method'] as String?, map['params']);
     }
   }
 
@@ -56,7 +56,7 @@ abstract class _MessageWithId extends Message {
 }
 
 class Notification extends Message with _RequestMixin {
-  Notification(String method, [var params]) {
+  Notification(String? method, [var params]) {
     _init(method, params);
   }
 
@@ -70,13 +70,13 @@ class Notification extends Message with _RequestMixin {
 
 class _RequestMixin {
   dynamic _params;
-  String _method;
+  String? _method;
 
   dynamic get params => _params;
 
-  String get method => _method;
+  String? get method => _method;
 
-  void _init(String method, [dynamic params]) {
+  void _init(String? method, [dynamic params]) {
     _method = method;
     _params = params;
   }
@@ -90,7 +90,7 @@ class _RequestMixin {
 }
 
 class Request extends _MessageWithId with _RequestMixin {
-  Request(dynamic /*String | int*/ id, String method, [var params])
+  Request(dynamic /*String | int*/ id, String? method, [var params])
       : super(id) {
     _init(method, params);
   }
@@ -117,8 +117,8 @@ class Response extends _MessageWithId {
 }
 
 class Error {
-  final int code;
-  final String message;
+  final int? code;
+  final String? message;
   final dynamic data;
 
   Error(this.code, this.message, [this.data]);
