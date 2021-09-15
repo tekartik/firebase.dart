@@ -22,8 +22,9 @@ class FirebaseMock with FirebaseMixin {
 }
 
 class FirebaseAppMock with FirebaseAppMixin {
-  FirebaseAppMock({this.name, AppOptions? options}) {
+  FirebaseAppMock({String? name, AppOptions? options}) {
     this.options = options ?? AppOptions();
+    this.name = name ?? _defaultAppName;
   }
 
   @override
@@ -32,10 +33,10 @@ class FirebaseAppMock with FirebaseAppMixin {
   }
 
   @override
-  final String? name;
+  late final String name;
 
   @override
-  late AppOptions options;
+  late final AppOptions options;
 }
 
 class FirebaseAppServiceMock implements FirebaseAppService {

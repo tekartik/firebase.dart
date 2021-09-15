@@ -29,10 +29,10 @@ typedef FirebaseApp = App;
 /// Firebase app.
 abstract class App {
   /// The app name
-  String? get name;
+  String get name;
 
   /// The app options
-  AppOptions? get options;
+  AppOptions get options;
 
   /// Dispose the app.
   ///

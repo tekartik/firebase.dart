@@ -99,10 +99,11 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
 
   bool deleted = false;
   @override
-  String? name;
+  late final String name;
 
-  AppRestImpl({required this.firebaseRest, required this.options, this.name}) {
-    name ??= _defaultAppName;
+  AppRestImpl(
+      {required this.firebaseRest, required this.options, String? name}) {
+    this.name = name ?? _defaultAppName;
   }
 
   @override
