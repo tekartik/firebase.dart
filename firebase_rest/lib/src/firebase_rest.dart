@@ -56,9 +56,9 @@ class FirebaseRestImpl
     var impl = AppRestImpl(
       name: name,
       firebaseRest: this,
-      options: options ??
+      options: (options ??
           (credential.applicationDefault() as FirebaseAdminCredentialRestImpl)
-              .appOptions,
+              .appOptions)!,
     );
     _apps[impl.name] = impl;
     return impl;
@@ -95,7 +95,7 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
   final FirebaseRestImpl firebaseRest;
 
   @override
-  final AppOptions? options;
+  final AppOptions options;
 
   bool deleted = false;
   @override

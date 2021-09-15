@@ -22,7 +22,9 @@ class FirebaseMock with FirebaseMixin {
 }
 
 class FirebaseAppMock with FirebaseAppMixin {
-  FirebaseAppMock({this.name, this.options});
+  FirebaseAppMock({this.name, AppOptions? options}) {
+    this.options = options ?? AppOptions();
+  }
 
   @override
   Future<void> delete() async {
@@ -33,7 +35,7 @@ class FirebaseAppMock with FirebaseAppMixin {
   final String? name;
 
   @override
-  final AppOptions? options;
+  late AppOptions options;
 }
 
 class FirebaseAppServiceMock implements FirebaseAppService {

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:tekartik_firebase/firebase.dart';
-
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
@@ -24,7 +23,7 @@ class AppSim with FirebaseAppMixin {
       webSocketChannel = admin.clientFactory!.connect(admin.url);
       var simClient = FirebaseSimClient(webSocketChannel);
       var adminInitializeAppData = AdminInitializeAppData()
-        ..projectId = options?.projectId
+        ..projectId = options.projectId
         ..name = name;
       try {
         await simClient.sendRequest(
@@ -53,7 +52,7 @@ class AppSim with FirebaseAppMixin {
   String get name => _name;
 
   @override
-  final AppOptions? options;
+  final AppOptions options;
 
   // basic ping feature with console display
   Future ping() async {
@@ -82,7 +81,7 @@ class FirebaseSim with FirebaseMixin {
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
-    var app = AppSim(this, options, name);
+    var app = AppSim(this, options ?? AppOptions(), name);
     _apps[name] = app;
     return app;
   }
