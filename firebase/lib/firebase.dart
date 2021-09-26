@@ -23,13 +23,16 @@ abstract class Firebase extends FirebaseAsync {
   App app({String? name});
 }
 
+/// This is the new type, App will be deprecated in the future
+typedef FirebaseApp = App;
+
 /// Firebase app.
 abstract class App {
   /// The app name
-  String? get name;
+  String get name;
 
   /// The app options
-  AppOptions? get options;
+  AppOptions get options;
 
   /// Dispose the app.
   ///
@@ -41,6 +44,9 @@ abstract class App {
   /// Upon delete, close will be called
   Future addService(FirebaseAppService service);
 }
+
+/// This is the new type, App will be deprecated in the future
+typedef FirebaseAppOptions = AppOptions;
 
 class AppOptions {
   String? apiKey;

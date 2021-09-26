@@ -1,2 +1,2 @@
 export 'package:tekartik_firebase_local/src/firebase_local.dart'
-    show FirebaseLocal, AppLocal;
+    show FirebaseLocal, AppLocal, newFirebaseAppLocal;

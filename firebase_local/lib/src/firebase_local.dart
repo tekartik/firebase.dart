@@ -76,3 +76,11 @@ class AppLocal with FirebaseAppMixin {
     await closeServices();
   }
 }
+
+/// Helper to create a new app for test
+FirebaseApp newFirebaseAppLocal(
+    {FirebaseAppOptions? options, String? localPath, String? name}) {
+  var firebase = FirebaseLocal(localPath: localPath);
+  var app = firebase.initializeApp(name: name, options: options);
+  return app;
+}

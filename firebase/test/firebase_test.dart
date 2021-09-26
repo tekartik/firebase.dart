@@ -13,6 +13,8 @@ void main() {
       // ignore: unnecessary_statements
       App;
       // ignore: unnecessary_statements
+      FirebaseApp;
+      // ignore: unnecessary_statements
       AppOptions;
       // ignore: unnecessary_statements
       FirebaseAsync;

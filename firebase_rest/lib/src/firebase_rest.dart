@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:googleapis_auth/auth_io.dart';
-import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:http/http.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firebase_admin.dart';
@@ -56,9 +55,9 @@ class FirebaseRestImpl
     var impl = AppRestImpl(
       name: name,
       firebaseRest: this,
-      options: options ??
+      options: (options ??
           (credential.applicationDefault() as FirebaseAdminCredentialRestImpl)
-              .appOptions,
+              .appOptions)!,
     );
     _apps[impl.name] = impl;
     return impl;
@@ -95,14 +94,15 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
   final FirebaseRestImpl firebaseRest;
 
   @override
-  final AppOptions? options;
+  final AppOptions options;
 
   bool deleted = false;
   @override
-  String? name;
+  late final String name;
 
-  AppRestImpl({required this.firebaseRest, required this.options, this.name}) {
-    name ??= _defaultAppName;
+  AppRestImpl(
+      {required this.firebaseRest, required this.options, String? name}) {
+    this.name = name ?? _defaultAppName;
   }
 
   @override
