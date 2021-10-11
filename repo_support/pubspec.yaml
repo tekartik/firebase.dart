@@ -17,6 +17,10 @@ dev_dependencies:
   process_run: '>=0.10.3'
   test:
   dev_test:
-  pedantic:
-
+  tekartik_lints:
+    git:
+      url: git://github.com/tekartik/common.dart
+      ref: null_safety
+      path: packages/lints
+    version: '>=0.1.0'
 
