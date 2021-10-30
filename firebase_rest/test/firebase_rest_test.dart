@@ -19,7 +19,7 @@ Future main() async {
       test('authClient', () {
         expect(
             (firebaseRest.credential.applicationDefault()
-                    as FirebaseAdminCredentialRestImpl)
+                    as FirebaseAdminCredentialRest)
                 .authClient,
             isNotNull);
       });
