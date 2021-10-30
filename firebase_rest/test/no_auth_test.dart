@@ -1,3 +1,6 @@
+@TestOn('vm')
+library no_auth_test;
+
 import 'package:process_run/shell.dart';
 import 'package:test/test.dart';
 
@@ -9,8 +12,11 @@ void main() {
   print('rootPath: $rootPath');
   group('firestore', () {
     test('Basic', () async {
-      // var app = noAuthAppRest(projectId: projectId);
-      //expect((app.options as AppOptionsRest).client, isNotNull);
+      /*
+      var app = noAuthAppRest(projectId: projectId);
+      expect((app.options as AppOptionsRest).client, isNotNull);
+
+       */
     });
   }, skip: (projectId == null || rootPath == null));
 }
