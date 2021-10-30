@@ -8,9 +8,16 @@ import 'package:tekartik_firebase_rest/src/platform.dart';
 
 String get _defaultAppName => firebaseAppNameDefault;
 
+abstract class AdminAppOptionsRest implements AppOptionsRest {
+  /// The http client
+  @override
+  Client? get client;
+}
+
 /// The app options to use for REST app initialization.
 abstract class AppOptionsRest extends AppOptions {
   /// The http client
+  @Deprecated('Use client in auth')
   Client? get client;
 
   /// Create a new options object.
@@ -41,7 +48,7 @@ class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
     if (client != null) {
       assert(authClient == null);
     }
-    assert(this.client != null);
+    // assert(this.client != null);
   }
 }
 
@@ -89,7 +96,15 @@ FirebaseRestImpl? _impl;
 
 FirebaseRestImpl get impl => _impl ??= FirebaseRestImpl();
 
-class AppRestImpl with FirebaseAppMixin implements AppRest {
+/// Mixin
+mixin FirebaseAppRestMixin {
+  Client? currentAuthClient;
+}
+
+/// App Rest
+class AppRestImpl
+    with FirebaseAppMixin, FirebaseAppRestMixin
+    implements AppRest {
   final FirebaseRestImpl firebaseRest;
 
   @override
@@ -102,6 +117,12 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
   AppRestImpl(
       {required this.firebaseRest, required this.options, String? name}) {
     this.name = name ?? _defaultAppName;
+    var options = this.options;
+    if (options is AppOptionsRest) {
+      // Compat
+      // ignore: deprecated_member_use_from_same_package
+      currentAuthClient = options.client;
+    }
   }
 
   @override
@@ -112,10 +133,13 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
 
   @override
   @Deprecated('Use client')
-  AuthClient? get authClient => (options as AppOptionsRestImpl?)?.authClient;
+  AuthClient? get authClient => currentAuthClient as AuthClient;
 
   @override
-  Client? get client => (options as AppOptionsRestImpl?)?.client;
+  Client? get client => currentAuthClient;
+
+  @override
+  set client(Client? client) => currentAuthClient = client;
 }
 
 class FirebaseAdminAccessTokenRest implements FirebaseAdminAccessToken {

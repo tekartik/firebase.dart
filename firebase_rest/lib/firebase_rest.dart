@@ -15,7 +15,10 @@ export 'src/scopes.dart'
         firebaseGoogleApisUserEmailScope;
 
 /// Rest extension (if any)
-abstract class FirebaseRest implements FirebaseAdmin {}
+abstract class FirebaseRest implements Firebase {}
+
+/// Rest extension (if any)
+abstract class FirebaseAdminRest implements FirebaseRest, FirebaseAdmin {}
 
 /// Rest firebase api
 FirebaseRest get firebaseRest => impl;
@@ -26,5 +29,9 @@ abstract class AppRest implements App {
   @Deprecated('Use client')
   AuthClient? get authClient;
 
+  // @Deprecated('Use client')
   Client? get client;
+
+  @Deprecated('Only implementation should call that')
+  set client(Client? client);
 }
