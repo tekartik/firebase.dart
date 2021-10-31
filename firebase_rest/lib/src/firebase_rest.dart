@@ -1,17 +1,23 @@
-import 'dart:convert';
-
-import 'package:googleapis_auth/auth_io.dart';
+import 'package:googleapis_auth/googleapis_auth.dart';
 import 'package:http/http.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firebase_admin.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
+import 'package:tekartik_firebase_rest/src/platform.dart';
 
 String get _defaultAppName => firebaseAppNameDefault;
+
+abstract class AdminAppOptionsRest implements AppOptionsRest {
+  /// The http client
+  @override
+  Client? get client;
+}
 
 /// The app options to use for REST app initialization.
 abstract class AppOptionsRest extends AppOptions {
   /// The http client
+  @Deprecated('Use client in auth')
   Client? get client;
 
   /// Create a new options object.
@@ -42,7 +48,7 @@ class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
     if (client != null) {
       assert(authClient == null);
     }
-    assert(this.client != null);
+    // assert(this.client != null);
   }
 }
 
@@ -56,7 +62,7 @@ class FirebaseRestImpl
       name: name,
       firebaseRest: this,
       options: (options ??
-          (credential.applicationDefault() as FirebaseAdminCredentialRestImpl)
+          (credential.applicationDefault() as FirebaseAdminCredentialRest)
               .appOptions)!,
     );
     _apps[impl.name] = impl;
@@ -90,7 +96,15 @@ FirebaseRestImpl? _impl;
 
 FirebaseRestImpl get impl => _impl ??= FirebaseRestImpl();
 
-class AppRestImpl with FirebaseAppMixin implements AppRest {
+/// Mixin
+mixin FirebaseAppRestMixin {
+  Client? currentAuthClient;
+}
+
+/// App Rest
+class AppRestImpl
+    with FirebaseAppMixin, FirebaseAppRestMixin
+    implements AppRest {
   final FirebaseRestImpl firebaseRest;
 
   @override
@@ -103,6 +117,12 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
   AppRestImpl(
       {required this.firebaseRest, required this.options, String? name}) {
     this.name = name ?? _defaultAppName;
+    var options = this.options;
+    if (options is AppOptionsRest) {
+      // Compat
+      // ignore: deprecated_member_use_from_same_package
+      currentAuthClient = options.client;
+    }
   }
 
   @override
@@ -113,10 +133,13 @@ class AppRestImpl with FirebaseAppMixin implements AppRest {
 
   @override
   @Deprecated('Use client')
-  AuthClient? get authClient => (options as AppOptionsRestImpl?)?.authClient;
+  AuthClient? get authClient => currentAuthClient as AuthClient;
 
   @override
-  Client? get client => (options as AppOptionsRestImpl?)?.client;
+  Client? get client => currentAuthClient;
+
+  @override
+  set client(Client? client) => currentAuthClient = client;
 }
 
 class FirebaseAdminAccessTokenRest implements FirebaseAdminAccessToken {
@@ -127,61 +150,6 @@ class FirebaseAdminAccessTokenRest implements FirebaseAdminAccessToken {
 
   @override
   int get expiresIn => 0;
-}
-
-class FirebaseAdminCredentialRestImpl implements FirebaseAdminCredentialRest {
-  late ServiceAccountCredentials serviceAccountCredentials;
-  final List<String> scopes;
-  AuthClient? authClient;
-  AppOptionsRest? appOptions;
-  String? projectId;
-
-  FirebaseAdminCredentialRestImpl.fromServiceAccountJson(
-      String serviceAccountJson,
-      {List<String>? scopes})
-      : scopes = scopes ?? firebaseBaseScopes {
-    var jsonData = jsonDecode(serviceAccountJson) as Map;
-    projectId = jsonData['project_id']?.toString();
-    serviceAccountCredentials = ServiceAccountCredentials.fromJson(jsonData);
-  }
-
-  Future<FirebaseAdminAccessToken>? _accessToken;
-
-  @override
-  Future<FirebaseAdminAccessToken> getAccessToken() =>
-      _accessToken ??= () async {
-        var client = Client();
-        var accessCreds = await obtainAccessCredentialsViaServiceAccount(
-            serviceAccountCredentials, scopes, client);
-        var accessToken = accessCreds.accessToken;
-        authClient = authenticatedClient(client, accessCreds);
-        appOptions = AppOptionsRest(client: authClient)..projectId = projectId;
-        return FirebaseAdminAccessTokenRest(data: accessToken.data);
-      }();
-/*
-
-    var authClient = authenticatedClient(client, accessCreds);
-    var appOptions = AppOptionsRest(authClient: authClient)
-      ..projectId = jsonData['project_id']?.toString();
-    var context = Context()
-      ..client = client
-      ..accessToken = accessToken
-      ..authClient = authClient
-      ..options = appOptions;
-  }
-
- */
-}
-
-/// Rest credentials implementation
-abstract class FirebaseAdminCredentialRest implements FirebaseAdminCredential {
-  factory FirebaseAdminCredentialRest.fromServiceAccountJson(
-      String serviceAccountJson,
-      {List<String>? scopes}) {
-    return FirebaseAdminCredentialRestImpl.fromServiceAccountJson(
-        serviceAccountJson,
-        scopes: scopes);
-  }
 }
 
 class FirebaseAdminCredentialServiceRest
@@ -199,5 +167,16 @@ class FirebaseAdminCredentialServiceRest
   @override
   void setApplicationDefault(FirebaseAdminCredential? credential) {
     _applicationDefault = credential as FirebaseAdminCredentialRest?;
+  }
+}
+
+/// Rest credentials implementation
+abstract class FirebaseAdminCredentialRest implements FirebaseAdminCredential {
+  AppOptionsRest? get appOptions;
+  AuthClient? get authClient;
+  factory FirebaseAdminCredentialRest.fromServiceAccountJson(
+      String serviceAccountJson,
+      {List<String>? scopes}) {
+    return newFromServiceAccountJson(serviceAccountJson, scopes: scopes);
   }
 }

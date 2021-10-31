@@ -1,6 +1,7 @@
+@TestOn('vm')
 library tekartik_firebase_rest.rest_test;
 
-import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
+import 'package:tekartik_firebase_rest/firebase_rest.dart';
 import 'package:tekartik_firebase_rest/src/test/test_setup.dart'
     show firebaseRestSetup;
 import 'package:tekartik_firebase_test/firebase_test.dart';
@@ -17,20 +18,24 @@ Future main() async {
       runApp(firebaseRest);
 
       test('authClient', () {
-        expect(
-            (firebaseRest.credential.applicationDefault()
-                    as FirebaseAdminCredentialRestImpl)
-                .authClient,
-            isNotNull);
+        if (firebaseRest is FirebaseAdminRest) {
+          expect(
+              (firebaseRest.credential.applicationDefault()
+                      as FirebaseAdminCredentialRest)
+                  .authClient,
+              isNotNull);
+        }
       });
 
       test('admin', () async {
-        expect(
-            (await firebaseRest.credential
-                    .applicationDefault()!
-                    .getAccessToken())
-                .data,
-            isNotNull);
+        if (firebaseRest is FirebaseAdminRest) {
+          expect(
+              (await firebaseRest.credential
+                      .applicationDefault()!
+                      .getAccessToken())
+                  .data,
+              isNotNull);
+        }
       });
     });
   }

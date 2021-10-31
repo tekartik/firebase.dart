@@ -1,3 +1,4 @@
+@TestOn('vm')
 library tekartik_firebase_rest.rest_setup_test;
 
 import 'dart:io';
