@@ -10,21 +10,21 @@ dependencies:
   js:
   tekartik_firebase:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase
-      ref: null_safety
+      ref: dart2_3
     version: '>=0.6.2'
   firebase: '>=6.0.0'
   tekartik_browser_utils:
     git:
-      url: git://github.com/tekartik/browser_utils.dart
-      ref: null_safety
+      url: https://github.com/tekartik/browser_utils.dart
+      ref: dart2_3
     version: '>=0.5.0'
   tekartik_firebase_test:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase_test
-      ref: null_safety
+      ref: dart2_3
     version: '>=0.6.2'
   service_worker:
   googleapis_auth:

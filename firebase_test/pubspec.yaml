@@ -12,9 +12,9 @@ dependencies:
   uuid: '>=1.0.0'
   tekartik_firebase:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase
-      ref: null_safety
+      ref: dart2_3
     version: '>=0.6.0'
   test: ">=1.0.0"
 

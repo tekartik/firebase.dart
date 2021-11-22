@@ -11,27 +11,27 @@ environment:
 dependencies:
   tekartik_firebase_sim:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase_sim
-      ref: null_safety
+      ref: dart2_3
   tekartik_firebase_local:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase_local
-      ref: null_safety
+      ref: dart2_3
   tekartik_web_socket_io:
     git:
-      url: git://github.com/tekartik/web_socket.dart
+      url: https://github.com/tekartik/web_socket.dart
       path: web_socket_io
-      ref: null_safety
+      ref: dart2_3
     version: '>=0.2.1'
 
 dev_dependencies:
   tekartik_firebase_test:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase_test
-      ref: null_safety
+      ref: dart2_3
   dev_test:
   test: "^1.0.0"
   build_runner: ">=0.9.1"

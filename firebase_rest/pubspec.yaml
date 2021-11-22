@@ -12,9 +12,9 @@ dependencies:
   uuid: '>=1.0.0'
   tekartik_firebase:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase
-      ref: null_safety
+      ref: dart2_3
     version: '>=0.7.3'
   googleapis_auth:
   googleapis:
@@ -27,8 +27,8 @@ dev_dependencies:
   process_run:
   tekartik_app_http:
     git:
-      url: git://github.com/tekartik/app_common_utils.dart
-      ref: null_safety
+      url: https://github.com/tekartik/app_common_utils.dart
+      ref: dart2_3
       path: app_http
     version: '>=0.1.0'
   build_runner: ^1.10.0

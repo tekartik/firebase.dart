@@ -11,8 +11,8 @@ environment:
 dependencies:
   tekartik_common_utils:
     git:
-      url: git://github.com/tekartik/common_utils.dart
-      ref: null_safety
+      url: https://github.com/tekartik/common_utils.dart
+      ref: dart2_3
     version: '>=0.10.1'
   path: '^1.6.1'
   collection: '^1.14.10'

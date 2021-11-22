@@ -33,7 +33,7 @@ void main() {
 dependencies:
   tekartik_firebase_flutter:
     git:
-      url: git://github.com/tekartik/firebase.dart
+      url: https://github.com/tekartik/firebase.dart
       path: firebase_flutter
       ref: dart2
     version: '>=0.3.9'
