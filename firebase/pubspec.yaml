@@ -16,6 +16,7 @@ dependencies:
     version: '>=0.10.1'
   path: '^1.6.1'
   collection: '^1.14.10'
+  synchronized:
 dev_dependencies:
   dev_test:
   test: "^1.0.0"

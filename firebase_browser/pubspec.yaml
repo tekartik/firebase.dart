@@ -30,6 +30,7 @@ dependencies:
   googleapis_auth:
 
 dev_dependencies:
+  process_run:
   test: ">=0.12.37"
   http: any
   yaml: any

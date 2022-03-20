@@ -19,7 +19,8 @@ dependencies:
   googleapis_auth:
   googleapis:
   test: ">=1.0.0"
-
+  http:
+  path:
 dev_dependencies:
   dev_test:
   tekartik_firebase_test:
