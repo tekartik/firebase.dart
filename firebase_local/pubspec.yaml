@@ -16,7 +16,7 @@ dependencies:
       path: firebase
       ref: dart2_3
     version: '>=0.9.0'
-
+  path:
 dev_dependencies:
   tekartik_firebase_test:
     path: ../firebase_test

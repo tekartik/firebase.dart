@@ -1,5 +1,6 @@
 import 'dart:html';
 
+// ignore: depend_on_referenced_packages
 import 'package:tekartik_common_utils/out_buffer.dart';
 
 OutBuffer _outBuffer = OutBuffer(100);
