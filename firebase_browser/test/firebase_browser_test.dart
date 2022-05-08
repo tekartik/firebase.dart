@@ -9,6 +9,7 @@ import 'test_setup.dart';
 
 void main() async {
   var options = await setup();
+  // ignore: deprecated_member_use_from_same_package
   final firebase = firebaseBrowser;
 
   group('browser', () {
