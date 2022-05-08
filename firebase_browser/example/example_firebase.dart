@@ -11,6 +11,7 @@ void main() async {
   write('require :$hasRequire');
   var options = await setup();
   write('loaded');
+  // ignore: deprecated_member_use_from_same_package
   final firebase = firebaseBrowser;
 
   App? app;

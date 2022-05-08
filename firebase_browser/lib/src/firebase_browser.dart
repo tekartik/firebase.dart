@@ -1,9 +1,9 @@
 import 'dart:async';
 
+// ignore: deprecated_member_use
 import 'package:firebase/firebase.dart' as native;
 import 'package:tekartik_browser_utils/js_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
-
 import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
 import 'package:tekartik_firebase_browser/src/common/firebase_js_version.dart';
 
