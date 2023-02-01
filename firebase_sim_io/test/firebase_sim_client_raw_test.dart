@@ -27,9 +27,9 @@ Future main() async {
       await simClient.close();
     });
     test('initializeApp', () async {
-      await simClient.sendRequest(
+      await simClient.sendRequest<void>(
           methodAdminInitializeApp, {'projectId': 'test', 'name': 'test_name'});
-      var name = await simClient.sendRequest(methodAdminGetAppName);
+      var name = await simClient.sendRequest<String>(methodAdminGetAppName);
       expect(name, 'test_name');
     });
   });

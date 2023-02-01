@@ -35,7 +35,7 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
       var response = await simClient.sendRequest(request);
       expect(response.id, request.id);
       */
-      await simClient.sendRequest(methodPing);
+      await simClient.sendRequest<void>(methodPing);
     });
   });
 }

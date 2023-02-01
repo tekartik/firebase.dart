@@ -26,7 +26,7 @@ class AppSim with FirebaseAppMixin {
         ..projectId = options.projectId
         ..name = name;
       try {
-        await simClient.sendRequest(
+        await simClient.sendRequest<void>(
             methodAdminInitializeApp, adminInitializeAppData.toMap());
         readyCompleter!.complete(simClient);
       } catch (e) {
@@ -57,7 +57,7 @@ class AppSim with FirebaseAppMixin {
   // basic ping feature with console display
   Future ping() async {
     var simClient = await this.simClient;
-    await simClient.sendRequest(methodPing);
+    await simClient.sendRequest<void>(methodPing);
   }
 
   // use the rpc

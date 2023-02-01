@@ -6,7 +6,7 @@ publish_to: none
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.14.0-0 <3.0.0'
+  sdk: '>=2.18.0 <3.0.0'
 
 dependencies:
   uuid: '>=1.0.0'

@@ -7,4 +7,4 @@ import 'package:js/js.dart';
 ///
 /// This function binds to JavaScript `Object.keys()`.
 @JS('Object.keys')
-external List<String> objectKeys(object);
+external List<String> objectKeys(Object? object);
