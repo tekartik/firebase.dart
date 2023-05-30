@@ -1,5 +1,1 @@
-import 'package:tekartik_firebase_rest/firebase_rest.dart';
-
-FirebaseAdminCredentialRest newFromServiceAccountJson(String serviceAccountJson,
-        {List<String>? scopes}) =>
-    throw UnsupportedError('io only');
+export 'firebase_rest_io.dart' show newFromServiceAccountJson;
