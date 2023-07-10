@@ -68,7 +68,7 @@ class Notification extends Message with _RequestMixin {
   }
 }
 
-class _RequestMixin {
+mixin class _RequestMixin {
   dynamic _params;
   String? _method;
 

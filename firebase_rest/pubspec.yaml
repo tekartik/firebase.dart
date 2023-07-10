@@ -6,7 +6,7 @@ publish_to: none
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   uuid: '>=1.0.0'
@@ -14,7 +14,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.7.3'
   googleapis_auth:
   googleapis:
@@ -29,13 +29,13 @@ dev_dependencies:
   tekartik_app_http:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
-      ref: dart2_3
+      ref: dart3a
       path: app_http
     version: '>=0.1.0'
   build_runner: '>=2.0.0'
   build_web_compilers: '>3.0.0'
   build_test: '>=2.0.0'
-  lints: ^1.0.0
+  lints: '>=1.0.0'
 
 dependency_overrides:
   tekartik_firebase:

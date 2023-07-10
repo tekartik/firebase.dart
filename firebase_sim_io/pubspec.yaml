@@ -6,24 +6,24 @@ publish_to: none
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   tekartik_firebase_sim:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase_sim
-      ref: dart2_3
+      ref: dart3a
   tekartik_firebase_local:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase_local
-      ref: dart2_3
+      ref: dart3a
   tekartik_web_socket_io:
     git:
       url: https://github.com/tekartik/web_socket.dart
       path: web_socket_io
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.2.1'
 
 dev_dependencies:
@@ -31,7 +31,7 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase_test
-      ref: dart2_3
+      ref: dart3a
   dev_test:
   test: "^1.0.0"
   build_runner: ">=0.9.1"

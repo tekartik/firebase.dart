@@ -6,20 +6,20 @@ publish_to: none
 #author: alex <email@example.com>
 
 environment:
-  sdk: '>=2.18.0 <4.0.0'
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   tekartik_firebase:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.6.0'
   tekartik_web_socket:
     git:
       url: https://github.com/tekartik/web_socket.dart
       path: web_socket
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.2.1'
   meta: any
   synchronized: '>=1.5.0-dev.2'
