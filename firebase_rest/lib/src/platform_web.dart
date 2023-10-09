@@ -1,3 +1,4 @@
+@Deprecated('use firebase_rest_io')
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
 
 FirebaseAdminCredentialRest newFromServiceAccountJson(String serviceAccountJson,

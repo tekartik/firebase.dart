@@ -8,6 +8,6 @@ dependencies:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase_rest
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.6.2'
 ```

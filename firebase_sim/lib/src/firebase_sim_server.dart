@@ -51,7 +51,7 @@ class FirebaseSimServer {
   }
 }
 
-abstract class FirebaseSimMixin {
+abstract mixin class FirebaseSimMixin {
   WebSocketChannel<String>? get webSocketChannel;
 
   // default

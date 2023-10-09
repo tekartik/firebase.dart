@@ -35,7 +35,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/firebase_flutter.dart
       path: firebase_flutter
-      ref: dart2_3
+      ref: dart3a
     version: '>=0.3.9'
 ```
 

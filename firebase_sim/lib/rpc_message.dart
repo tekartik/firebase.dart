@@ -43,7 +43,7 @@ abstract class Message {
 }
 
 abstract class _MessageWithId extends Message {
-  final dynamic /*String | int*/ id;
+  final Object? /*String | int*/ id;
 
   _MessageWithId(this.id);
 
@@ -56,7 +56,7 @@ abstract class _MessageWithId extends Message {
 }
 
 class Notification extends Message with _RequestMixin {
-  Notification(String? method, [var params]) {
+  Notification(String? method, [Object? params]) {
     _init(method, params);
   }
 
@@ -68,7 +68,7 @@ class Notification extends Message with _RequestMixin {
   }
 }
 
-class _RequestMixin {
+mixin class _RequestMixin {
   dynamic _params;
   String? _method;
 
@@ -90,7 +90,7 @@ class _RequestMixin {
 }
 
 class Request extends _MessageWithId with _RequestMixin {
-  Request(dynamic /*String | int*/ id, String? method, [var params])
+  Request(dynamic /*String | int*/ id, String? method, [Object? params])
       : super(id) {
     _init(method, params);
   }
@@ -106,7 +106,7 @@ class Request extends _MessageWithId with _RequestMixin {
 class Response extends _MessageWithId {
   final dynamic result;
 
-  Response(id, this.result) : super(id);
+  Response(Object? id, this.result) : super(id);
 
   @override
   Map<String, dynamic> toMap() {
@@ -140,7 +140,7 @@ class Error {
 class ErrorResponse extends _MessageWithId {
   final Error error;
 
-  ErrorResponse(id, this.error) : super(id);
+  ErrorResponse(Object? id, this.error) : super(id);
 
   @override
   Map<String, dynamic> toMap() {
