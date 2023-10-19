@@ -3,4 +3,7 @@ import 'package:tekartik_firebase_rest/firebase_rest.dart';
 
 FirebaseAdminCredentialRest newFromServiceAccountJson(String serviceAccountJson,
         {List<String>? scopes}) =>
-    throw UnsupportedError('io only');
+    throw UnsupportedError('newFromServiceAccountJson io only');
+FirebaseAdminCredentialRest newFromServiceAccountMap(Map serviceAccountMap,
+        {List<String>? scopes}) =>
+    throw UnsupportedError('newFromServiceAccountMap io only');
