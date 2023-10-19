@@ -16,13 +16,19 @@ class FirebaseAdminCredentialRestImpl implements FirebaseAdminCredentialRest {
   AppOptionsRest? appOptions;
   String? projectId;
 
-  FirebaseAdminCredentialRestImpl.fromServiceAccountJson(
-      String serviceAccountJson,
+  factory FirebaseAdminCredentialRestImpl.fromServiceAccountJson(
+          String serviceAccountJson,
+          {List<String>? scopes}) =>
+      FirebaseAdminCredentialRestImpl.fromServiceAccountMap(
+          jsonDecode(serviceAccountJson) as Map,
+          scopes: scopes);
+
+  FirebaseAdminCredentialRestImpl.fromServiceAccountMap(Map serviceAccountMap,
       {List<String>? scopes})
       : scopes = scopes ?? firebaseBaseScopes {
-    var jsonData = jsonDecode(serviceAccountJson) as Map;
-    projectId = jsonData['project_id']?.toString();
-    serviceAccountCredentials = ServiceAccountCredentials.fromJson(jsonData);
+    projectId = serviceAccountMap['project_id']?.toString();
+    serviceAccountCredentials =
+        ServiceAccountCredentials.fromJson(serviceAccountMap);
   }
 
   Future<FirebaseAdminAccessToken>? _accessToken;
