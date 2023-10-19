@@ -90,8 +90,7 @@ mixin class _RequestMixin {
 }
 
 class Request extends _MessageWithId with _RequestMixin {
-  Request(dynamic /*String | int*/ id, String? method, [Object? params])
-      : super(id) {
+  Request(dynamic /*String | int*/ super.id, String? method, [Object? params]) {
     _init(method, params);
   }
 
@@ -106,7 +105,7 @@ class Request extends _MessageWithId with _RequestMixin {
 class Response extends _MessageWithId {
   final dynamic result;
 
-  Response(Object? id, this.result) : super(id);
+  Response(super.id, this.result);
 
   @override
   Map<String, dynamic> toMap() {
@@ -140,7 +139,7 @@ class Error {
 class ErrorResponse extends _MessageWithId {
   final Error error;
 
-  ErrorResponse(Object? id, this.error) : super(id);
+  ErrorResponse(super.id, this.error);
 
   @override
   Map<String, dynamic> toMap() {

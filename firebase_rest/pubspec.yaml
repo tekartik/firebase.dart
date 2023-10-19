@@ -16,7 +16,7 @@ dependencies:
       path: firebase
       ref: dart3a
     version: '>=0.7.3'
-  googleapis_auth:
+  googleapis_auth: '>=1.4.1'
   googleapis:
   test: ">=1.0.0"
   http:
