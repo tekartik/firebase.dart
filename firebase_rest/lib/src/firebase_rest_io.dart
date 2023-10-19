@@ -65,3 +65,10 @@ FirebaseAdminCredentialRest newFromServiceAccountJson(String serviceAccountJson,
       serviceAccountJson,
       scopes: scopes);
 }
+
+FirebaseAdminCredentialRest newFromServiceAccountMap(Map serviceAccountMap,
+    {List<String>? scopes}) {
+  return FirebaseAdminCredentialRestImpl.fromServiceAccountMap(
+      serviceAccountMap,
+      scopes: scopes);
+}

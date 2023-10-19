@@ -179,4 +179,9 @@ abstract class FirebaseAdminCredentialRest implements FirebaseAdminCredential {
       {List<String>? scopes}) {
     return newFromServiceAccountJson(serviceAccountJson, scopes: scopes);
   }
+  factory FirebaseAdminCredentialRest.fromServiceAccountMap(
+      Map serviceAccountMap,
+      {List<String>? scopes}) {
+    return newFromServiceAccountMap(serviceAccountMap, scopes: scopes);
+  }
 }
