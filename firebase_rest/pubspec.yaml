@@ -22,7 +22,7 @@ dependencies:
   http:
   path:
 dev_dependencies:
-  dev_test:
+  dev_build:
   tekartik_firebase_test:
     path: ../firebase_test
   process_run:

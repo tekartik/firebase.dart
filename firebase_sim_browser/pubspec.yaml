@@ -23,7 +23,7 @@ dependencies:
     version: '>=0.2.1'
 
 dev_dependencies:
-  dev_test:
+  dev_build:
   test: ">=0.12.37"
   build_runner: ">=0.9.1"
   build_web_compilers: ">=0.4.0+4"

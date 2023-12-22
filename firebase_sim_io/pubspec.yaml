@@ -32,8 +32,8 @@ dev_dependencies:
       url: https://github.com/tekartik/firebase.dart
       path: firebase_test
       ref: dart3a
-  dev_test:
-  test: "^1.0.0"
+  dev_build:
+  test: ">=1.0.0"
   build_runner: ">=0.9.1"
   build_test: ">=0.10.3"
   process_run:
