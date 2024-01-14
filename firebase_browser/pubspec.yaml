@@ -37,7 +37,7 @@ dev_dependencies:
   build_runner: ">=0.9.1"
   build_test: ">=0.10.3"
   build_web_compilers: ">=0.4.0+4"
-  dev_test:
+  dev_build:
 
 dependency_overrides:
   tekartik_firebase:

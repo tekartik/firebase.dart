@@ -27,8 +27,8 @@ dependencies:
   json_rpc_2:
 
 dev_dependencies:
-  dev_test:
-  test: "^1.0.0"
+  dev_build:
+  test: '>=1.0.0'
   build_runner: ">=0.9.1"
   build_web_compilers: ">=0.4.0+4"
   build_test: ">=0.10.3"
