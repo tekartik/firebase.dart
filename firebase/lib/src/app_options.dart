@@ -78,35 +78,27 @@ mixin FirebaseAppOptionsMixin implements FirebaseAppOptions {
   }
 
   @override
-  // TODO: implement apiKey
   String? get apiKey => throw UnimplementedError();
 
   @override
-  // TODO: implement appId
   String? get appId => throw UnimplementedError();
 
   @override
-  // TODO: implement authDomain
   String? get authDomain => throw UnimplementedError();
 
   @override
-  // TODO: implement databaseURL
   String? get databaseURL => throw UnimplementedError();
 
   @override
-  // TODO: implement measurementId
   String? get measurementId => throw UnimplementedError();
 
   @override
-  // TODO: implement messagingSenderId
   String? get messagingSenderId => throw UnimplementedError();
 
   @override
-  // TODO: implement projectId
   String? get projectId => throw UnimplementedError();
 
   @override
-  // TODO: implement storageBucket
   String? get storageBucket => throw UnimplementedError();
 
   @override
