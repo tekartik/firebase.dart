@@ -4,6 +4,7 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firebase_admin.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
+
 import 'platform.dart';
 
 String get _defaultAppName => firebaseAppNameDefault;
@@ -12,6 +13,25 @@ abstract class AdminAppOptionsRest implements AppOptionsRest {
   /// The http client
   @override
   Client? get client;
+}
+
+/// Rest extension.
+extension FirebaseAdminRestExtension on FirebaseAdminRest {
+  /// Initialize rest with a service account json map.
+  Future<FirebaseApp> initializeAppWithServiceAccountMap(Map map) async {
+    var credentials = FirebaseAdminCredentialRest.fromServiceAccountMap(map);
+    credential.setApplicationDefault(credentials);
+    return await initializeAppAsync();
+  }
+
+  /// Initialize rest with a service account json string.
+  Future<FirebaseApp> initializeAppWithServiceAccountString(
+      String serviceAccountString) async {
+    var credentials = FirebaseAdminCredentialRest.fromServiceAccountJson(
+        serviceAccountString);
+    credential.setApplicationDefault(credentials);
+    return await initializeAppAsync();
+  }
 }
 
 /// The app options to use for REST app initialization.
@@ -52,9 +72,7 @@ class AppOptionsRestImpl extends AppOptions implements AppOptionsRest {
   }
 }
 
-class FirebaseRestImpl
-    with FirebaseMixin
-    implements FirebaseRest, FirebaseAdmin {
+class FirebaseRestImpl with FirebaseMixin implements FirebaseAdminRest {
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
@@ -71,9 +89,9 @@ class FirebaseRestImpl
 
   @override
   Future<App> initializeAppAsync({AppOptions? options, String? name}) async {
-    var app = initializeApp(options: options, name: name);
     // initialize client
     await credential.applicationDefault()?.getAccessToken();
+    var app = initializeApp(options: options, name: name);
     return app;
   }
 
@@ -173,12 +191,15 @@ class FirebaseAdminCredentialServiceRest
 /// Rest credentials implementation
 abstract class FirebaseAdminCredentialRest implements FirebaseAdminCredential {
   AppOptionsRest? get appOptions;
+
   AuthClient? get authClient;
+
   factory FirebaseAdminCredentialRest.fromServiceAccountJson(
       String serviceAccountJson,
       {List<String>? scopes}) {
     return newFromServiceAccountJson(serviceAccountJson, scopes: scopes);
   }
+
   factory FirebaseAdminCredentialRest.fromServiceAccountMap(
       Map serviceAccountMap,
       {List<String>? scopes}) {
