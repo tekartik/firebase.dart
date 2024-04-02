@@ -5,7 +5,10 @@ import 'package:tekartik_firebase/firebase_admin.dart';
 import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
 
 export 'package:tekartik_firebase_rest/src/firebase_rest.dart'
-    show AppOptionsRest, FirebaseAdminCredentialRest;
+    show
+        AppOptionsRest,
+        FirebaseAdminCredentialRest,
+        FirebaseAdminRestExtension;
 
 export 'src/app_options_access_token.dart' show getAppOptionsFromAccessToken;
 export 'src/scopes.dart'
@@ -21,7 +24,7 @@ abstract class FirebaseRest implements Firebase {}
 abstract class FirebaseAdminRest implements FirebaseRest, FirebaseAdmin {}
 
 /// Rest firebase api
-FirebaseRest get firebaseRest => impl;
+FirebaseAdminRest get firebaseRest => impl;
 
 /// Rest app extension (if any)
 abstract class AppRest implements App {

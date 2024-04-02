@@ -53,6 +53,8 @@ class FirebaseAppServiceMock implements FirebaseAppService {
   }
 }
 
+class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
+
 void main() {
   group('firebase', () {
     test('service', () async {
