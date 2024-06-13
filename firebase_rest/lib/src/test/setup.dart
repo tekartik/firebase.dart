@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:googleapis_auth/auth_io.dart';
@@ -43,19 +42,8 @@ Future<AccessToken> getAccessToken(Client client) async {
 
 /// Get the context from a json file or local.service_account.json file
 Future<Context> getContext(Client client,
-    {List<String>? scopes,
-    String? dir,
-    String? serviceAccountJsonPath,
-    Map? serviceAccountMap}) async {
-  var jsonData = serviceAccountMap ??
-      jsonDecode(() {
-        var path = serviceAccountJsonPath ??
-            join(dir ?? 'test', 'local.service_account.json');
-
-        var serviceAccountJsonString = File(path).readAsStringSync();
-        return serviceAccountJsonString;
-      }());
-  var creds = ServiceAccountCredentials.fromJson(jsonData);
+    {List<String>? scopes, String? dir, required Map serviceAccountMap}) async {
+  var creds = ServiceAccountCredentials.fromJson(serviceAccountMap);
 
   var accessCreds = await obtainAccessCredentialsViaServiceAccount(
       creds, scopes ?? firebaseBaseScopes, client);
@@ -63,7 +51,7 @@ Future<Context> getContext(Client client,
 
   var authClient = authenticatedClient(client, accessCreds);
   var appOptions = AppOptionsRest(client: authClient)
-    ..projectId = (jsonData as Map)['project_id']?.toString();
+    ..projectId = serviceAccountMap['project_id']?.toString();
   var context = Context()
     ..client = client
     ..accessToken = accessToken
@@ -96,19 +84,36 @@ Future<Context> getContextFromAccessToken(Client client, String token,
   return getContextFromAccessCredentials(client, accessCredentials);
 }
 
+/*
+Future<Context> getContextFromJsonAccount(Client client,
+    {List<String> scopes, String serviceAccountJsonString}) async {
+  var jsonData = jsonDecode(serviceAccountJsonString);
+  var creds = ServiceAccountCredentials.fromJson(jsonData);
+
+  var accessCreds = await obtainAccessCredentialsViaServiceAccount(
+      creds, scopes ?? _firebaseScopes, client);
+  var accessToken = accessCreds.accessToken;
+
+  var authClient = authenticatedClient(client, accessCreds);
+  var appOptions = AppOptionsRest(authClient: authClient)
+    ..projectId = jsonData['project_id']?.toString();
+  var context = Context()
+    ..client = client
+    ..accessToken = accessToken
+    ..authClient = authClient
+    ..options = appOptions;
+  return context;
+}
+*/
 Future<Context?> setup(
     {List<String>? scopes,
     String dir = 'test',
-    String? serviceAccountJsonPath,
-    Map? serviceAccountMap}) async {
+    required Map serviceAccountMap}) async {
   var client = Client();
   // Load client info
   try {
     return await getContext(client,
-        scopes: scopes,
-        dir: dir,
-        serviceAccountJsonPath: serviceAccountJsonPath,
-        serviceAccountMap: serviceAccountMap);
+        scopes: scopes, dir: dir, serviceAccountMap: serviceAccountMap);
   } catch (e) {
     client.close();
     print(e);
@@ -123,17 +128,12 @@ Future<Context?> setup(
 Future<FirebaseRest?> firebaseRestSetup(
     {List<String>? scopes,
     String dir = 'test',
-    String? serviceAccountJsonPath}) async {
+    required serviceAccountMap}) async {
   var client = Client();
   // Load client info
   try {
-    serviceAccountJsonPath ??= join(dir, 'local.service_account.json');
-
-    var serviceAccountJsonString =
-        File(serviceAccountJsonPath).readAsStringSync();
     firebaseRest.credential.setApplicationDefault(
-        FirebaseAdminCredentialRest.fromServiceAccountJson(
-            serviceAccountJsonString,
+        FirebaseAdminCredentialRest.fromServiceAccountMap(serviceAccountMap,
             scopes: scopes));
     await firebaseRest.credential.applicationDefault()?.getAccessToken();
     return firebaseRest;

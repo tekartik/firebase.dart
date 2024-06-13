@@ -14,7 +14,11 @@ void run(FirebaseAsync firebase, {AppOptions options}) {
   runApp(firebase, app);
 }
 */
-void runApp(FirebaseAsync firebaseAsync, {AppOptions? options, String? name}) {
+
+void runApp(FirebaseAsync firebaseAsync, {AppOptions? options, String? name}) =>
+    runFirebaseTests(firebaseAsync, options: options, name: name);
+void runFirebaseTests(FirebaseAsync firebaseAsync,
+    {AppOptions? options, String? name}) {
   late App app;
   setUpAll(() async {
     app = await firebaseAsync.initializeAppAsync(options: options, name: name);
