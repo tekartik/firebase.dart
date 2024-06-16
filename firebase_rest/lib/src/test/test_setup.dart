@@ -5,9 +5,11 @@ import 'dart:io';
 import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart';
 import 'package:path/path.dart';
+// ignore: depend_on_referenced_packages
+import 'package:process_run/shell.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart' hide firebaseRest;
 import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
-import 'package:process_run/shell.dart';
+
 export 'package:tekartik_firebase_rest/firebase_rest.dart';
 
 /// Json (if starting with { or path
@@ -98,7 +100,7 @@ Future<FirebaseRestTestContext> getContext(Client client,
 
   var authClient = authenticatedClient(client, accessCreds);
   var appOptions = AppOptionsRest(client: authClient)
-    ..projectId = (jsonData as Map)['project_id']?.toString();
+    ..projectId = (jsonData)['project_id']?.toString();
   var context = FirebaseRestTestContext()
     ..client = client
     ..accessToken = accessToken
