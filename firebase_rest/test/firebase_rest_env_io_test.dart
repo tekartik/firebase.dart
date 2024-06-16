@@ -16,7 +16,8 @@ Future main() async {
   } else {
     group('rest', () {
       test('setup', () {
-        print('Using firebase project: ${context.options!.projectId}');
+        print('Using firebase:');
+        print('projectId: ${context.options!.projectId}');
       });
       // there is no name on node
       runFirebaseTests(firebaseRest, options: context.options);
