@@ -7,10 +7,17 @@ import 'package:http/http.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart' hide firebaseRest;
 import 'package:tekartik_firebase_rest/src/firebase_rest.dart';
-
+import 'package:process_run/shell.dart';
 export 'package:tekartik_firebase_rest/firebase_rest.dart';
 
-class Context {
+/// Json (if starting with { or path
+const _envServiceAccount = 'TEKARTIK_FIREBASE_REST_TEST_SERVICE_ACCOUNT';
+
+String? _envGetServiceAccountJsonOrPath() {
+  return shellEnvironment[_envServiceAccount];
+}
+
+class FirebaseRestTestContext {
   Client? client;
   AuthClient? authClient;
   AccessToken? accessToken;
@@ -20,6 +27,9 @@ class Context {
   /// True if it can be used
   bool get valid => authClient != null;
 }
+
+@Deprecated('Use FirebaseRestTestContext')
+typedef Context = FirebaseRestTestContext;
 
 class ServiceAccount {
   Map? jsonData;
@@ -41,20 +51,45 @@ Future<AccessToken> getAccessToken(Client client) async {
   return accessCreds.accessToken;
 }
 
-/// Get the context from a json file or local.service_account.json file
-Future<Context> getContext(Client client,
+/// Get the FirebaseRestTestContext from a json file or local.service_account.json file
+Future<FirebaseRestTestContext> getContext(Client client,
     {List<String>? scopes,
     String? dir,
     String? serviceAccountJsonPath,
-    Map? serviceAccountMap}) async {
-  var jsonData = serviceAccountMap ??
-      jsonDecode(() {
-        var path = serviceAccountJsonPath ??
-            join(dir ?? 'test', 'local.service_account.json');
+    Map? serviceAccountMap,
+    bool? useEnv}) async {
+  Map serviceAccountFromString(String jsonString) {
+    return jsonDecode(jsonString) as Map;
+  }
 
-        var serviceAccountJsonString = File(path).readAsStringSync();
-        return serviceAccountJsonString;
-      }());
+  Map serviceAccountFromPath(String path) {
+    try {
+      var serviceAccountJsonString = File(path).readAsStringSync();
+      return serviceAccountFromString(serviceAccountJsonString);
+    } catch (e) {
+      throw (StateError('Cannot read $path'));
+    }
+  }
+
+  Map jsonData;
+  if (serviceAccountMap != null) {
+    jsonData = serviceAccountMap;
+  } else if (useEnv == true) {
+    var serviceAccountJsonOrPath = _envGetServiceAccountJsonOrPath();
+    if (serviceAccountJsonOrPath == null) {
+      throw (StateError('$_envServiceAccount not set'));
+    }
+    if (serviceAccountJsonOrPath.startsWith('{')) {
+      jsonData = serviceAccountFromString(serviceAccountJsonOrPath);
+    } else {
+      jsonData = serviceAccountFromPath(serviceAccountJsonOrPath);
+    }
+  } else {
+    serviceAccountJsonPath ??=
+        join(dir ?? 'test', 'local.service_account.json');
+    jsonData = serviceAccountFromPath(serviceAccountJsonPath);
+  }
+
   var creds = ServiceAccountCredentials.fromJson(jsonData);
 
   var accessCreds = await obtainAccessCredentialsViaServiceAccount(
@@ -64,7 +99,7 @@ Future<Context> getContext(Client client,
   var authClient = authenticatedClient(client, accessCreds);
   var appOptions = AppOptionsRest(client: authClient)
     ..projectId = (jsonData as Map)['project_id']?.toString();
-  var context = Context()
+  var context = FirebaseRestTestContext()
     ..client = client
     ..accessToken = accessToken
     ..authClient = authClient
@@ -72,7 +107,7 @@ Future<Context> getContext(Client client,
   return context;
 }
 
-Future<Context> getContextFromAccessCredentials(
+Future<FirebaseRestTestContext> getContextFromAccessCredentials(
     Client client, AccessCredentials accessCredentials,
     {List<String>? scopes}) async {
   var accessToken = accessCredentials.accessToken;
@@ -80,7 +115,7 @@ Future<Context> getContextFromAccessCredentials(
   var authClient = authenticatedClient(client, accessCredentials);
   var appOptions = AppOptionsRest(client: authClient);
   // ..projectId = jsonData['project_id']?.toString();
-  var context = Context()
+  var context = FirebaseRestTestContext()
     ..client = client
     ..accessToken = accessToken
     ..authClient = authClient
@@ -88,7 +123,8 @@ Future<Context> getContextFromAccessCredentials(
   return context;
 }
 
-Future<Context> getContextFromAccessToken(Client client, String token,
+Future<FirebaseRestTestContext> getContextFromAccessToken(
+    Client client, String token,
     {required List<String> scopes}) async {
   // expiry is ignored in request
   var accessToken = AccessToken('Bearer', token, DateTime.now().toUtc());
@@ -96,9 +132,10 @@ Future<Context> getContextFromAccessToken(Client client, String token,
   return getContextFromAccessCredentials(client, accessCredentials);
 }
 
-Future<Context?> setup(
+Future<FirebaseRestTestContext?> setup(
     {List<String>? scopes,
     String dir = 'test',
+    bool? useEnv,
     String? serviceAccountJsonPath,
     Map? serviceAccountMap}) async {
   var client = Client();
@@ -108,13 +145,11 @@ Future<Context?> setup(
         scopes: scopes,
         dir: dir,
         serviceAccountJsonPath: serviceAccountJsonPath,
-        serviceAccountMap: serviceAccountMap);
+        serviceAccountMap: serviceAccountMap,
+        useEnv: useEnv);
   } catch (e) {
     client.close();
     print(e);
-    print('Cannot find $dir/sample.local.config.yaml');
-    print('Make sure to run the test using something like: ');
-    print('  pub run build_runner test --fail-on-severe -- -p chrome');
   }
   return null;
 }
@@ -123,6 +158,7 @@ Future<Context?> setup(
 Future<FirebaseRest?> firebaseRestSetup(
     {List<String>? scopes,
     String dir = 'test',
+    Map? serviceAccountMap,
     String? serviceAccountJsonPath}) async {
   var client = Client();
   // Load client info

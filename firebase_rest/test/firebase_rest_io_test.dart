@@ -15,7 +15,7 @@ Future main() async {
   } else {
     group('rest', () {
       // there is no name on node
-      runApp(firebaseRest);
+      runFirebaseTests(firebaseRest);
 
       test('authClient', () {
         if (firebaseRest is FirebaseAdminRest) {
