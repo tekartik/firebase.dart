@@ -1,8 +1,7 @@
-import 'dart:html';
-
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_browser/firebase_browser.dart';
 import 'package:tekartik_firebase_browser/src/interop.dart';
+import 'package:web/web.dart' as web;
 
 import 'example_common.dart';
 import 'example_setup.dart';
@@ -16,13 +15,13 @@ void main() async {
 
   App? app;
 
-  querySelector('#initialize')!.onClick.listen((_) async {
+  web.document.querySelector('#initialize')!.onClick.listen((_) async {
     write('initializing...');
     app = firebase.initializeApp(options: options);
     write('initialized ${app!.name}');
   });
 
-  querySelector('#delete')!.onClick.listen((_) async {
+  web.document.querySelector('#delete')!.onClick.listen((_) async {
     if (app != null) {
       write('deleting...');
       await app!.delete();
@@ -30,7 +29,7 @@ void main() async {
     }
   });
 
-  querySelector('#get_app')!.onClick.listen((_) async {
+  web.document.querySelector('#get_app')!.onClick.listen((_) async {
     write('Getting...');
     try {
       app = firebase.app();

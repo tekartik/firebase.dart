@@ -1,16 +1,14 @@
-import 'dart:convert';
-import 'dart:html';
-
+// ignore: depend_on_referenced_packages
+import 'package:tekartik_common_utils/out_buffer.dart';
 import 'package:tekartik_firebase_rest/firebase_rest.dart';
+import 'package:web/web.dart' as web;
 
-Element get _output => querySelector('#output') as Element;
-void write(String message) {
-  var lines = LineSplitter.split(_output.text ?? '').toList();
-  if (lines.length > 100) {
-    lines = lines.sublist(10);
-  }
-  lines.add(message);
-  _output.text = lines.join('\n');
+OutBuffer _outBuffer = OutBuffer(100);
+web.Element? _output = web.document.getElementById('output');
+
+void write([Object? message]) {
+  print(message);
+  _output?.text = (_outBuffer..add('$message')).toString();
 }
 
 void main() {

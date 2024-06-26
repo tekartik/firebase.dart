@@ -22,6 +22,7 @@ dependencies:
   http:
   path:
 dev_dependencies:
+  web:
   dev_build:
   tekartik_firebase_test:
     path: ../firebase_test
