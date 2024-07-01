@@ -35,3 +35,18 @@ mixin FirebaseAppMixin implements App {
     });
   }
 }
+
+/// Helper for any app service (firestore, storage...)
+mixin FirebaseProductServiceMixin<T> {
+  /// Most implementation need a single instance, keep it in memory!
+  final _instances = <App, T>{};
+
+  T getInstance(App app, T Function() createIfNotFound) {
+    var instance = _instances[app];
+    if (instance == null) {
+      var newInstance = instance = createIfNotFound();
+      _instances[app] = newInstance;
+    }
+    return instance!;
+  }
+}

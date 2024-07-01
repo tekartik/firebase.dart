@@ -55,6 +55,14 @@ class FirebaseAppServiceMock implements FirebaseAppService {
 
 class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
 
+class FirebaseProductMock {}
+
+class FirebaseProductServiceMock
+    with FirebaseProductServiceMixin<FirebaseProductMock> {
+  FirebaseProductMock product(App app) =>
+      getInstance(app, () => FirebaseProductMock());
+}
+
 void main() {
   group('firebase', () {
     test('service', () async {
@@ -65,6 +73,18 @@ void main() {
       expect(service.initCount, 1);
       await app.delete();
       expect(service.initCount, 0);
+    });
+    test('product service', () {
+      var firebase = FirebaseMock();
+      var app1 = firebase.initializeApp(name: 'app1');
+      var app2 = firebase.initializeApp(name: 'app2');
+      expect(app1, isNot(app2));
+      var service = FirebaseProductServiceMock();
+      var product1 = service.product(app1);
+      var product2 = service.product(app2);
+      var product1bis = service.product(app1);
+      expect(product1, isNot(product2));
+      expect(product1, product1bis);
     });
   });
 }
