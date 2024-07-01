@@ -6,6 +6,8 @@ export 'package:tekartik_firebase/src/app_options.dart'
 
 export 'package:tekartik_firebase/src/firebase.dart'
     show firebaseAppNameDefault;
+export 'package:tekartik_firebase/src/firebase_mixin.dart'
+    show FirebaseProductServiceMixin;
 
 /// Async interface, needed for flutter.
 abstract class FirebaseAsync {
