@@ -5,7 +5,6 @@ var topDir = '..';
 
 Future<void> main() async {
   for (var dir in [
-    'firebase_rest',
     'firebase',
     'firebase_browser',
     'firebase_local',
