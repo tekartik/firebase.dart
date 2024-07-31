@@ -5,47 +5,65 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart'; // ignore: implementation_imports
 
 String get _defaultAppName => firebaseAppNameDefault;
+String get _defaultProjectId => 'local';
 
+/// Local firebase implementation
 class FirebaseLocal with FirebaseMixin {
   String? _localPath;
 
+  /// Local path
   String? get localPath => _localPath;
 
+  /// Create a local firebase
   FirebaseLocal({String? localPath}) {
     _localPath = localPath ?? join('.dart_tool', 'tekartik_firebase_local');
   }
 
   @override
-  App initializeApp({AppOptions? options, String? name}) {
+  bool get isLocal => true;
+
+  @override
+  App initializeApp({FirebaseAppOptions? options, String? name}) {
     name ??= _defaultAppName;
-    options ??= AppOptions();
+    options ??= AppOptions(projectId: _defaultProjectId);
 
     var app = AppLocal(this, options, name);
-    apps[name] = app;
+    _apps[name] = app;
     return app;
   }
 
   @override
   App app({String? name}) {
     name ??= _defaultAppName;
-    for (var appName in apps.keys) {
+    for (var appName in _apps.keys) {
       if (appName == name) {
-        return apps[appName]!;
+        return _apps[appName]!;
       }
     }
     return initializeApp(name: name);
   }
 
-  final Map<String, AppLocal> apps = {};
+  /// List of apps
+  final Map<String, AppLocal> _apps = {};
 }
 
-class AppLocal with FirebaseAppMixin {
+/// To deprecate
+typedef AppLocal = FirebaseAppLocal;
+
+/// Local app
+class FirebaseAppLocal with FirebaseAppMixin {
+  /// App path part
   static String appPathPart(String name) {
     return (name == _defaultAppName || name == '') ? '_default' : name;
   }
 
+  /// Local firebase
   final FirebaseLocal firebaseLocal;
 
+  @override
+  Firebase get firebase => firebaseLocal;
+
+  /// Local path
   String get localPath {
     var partPath = appPathPart(name);
     // If the name has more than 1 part, it is a path
@@ -56,6 +74,7 @@ class AppLocal with FirebaseAppMixin {
     }
   }
 
+  /// Path part
   String get pathPart => appPathPart(name);
 
   // Updated on init
@@ -64,11 +83,13 @@ class AppLocal with FirebaseAppMixin {
   @override
   AppOptions get options => _options;
 
+  /// Deleted
   bool deleted = false;
   @override
   String name;
 
-  AppLocal(this.firebaseLocal, this._options, this.name);
+  /// Constructor
+  FirebaseAppLocal(this.firebaseLocal, this._options, this.name);
 
   @override
   Future<void> delete() async {

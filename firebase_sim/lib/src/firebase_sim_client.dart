@@ -13,6 +13,8 @@ class AppSim with FirebaseAppMixin {
   bool deleted = false;
   final String _name;
 
+  @override
+  Firebase get firebase => admin;
   // when ready
   WebSocketChannel<String>? webSocketChannel;
   Completer<FirebaseSimClient>? readyCompleter;
@@ -68,6 +70,7 @@ class AppSim with FirebaseAppMixin {
 }
 
 String get _defaultAppName => firebaseAppNameDefault;
+String get _defaultProjectId => 'sim';
 
 class FirebaseSim with FirebaseMixin {
   final WebSocketChannelClientFactory? clientFactory;
@@ -81,7 +84,8 @@ class FirebaseSim with FirebaseMixin {
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
-    var app = AppSim(this, options ?? AppOptions(), name);
+    var app =
+        AppSim(this, options ?? AppOptions(projectId: _defaultProjectId), name);
     _apps[name] = app;
     return app;
   }

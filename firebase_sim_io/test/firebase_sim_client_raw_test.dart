@@ -14,7 +14,7 @@ import 'test_common.dart';
 
 Future main() async {
   var testContext = await initTestContextSim();
-  runApp(testContext.firebase);
+  runFirebaseTests(testContext.firebase);
 
   group('firebase_sim_client', () {
     late FirebaseSimClient simClient;

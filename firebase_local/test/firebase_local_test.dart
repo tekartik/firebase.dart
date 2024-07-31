@@ -8,7 +8,7 @@ import 'package:test/test.dart';
 void main() {
   group('local', () {
     // there is no name on node
-    runApp(FirebaseLocal(localPath: '.'), options: null);
+    runFirebaseTests(FirebaseLocal(localPath: '.'), options: null);
 
     test('projectId', () async {
       var firebase = FirebaseLocal();
@@ -20,7 +20,7 @@ void main() {
 
     test('newFirebaseAppLocal', () async {
       var app = newFirebaseAppLocal();
-      expect(app.options.projectId, isNull);
+      expect(app.options.projectId, 'local');
       expect(app.name, '[DEFAULT]');
       await app.delete();
 

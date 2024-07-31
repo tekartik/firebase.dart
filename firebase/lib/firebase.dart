@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:tekartik_firebase/src/app_options.dart';
+import 'src/app_options.dart';
 export 'package:tekartik_firebase/src/app_options.dart'
     show AppOptions, FirebaseAppOptions, FirebaseAppOptionsMixin;
 
@@ -18,6 +18,7 @@ abstract class FirebaseAsync {
   Future<App> appAsync({String? name});
 }
 
+/// Firebase interface.
 abstract class Firebase extends FirebaseAsync {
   /// Initialize the app with the given options.
   // @deprecated use async version
@@ -25,13 +26,16 @@ abstract class Firebase extends FirebaseAsync {
 
   /// Retrieves an existing instance of an App.
   App app({String? name});
+
+  /// True if firebase is local (i.e. FirebaseLocal, not rest, nor node, nor flutter
+  bool get isLocal;
 }
 
 /// This is the new type, App will be deprecated in the future
-typedef FirebaseApp = App;
+typedef App = FirebaseApp;
 
 /// Firebase app.
-abstract class App {
+abstract class FirebaseApp {
   /// The app name
   String get name;
 
@@ -46,7 +50,13 @@ abstract class App {
   /// Add a service and calls its init method.
   ///
   /// Upon delete, close will be called
-  Future addService(FirebaseAppService service);
+  Future<void> addService(FirebaseAppService service);
+
+  /// Get firebase
+  Firebase get firebase;
+
+  /// True if local (nor node, nor rest, nor flutter)
+  bool get isLocal;
 }
 
 /// Attached firebase service.
@@ -54,7 +64,7 @@ abstract class App {
 /// Init is called
 abstract class FirebaseAppService {
   /// Called when [App.addService] is called
-  Future init(App app);
+  Future<void> init(App app);
 
   /// Called when [App.delete] is called
   Future close(App app);

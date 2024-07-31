@@ -1,10 +1,14 @@
-library tekartik_firebase.firebase_test;
-
 import 'package:tekartik_firebase/firebase.dart';
+import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:test/test.dart';
+
+import 'firebase_mixin_test.dart';
 
 void main() {
   group('firebase', () {
+    // there is no name on node
+    runFirebaseTests(FirebaseMock(), options: null);
+
     test('api', () {
       // ignore: unnecessary_statements
       Firebase;

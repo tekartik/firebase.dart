@@ -3,52 +3,40 @@
 version: 2
 
 enable-beta-ecosystems: true
+
 updates:
   - package-ecosystem: "pub"
     directory: "firebase"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "firebase_browser"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "firebase_local"
     schedule:
       interval: "monthly"
-
-  - package-ecosystem: "pub"
-    directory: "firebase_rest"
-    schedule:
-      interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "firebase_sim"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "firebase_sim_browser"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "firebase_sim_io"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "firebase_test"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "pub"
     directory: "repo_support"
     schedule:
       interval: "monthly"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:

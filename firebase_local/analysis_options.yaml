@@ -1,2 +1,2 @@
-# tekartik analysis_options extension to pedantic
-include: package:tekartik_lints/strict.yaml
+# tekartik analysis_options for package
+include: package:tekartik_lints/package.yaml

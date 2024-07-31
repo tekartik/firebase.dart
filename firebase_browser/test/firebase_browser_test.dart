@@ -19,6 +19,6 @@ void main() async {
     if (options == null) {
       return;
     }
-    runApp(firebase, options: options);
+    runFirebaseTests(firebase, options: options);
   });
 }

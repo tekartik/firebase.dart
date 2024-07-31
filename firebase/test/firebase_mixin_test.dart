@@ -1,32 +1,37 @@
-library tekartik_firebase.firebase_test;
-
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:test/test.dart';
 
 String get _defaultAppName => firebaseAppNameDefault;
+String get _defaultProjectId => 'mock';
 
 class FirebaseMock with FirebaseMixin {
   final _apps = <String, App?>{};
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
-    var app = FirebaseAppMock(options: options, name: name);
+    var app = FirebaseAppMock(firebaseMock: this, options: options, name: name);
+    _apps[name] = app;
     return app;
   }
 
   @override
   App app({String? name}) {
-    return _apps[name!]!;
+    return _apps[name ?? _defaultAppName]!;
   }
 }
 
 class FirebaseAppMock with FirebaseAppMixin {
-  FirebaseAppMock({String? name, AppOptions? options}) {
-    this.options = options ?? AppOptions();
+  final FirebaseMock firebaseMock;
+  FirebaseAppMock(
+      {required this.firebaseMock, String? name, AppOptions? options}) {
+    this.options = options ?? AppOptions()
+      ..projectId = _defaultProjectId;
     this.name = name ?? _defaultAppName;
   }
 
+  @override
+  Firebase get firebase => firebaseMock;
   @override
   Future<void> delete() async {
     await closeServices();
@@ -53,6 +58,7 @@ class FirebaseAppServiceMock implements FirebaseAppService {
   }
 }
 
+// ignore: unreachable_from_main
 class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
 
 class FirebaseProductMock {}
@@ -60,7 +66,7 @@ class FirebaseProductMock {}
 class FirebaseProductServiceMock
     with FirebaseProductServiceMixin<FirebaseProductMock> {
   FirebaseProductMock product(App app) =>
-      getInstance(app, () => FirebaseProductMock());
+      getInstance(app, FirebaseProductMock.new);
 }
 
 void main() {

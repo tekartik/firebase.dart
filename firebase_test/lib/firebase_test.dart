@@ -1,6 +1,7 @@
 library tekartik_tekartik_firebase_sembast.admin_test;
 
 import 'package:tekartik_firebase/firebase.dart';
+import 'package:tekartik_firebase_test/firebase_app_test.dart';
 import 'package:test/test.dart';
 
 /*
@@ -15,11 +16,12 @@ void run(FirebaseAsync firebase, {AppOptions options}) {
 }
 */
 
+@Deprecated('Preferred runFirebaseTests')
 void runApp(FirebaseAsync firebaseAsync, {AppOptions? options, String? name}) =>
     runFirebaseTests(firebaseAsync, options: options, name: name);
 void runFirebaseTests(FirebaseAsync firebaseAsync,
     {AppOptions? options, String? name}) {
-  late App app;
+  late FirebaseApp app;
   setUpAll(() async {
     app = await firebaseAsync.initializeAppAsync(options: options, name: name);
   });
@@ -27,6 +29,7 @@ void runFirebaseTests(FirebaseAsync firebaseAsync,
     return app.delete();
   });
 
+  runFirebaseAppTests(firebaseAsync, () => app);
   group('Firebase', () {
     test('default app name', () async {
       expect(app.name, name ?? '[DEFAULT]');

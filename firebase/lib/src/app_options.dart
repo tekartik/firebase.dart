@@ -1,19 +1,36 @@
-import 'utils.dart';
+import 'package:tekartik_common_utils/string_utils.dart';
 
 /// This is the new type, App will be deprecated in the future
-typedef FirebaseAppOptions = AppOptions;
+typedef AppOptions = FirebaseAppOptions;
 
-class AppOptions {
+/// Firebase app options
+class FirebaseAppOptions {
+  /// Api key
   String? apiKey;
+
+  /// Auth domain
   String? authDomain;
+
+  /// Database url
   String? databaseURL;
+
+  /// Project id
   String? projectId;
+
+  /// Storage bucket
   String? storageBucket;
+
+  /// Messaging sender id
   String? messagingSenderId;
+
+  /// Measurement id
   String? measurementId;
+
+  /// App id
   String? appId;
 
-  AppOptions(
+  /// Constructor
+  FirebaseAppOptions(
       {this.apiKey,
       this.authDomain,
       this.databaseURL,
@@ -23,17 +40,23 @@ class AppOptions {
       this.appId,
       this.measurementId});
 
-  factory AppOptions.fromMap(Map<String, Object?> map) =>
+  /// Create from map
+  factory FirebaseAppOptions.fromMap(Map<String, Object?> map) =>
       FirebaseAppOptionsFromMap(map);
 
+  /// To debug map
   Map<String, Object?> toDebugMap() {
-    return {'apiKey': obfuscate(apiKey), projectId!: projectId};
+    return {
+      if (apiKey != null) 'apiKey': apiKey!.obfuscate(),
+      'projectId': projectId
+    };
   }
 
   @override
   String toString() => toDebugMap().toString();
 }
 
+/// Firebase app options from map
 class FirebaseAppOptionsFromMap
     with FirebaseAppOptionsMixin
     implements FirebaseAppOptions {
@@ -54,6 +77,7 @@ class FirebaseAppOptionsFromMap
   @override
   String? appId;
 
+  /// Constructor for map
   FirebaseAppOptionsFromMap(Map<String, Object?> map) {
     apiKey = map['apiKey']?.toString();
     authDomain = map['authDomain']?.toString();
@@ -64,17 +88,16 @@ class FirebaseAppOptionsFromMap
     measurementId = map['measurementId']?.toString();
     appId = map['appId']?.toString();
   }
-
-  @override
-  Map<String, Object?> toDebugMap() {
-    return {'apiKey': obfuscate(apiKey), projectId!: projectId};
-  }
 }
 
+/// Firebase app options mixin
 mixin FirebaseAppOptionsMixin implements FirebaseAppOptions {
   @override
   Map<String, Object?> toDebugMap() {
-    return {'apiKey': obfuscate(apiKey), projectId!: projectId};
+    return {
+      if (apiKey != null) 'apiKey': apiKey!.obfuscate(),
+      'projectId': projectId
+    };
   }
 
   @override

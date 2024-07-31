@@ -1,4 +1,4 @@
-library tekartik_firebase_browser.test.firebase_browser_api_test;
+library;
 
 import 'package:test/test.dart';
 

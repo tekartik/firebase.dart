@@ -19,7 +19,7 @@ Future main() async {
 }
 
 void run(TestContext testContext) {
-  runApp(testContext.firebase);
+  runFirebaseTests(testContext.firebase);
 
   group('firebase_app_sim', () {
     late AppSim app;
