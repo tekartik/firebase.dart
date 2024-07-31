@@ -10,6 +10,10 @@ void main() {
     // there is no name on node
     runFirebaseTests(FirebaseLocal(localPath: '.'), options: null);
 
+    test('isLocal', () {
+      var firebase = FirebaseLocal();
+      expect(firebase.isLocal, isTrue);
+    });
     test('projectId', () async {
       var firebase = FirebaseLocal();
       var app = await firebase.initializeAppAsync(
@@ -20,6 +24,7 @@ void main() {
 
     test('newFirebaseAppLocal', () async {
       var app = newFirebaseAppLocal();
+      expect(app.isLocal, isTrue);
       expect(app.options.projectId, 'local');
       expect(app.name, '[DEFAULT]');
       await app.delete();
