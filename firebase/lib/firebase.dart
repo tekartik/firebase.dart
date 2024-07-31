@@ -5,7 +5,7 @@ export 'package:tekartik_firebase/src/app_options.dart'
     show AppOptions, FirebaseAppOptions, FirebaseAppOptionsMixin;
 
 export 'package:tekartik_firebase/src/firebase.dart'
-    show firebaseAppNameDefault;
+    show firebaseAppNameDefault, FirebaseAppProductService, FirebaseAppProduct;
 export 'package:tekartik_firebase/src/firebase_mixin.dart'
     show FirebaseProductServiceMixin;
 
@@ -50,7 +50,7 @@ abstract class FirebaseApp {
   /// Add a service and calls its init method.
   ///
   /// Upon delete, close will be called
-  Future<void> addService(FirebaseAppService service);
+  Future<void> addService(FirebaseProductService service);
 
   /// Get firebase
   Firebase get firebase;
@@ -62,10 +62,10 @@ abstract class FirebaseApp {
 /// Attached firebase service.
 ///
 /// Init is called
-abstract class FirebaseAppService {
+abstract class FirebaseProductService {
   /// Called when [App.addService] is called
   Future<void> init(App app);
 
   /// Called when [App.delete] is called
-  Future close(App app);
+  Future<void> close(App app);
 }

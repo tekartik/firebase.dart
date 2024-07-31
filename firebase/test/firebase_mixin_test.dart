@@ -44,37 +44,43 @@ class FirebaseAppMock with FirebaseAppMixin {
   late final AppOptions options;
 }
 
-class FirebaseAppServiceMock implements FirebaseAppService {
+// ignore: unused_element
+class _FirebaseAppProductTest with FirebaseAppProductMixin {}
+
+// ignore: unused_element
+class _FirebaseProductServiceTest with FirebaseProductServiceMixin {}
+
+class FirebaseProductServiceMock
+    with FirebaseProductServiceMixin<FirebaseAppProductMock> {
   int initCount = 0;
 
+  FirebaseAppProductMock product(App app) =>
+      getInstance(app, FirebaseAppProductMock.new);
+
   @override
-  Future close(App app) async {
+  Future<void> close(App app) async {
     initCount--;
+    await super.close(app);
   }
 
   @override
-  Future init(App app) async {
+  Future<void> init(App app) async {
     initCount++;
+    await super.init(app);
   }
 }
 
 // ignore: unreachable_from_main
 class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
 
-class FirebaseProductMock {}
-
-class FirebaseProductServiceMock
-    with FirebaseProductServiceMixin<FirebaseProductMock> {
-  FirebaseProductMock product(App app) =>
-      getInstance(app, FirebaseProductMock.new);
-}
+class FirebaseAppProductMock with FirebaseAppProductMixin {}
 
 void main() {
   group('firebase', () {
     test('service', () async {
       var firebase = FirebaseMock();
       var app = firebase.initializeApp();
-      var service = FirebaseAppServiceMock();
+      var service = FirebaseProductServiceMock();
       await app.addService(service);
       expect(service.initCount, 1);
       await app.delete();
@@ -91,6 +97,16 @@ void main() {
       var product1bis = service.product(app1);
       expect(product1, isNot(product2));
       expect(product1, product1bis);
+    });
+    test('dispose', () async {
+      var firebase = FirebaseMock();
+      var app = firebase.initializeApp();
+      var service = FirebaseProductServiceMock();
+
+      var productMock = service.product(app);
+      expect(productMock.disposed, isFalse);
+      await app.delete();
+      expect(productMock.disposed, isTrue);
     });
   });
 }

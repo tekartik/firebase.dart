@@ -13,7 +13,7 @@ void main() {
       // ignore: unnecessary_statements
       Firebase;
       // ignore: unnecessary_statements
-      FirebaseAppService;
+      FirebaseProductService;
       // ignore: unnecessary_statements
       App;
       // ignore: unnecessary_statements
