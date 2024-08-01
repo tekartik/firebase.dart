@@ -84,7 +84,7 @@ mixin FirebaseProductServiceMixin<T> implements FirebaseProductService {
   final _instances = <App, T>{};
 
   /// Get the instance for the app, create it if not found
-  T getInstance(App app, T Function() createIfNotFound) {
+  I getInstance<I extends T>(App app, T Function() createIfNotFound) {
     var instance = _instances[app];
     if (instance == null) {
       app.addService(this);
@@ -96,7 +96,7 @@ mixin FirebaseProductServiceMixin<T> implements FirebaseProductService {
         app.addProduct(newInstance);
       }
     }
-    return instance!;
+    return instance as I;
   }
 
   @mustCallSuper

@@ -55,7 +55,7 @@ class FirebaseProductServiceMock
   int initCount = 0;
 
   FirebaseAppProductMock product(App app) =>
-      getInstance(app, FirebaseAppProductMock.new) as FirebaseAppProductMock;
+      getInstance<FirebaseAppProductMock>(app, FirebaseAppProductMock.new);
 
   @override
   Future<void> close(App app) async {
