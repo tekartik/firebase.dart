@@ -5,7 +5,10 @@ const firebaseAppNameDefault = '[DEFAULT]';
 class FirebaseAppProductService {}
 
 /// Interface for a firebase app service (auth, firestore, storage...)
-class FirebaseAppProduct {
+abstract class FirebaseAppProduct<T> {
+  /// The type of the product
+  Type get type;
+
   /// Close the service
-  void dispose() {}
+  void dispose();
 }

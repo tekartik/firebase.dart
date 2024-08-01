@@ -19,6 +19,18 @@ mixin FirebaseMixin implements Firebase {
 mixin FirebaseAppMixin implements App {
   final _servicesLock = Lock();
   final _services = <FirebaseProductService>{};
+  final _product = <Type, FirebaseAppProduct>{};
+
+  /// add the product to the app
+  void addProduct(FirebaseAppProduct product) {
+    _product[product.type] = product;
+  }
+
+  /// Get the product for the type
+  T? getProduct<T>() {
+    var product = _product[T];
+    return product as T?;
+  }
 
   /// Close all added service.
   Future<void> closeServices() {
@@ -50,8 +62,11 @@ mixin FirebaseAppMixin implements App {
 }
 
 /// Helper for any app produce (firestore, storage...)
-mixin FirebaseAppProductMixin<T> implements FirebaseAppProduct {
+mixin FirebaseAppProductMixin<T> implements FirebaseAppProduct<T> {
   var _disposed = false;
+
+  @override
+  Type get type => T;
 
   /// True if disposed
   bool get disposed => _disposed;
@@ -75,6 +90,11 @@ mixin FirebaseProductServiceMixin<T> implements FirebaseProductService {
       app.addService(this);
       var newInstance = instance = createIfNotFound();
       _instances[app] = newInstance;
+
+      /// Add the product to the app
+      if (app is FirebaseAppMixin && newInstance is FirebaseAppProduct) {
+        app.addProduct(newInstance);
+      }
     }
     return instance!;
   }

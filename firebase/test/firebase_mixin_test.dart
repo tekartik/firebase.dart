@@ -51,11 +51,11 @@ class _FirebaseAppProductTest with FirebaseAppProductMixin {}
 class _FirebaseProductServiceTest with FirebaseProductServiceMixin {}
 
 class FirebaseProductServiceMock
-    with FirebaseProductServiceMixin<FirebaseAppProductMock> {
+    with FirebaseProductServiceMixin<FirebaseAppProductMockBase> {
   int initCount = 0;
 
   FirebaseAppProductMock product(App app) =>
-      getInstance(app, FirebaseAppProductMock.new);
+      getInstance(app, FirebaseAppProductMock.new) as FirebaseAppProductMock;
 
   @override
   Future<void> close(App app) async {
@@ -73,7 +73,12 @@ class FirebaseProductServiceMock
 // ignore: unreachable_from_main
 class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
 
-class FirebaseAppProductMock with FirebaseAppProductMixin {}
+/// test base definition
+abstract class FirebaseAppProductMockBase {}
+
+class FirebaseAppProductMock
+    with FirebaseAppProductMixin<FirebaseAppProductMockBase>
+    implements FirebaseAppProductMockBase {}
 
 void main() {
   group('firebase', () {
@@ -97,6 +102,15 @@ void main() {
       var product1bis = service.product(app1);
       expect(product1, isNot(product2));
       expect(product1, product1bis);
+    });
+    test('product', () async {
+      var firebase = FirebaseMock();
+      var app = firebase.initializeApp() as FirebaseAppMock;
+      var service = FirebaseProductServiceMock();
+      expect(app.getProduct<FirebaseAppProductMockBase>(), isNull);
+      var productMock = service.product(app);
+      expect(app.getProduct<FirebaseAppProductMockBase>(), productMock);
+      await app.delete();
     });
     test('dispose', () async {
       var firebase = FirebaseMock();
