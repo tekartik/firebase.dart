@@ -7,16 +7,21 @@ import '../firebase.dart';
 mixin FirebaseMixin implements Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions? options, String? name}) async =>
-      initializeApp(options: options, name: name);
+      latestFirebaseInstanceOrNull =
+          initializeApp(options: options, name: name);
   @override
-  Future<App> appAsync({String? name}) async => app(name: name);
+  Future<App> appAsync({String? name}) async =>
+      latestFirebaseInstanceOrNull = app(name: name);
+
+  /// The latest initialized firebase app instance.
+  static FirebaseApp? latestFirebaseInstanceOrNull;
 
   @override
   bool get isLocal => false;
 }
 
 /// Firebase app mixin
-mixin FirebaseAppMixin implements App {
+mixin FirebaseAppMixin implements FirebaseApp {
   final _servicesLock = Lock();
   final _services = <FirebaseProductService>{};
   final _product = <Type, FirebaseAppProduct>{};

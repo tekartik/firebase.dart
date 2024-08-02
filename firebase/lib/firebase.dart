@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'firebase_mixin.dart';
 import 'src/app_options.dart';
 export 'package:tekartik_firebase/src/app_options.dart'
     show AppOptions, FirebaseAppOptions, FirebaseAppOptionsMixin;
@@ -57,6 +58,10 @@ abstract class FirebaseApp {
 
   /// True if local (nor node, nor rest, nor flutter)
   bool get isLocal;
+
+  /// The latest initialized firebase app instance.
+  static FirebaseApp get instance =>
+      FirebaseMixin.latestFirebaseInstanceOrNull!;
 }
 
 /// Attached firebase service.

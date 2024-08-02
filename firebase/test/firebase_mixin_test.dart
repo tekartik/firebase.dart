@@ -11,7 +11,7 @@ class FirebaseMock with FirebaseMixin {
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
     var app = FirebaseAppMock(firebaseMock: this, options: options, name: name);
-    _apps[name] = app;
+    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
     return app;
   }
 
@@ -85,6 +85,8 @@ void main() {
     test('service', () async {
       var firebase = FirebaseMock();
       var app = firebase.initializeApp();
+      expect(FirebaseApp.instance, app);
+
       var service = FirebaseProductServiceMock();
       await app.addService(service);
       expect(service.initCount, 1);
