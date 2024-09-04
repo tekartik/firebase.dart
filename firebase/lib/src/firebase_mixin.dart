@@ -1,7 +1,7 @@
 // This file is use by the implementation, should be considerd like a public api
 // although not exposed.
 import 'package:tekartik_common_utils/common_utils_import.dart';
-import '../firebase.dart';
+import 'package:tekartik_firebase/firebase.dart';
 
 /// Firebase mixin
 mixin FirebaseMixin implements Firebase {

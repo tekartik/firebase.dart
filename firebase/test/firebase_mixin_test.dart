@@ -45,7 +45,12 @@ class FirebaseAppMock with FirebaseAppMixin {
 }
 
 // ignore: unused_element
-class _FirebaseAppProductTest with FirebaseAppProductMixin {}
+class _FirebaseAppProductTest with FirebaseAppProductMixin {
+  @override
+  final FirebaseApp app;
+
+  _FirebaseAppProductTest(this.app);
+}
 
 // ignore: unused_element
 class _FirebaseProductServiceTest with FirebaseProductServiceMixin {}
@@ -55,7 +60,8 @@ class FirebaseProductServiceMock
   int initCount = 0;
 
   FirebaseAppProductMock product(App app) =>
-      getInstance<FirebaseAppProductMock>(app, FirebaseAppProductMock.new);
+      getInstance<FirebaseAppProductMock>(
+          app, () => FirebaseAppProductMock(app));
 
   @override
   Future<void> close(App app) async {
@@ -78,7 +84,12 @@ abstract class FirebaseAppProductMockBase {}
 
 class FirebaseAppProductMock
     with FirebaseAppProductMixin<FirebaseAppProductMockBase>
-    implements FirebaseAppProductMockBase {}
+    implements FirebaseAppProductMockBase {
+  @override
+  final FirebaseApp app;
+
+  FirebaseAppProductMock(this.app);
+}
 
 void main() {
   group('firebase', () {

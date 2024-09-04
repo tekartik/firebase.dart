@@ -22,3 +22,4 @@ doc/api/
 # local files
 local.*
 .local/
+pubspec_overrides.yaml

@@ -2,13 +2,17 @@ import 'dart:async';
 
 import 'firebase_mixin.dart';
 import 'src/app_options.dart';
+import 'src/firebase_product_service.dart';
 export 'package:tekartik_firebase/src/app_options.dart'
     show AppOptions, FirebaseAppOptions, FirebaseAppOptionsMixin;
 
 export 'package:tekartik_firebase/src/firebase.dart'
-    show firebaseAppNameDefault, FirebaseAppProductService, FirebaseAppProduct;
+    show firebaseAppNameDefault;
+export 'package:tekartik_firebase/src/firebase_app_product.dart'
+    show FirebaseAppProductService, FirebaseAppProduct;
 export 'package:tekartik_firebase/src/firebase_mixin.dart'
     show FirebaseProductServiceMixin;
+export 'src/firebase_product_service.dart' show FirebaseProductService;
 
 /// Async interface, needed for flutter.
 abstract class FirebaseAsync {
@@ -62,15 +66,4 @@ abstract class FirebaseApp {
   /// The latest initialized firebase app instance.
   static FirebaseApp get instance =>
       FirebaseMixin.latestFirebaseInstanceOrNull!;
-}
-
-/// Attached firebase service.
-///
-/// Init is called
-abstract class FirebaseProductService {
-  /// Called when [App.addService] is called
-  Future<void> init(App app);
-
-  /// Called when [App.delete] is called
-  Future<void> close(App app);
 }
