@@ -1,9 +1,8 @@
 library tekartik_tekartik_firebase_sembast.admin_test;
 
-import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_test/firebase_app_test.dart';
 import 'package:test/test.dart';
-
+export 'package:tekartik_firebase/firebase.dart';
 /*
 void run(FirebaseAsync firebase, {AppOptions options}) {
   App app = firebase.initializeApp(options: options);

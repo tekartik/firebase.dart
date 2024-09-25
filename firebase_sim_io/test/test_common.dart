@@ -1,7 +1,6 @@
 import 'dart:async';
 
 // ignore: depend_on_referenced_packages
-import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_local/firebase_local.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
 import 'package:tekartik_firebase_sim_io/firebase_sim_client_io.dart' as sim;

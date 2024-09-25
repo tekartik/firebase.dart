@@ -1,4 +1,3 @@
-import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:test/test.dart';
 
