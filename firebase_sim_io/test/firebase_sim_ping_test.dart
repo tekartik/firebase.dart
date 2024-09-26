@@ -5,7 +5,6 @@ import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
 // ignore: depend_on_referenced_packages
-import 'package:tekartik_web_socket/web_socket.dart';
 import 'package:tekartik_web_socket_io/web_socket_io.dart';
 import 'package:test/test.dart';
 
