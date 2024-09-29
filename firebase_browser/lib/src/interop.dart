@@ -1,5 +1,5 @@
 @JS()
-library tekartik_firebase_browser_interop;
+library;
 
 import 'dart:js' as js;
 

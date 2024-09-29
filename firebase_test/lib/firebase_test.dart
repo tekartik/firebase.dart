@@ -1,4 +1,4 @@
-library tekartik_tekartik_firebase_sembast.admin_test;
+library;
 
 import 'package:tekartik_firebase_test/firebase_app_test.dart';
 import 'package:test/test.dart';

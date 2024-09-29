@@ -1,5 +1,5 @@
 @JS()
-library tekartik_firebase_interop;
+library;
 
 // ignore_for_file: implementation_imports
 import 'package:firebase/src/interop/app_interop.dart' show AppJsImpl;

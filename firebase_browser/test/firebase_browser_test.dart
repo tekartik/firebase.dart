@@ -1,5 +1,5 @@
 @TestOn('browser')
-library tekartik_firebase_browser.test.firebase_browser_test;
+library;
 
 import 'package:tekartik_firebase_browser/firebase_browser.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';

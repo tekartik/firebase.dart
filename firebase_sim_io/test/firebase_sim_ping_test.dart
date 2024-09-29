@@ -1,5 +1,5 @@
 @TestOn('vm')
-library tekartik_firebase_sim_io.firebase_sim_ping_test;
+library;
 
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';

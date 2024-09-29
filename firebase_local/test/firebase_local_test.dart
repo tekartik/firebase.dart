@@ -1,4 +1,4 @@
-library tekartik_firebase_local.local_test;
+library;
 
 import 'package:tekartik_firebase_local/firebase_local.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
