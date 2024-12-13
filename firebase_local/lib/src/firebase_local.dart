@@ -28,7 +28,7 @@ class FirebaseLocal with FirebaseMixin {
     options ??= AppOptions(projectId: _defaultProjectId);
 
     var app = AppLocal(this, options, name);
-    _apps[name] = app;
+    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
     return app;
   }
 
