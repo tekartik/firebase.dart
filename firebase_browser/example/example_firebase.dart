@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use_from_same_package, duplicate_ignore
+
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_browser/firebase_browser.dart';
 import 'package:tekartik_firebase_browser/src/interop.dart';
