@@ -4,14 +4,14 @@ version: 0.3.0
 publish_to: none
 
 environment:
-  sdk: ^3.5.0
+  sdk: ^3.6.0
 
 dev_dependencies:
-  path:
-  pub_semver:
-  process_run: '>=0.10.3'
-  test:
-  dev_build:
+  path: ">=1.9.0"
+  pub_semver: ">=2.1.4"
+  process_run: ">=1.2.1+1"
+  test: ">=1.24.0"
+  dev_build: ">=1.1.2"
   tekartik_lints:
     git:
       url: https://github.com/tekartik/common.dart

@@ -7,5 +7,5 @@ web.Element? _output = web.document.getElementById('output');
 
 void write([Object? message]) {
   print(message);
-  _output?.text = (_outBuffer..add('$message')).toString();
+  _output?.textContent = (_outBuffer..add('$message')).toString();
 }
