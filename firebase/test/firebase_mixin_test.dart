@@ -21,6 +21,17 @@ class FirebaseMock with FirebaseMixin {
   }
 }
 
+class FirebaseAdminMock extends FirebaseMock {
+  @override
+  App initializeApp({AppOptions? options, String? name}) {
+    name ??= _defaultAppName;
+    var app =
+        FirebaseAdminAppMock(firebaseMock: this, options: options, name: name);
+    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
+    return app;
+  }
+}
+
 class FirebaseAppMock with FirebaseAppMixin {
   final FirebaseMock firebaseMock;
   FirebaseAppMock(
@@ -42,6 +53,14 @@ class FirebaseAppMock with FirebaseAppMixin {
 
   @override
   late final AppOptions options;
+}
+
+class FirebaseAdminAppMock extends FirebaseAppMock {
+  FirebaseAdminAppMock(
+      {required super.firebaseMock, super.options, super.name});
+
+  @override
+  bool get hasAdminCredentials => true;
 }
 
 // ignore: unused_element
@@ -96,6 +115,7 @@ void main() {
     test('service', () async {
       var firebase = FirebaseMock();
       var app = firebase.initializeApp();
+      expect(app.hasAdminCredentials, isFalse);
       expect(FirebaseApp.instance, app);
 
       var service = FirebaseProductServiceMock();
@@ -134,6 +154,12 @@ void main() {
       expect(productMock.disposed, isFalse);
       await app.delete();
       expect(productMock.disposed, isTrue);
+    });
+
+    test('admin', () async {
+      var firebase = FirebaseAdminMock();
+      var app = firebase.initializeApp();
+      expect(app.hasAdminCredentials, isTrue);
     });
   });
 }

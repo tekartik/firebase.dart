@@ -63,6 +63,9 @@ abstract class FirebaseApp {
   /// True if local (nor node, nor rest, nor flutter)
   bool get isLocal;
 
+  /// True if it has admin credentials
+  bool get hasAdminCredentials;
+
   /// The latest initialized firebase app instance.
   static FirebaseApp get instance =>
       FirebaseMixin.latestFirebaseInstanceOrNull!;

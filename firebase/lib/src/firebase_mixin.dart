@@ -64,6 +64,9 @@ mixin FirebaseAppMixin implements FirebaseApp {
 
   @override
   bool get isLocal => firebase.isLocal;
+
+  @override
+  bool get hasAdminCredentials => false;
 }
 
 /// Helper for any app produce (firestore, storage...)
