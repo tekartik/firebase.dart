@@ -25,6 +25,11 @@ dependencies:
   synchronized: '>=1.5.0-dev.2'
   logging: any
   json_rpc_2:
+  tekartik_rpc:
+    git:
+      url: https://github.com/tekartik/rpc.dart
+      ref: dart3a
+      path: packages/rpc
 
 dev_dependencies:
   dev_build: ">=1.1.2"

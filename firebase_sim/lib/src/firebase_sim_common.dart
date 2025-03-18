@@ -1,6 +1,11 @@
 import 'package:json_rpc_2/json_rpc_2.dart';
 import 'package:tekartik_firebase_sim/rpc_message.dart';
 
+void log(String tag, Object? message) {
+  // ignore: avoid_print
+  print('/$tag $message');
+}
+
 Map<String, dynamic>? requestParams(Request request) =>
     request.params as Map<String, dynamic>?;
 

@@ -1,12 +1,23 @@
-import 'dart:async';
-
+import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
+// ignore: depend_on_referenced_packages
+import 'package:tekartik_common_utils/common_utils_import.dart' hide log;
+// ignore: depend_on_referenced_packages
+import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
+import 'package:tekartik_firebase_sim/rpc_message.dart';
+import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
+import 'firebase_sim_common.dart';
+
+var debugFirebaseSimClient = false; // devWarning(true);
+
+void _log(Object? message) {
+  log('firebase_sim_client', message);
+}
 
 class AppSim with FirebaseAppMixin {
   final FirebaseSim admin;
@@ -94,5 +105,56 @@ class FirebaseSim with FirebaseMixin {
   App app({String? name}) {
     name ??= _defaultAppName;
     return _apps[name]!;
+  }
+}
+
+const requestTimeoutDuration = Duration(seconds: 15);
+
+class FirebaseSimClient extends Object with FirebaseSimMixin {
+  final _notificationController = StreamController<Notification>.broadcast();
+
+  Stream<Notification> get notificationStream => _notificationController.stream;
+  @override
+  final WebSocketChannel<String>? webSocketChannel;
+  late json_rpc.Client rpcClient;
+
+  static FirebaseSimClient connect(String url,
+      {required WebSocketChannelClientFactory webSocketChannelClientFactory}) {
+    var client = webSocketChannelClientFactory.connect<String>(url);
+    return FirebaseSimClient(client);
+  }
+
+  FirebaseSimClient(this.webSocketChannel) {
+    rpcClient = json_rpc.Client(webSocketChannel!);
+    init();
+    // starting listening
+    rpcClient.listen();
+  }
+
+  @override
+  Future close() async {
+    await _notificationController.close();
+    await closeMixin();
+  }
+
+  Future<T?> sendRequest<T>(String method, [dynamic param]) async {
+    T? t;
+    if (debugFirebaseSimClient) {
+      _log('request: $method $param');
+    }
+    try {
+      t = await rpcClient.sendRequest(method, param) as T?;
+      if (debugFirebaseSimClient) {
+        _log('response $t');
+      }
+    } on json_rpc.RpcException catch (e) {
+      // devPrint('ERROR ${e.runtimeType} $e ${e.message} ${e.data}');
+      if (isDebug) {
+        _log(e);
+        _log('sending $method $param');
+      }
+      throw e.message;
+    }
+    return t;
   }
 }
