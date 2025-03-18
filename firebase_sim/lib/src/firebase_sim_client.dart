@@ -8,10 +8,10 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
-import 'package:tekartik_firebase_sim/rpc_message.dart';
+
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
-import 'firebase_sim_common.dart';
+import 'log_utils.dart';
 
 var debugFirebaseSimClient = false; // devWarning(true);
 
@@ -111,9 +111,6 @@ class FirebaseSim with FirebaseMixin {
 const requestTimeoutDuration = Duration(seconds: 15);
 
 class FirebaseSimClient extends Object with FirebaseSimMixin {
-  final _notificationController = StreamController<Notification>.broadcast();
-
-  Stream<Notification> get notificationStream => _notificationController.stream;
   @override
   final WebSocketChannel<String>? webSocketChannel;
   late json_rpc.Client rpcClient;
@@ -133,7 +130,6 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
 
   @override
   Future close() async {
-    await _notificationController.close();
     await closeMixin();
   }
 

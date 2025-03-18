@@ -1,16 +1,17 @@
 import 'dart:core' hide Error;
 
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
-// ignore: depend_on_referenced_packages
-import 'package:tekartik_common_utils/common_utils_import.dart';
+import 'package:tekartik_common_utils/common_utils_import.dart' hide log;
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
-// for debugging
-//@deprecated
-//set debugSimServerMessage(bool debugMessage) => _debugMessage = debugMessage;
-//bool _debugMessage = false;
+import 'log_utils.dart';
+
+var debugFirebaseSimServer = false; // devWarning(true);
+void _log(Object? message) {
+  log('firebase_sim_client', message);
+}
 
 Future<FirebaseSimServer> serve(
     Firebase firebase, WebSocketChannelFactory channelFactory,
@@ -96,7 +97,14 @@ class FirebaseSimServerChannel {
       return _app!.name;
     });
     _rpcServer.registerMethod(methodPing, (json_rpc.Parameters parameters) {
-      return _mapParams(parameters);
+      if (debugFirebaseSimServer) {
+        _log('ping rcv: $parameters');
+      }
+      var result = _mapParams(parameters);
+      if (debugFirebaseSimServer) {
+        _log('ping snd: $result');
+      }
+      return result;
     });
     /*
     // Specific method for deleting a database

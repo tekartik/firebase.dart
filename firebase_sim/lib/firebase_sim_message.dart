@@ -1,6 +1,10 @@
+/// Ping method
 const methodPing = 'ping'; // from client or server
 
+/// InitializeApp method
 const methodAdminInitializeApp = 'admin/initializeApp';
+
+/// GetAppName method
 const methodAdminGetAppName = 'admin/getAppName';
 
 class RawData {
