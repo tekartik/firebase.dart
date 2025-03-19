@@ -133,13 +133,13 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
     await closeMixin();
   }
 
-  Future<T?> sendRequest<T>(String method, [dynamic param]) async {
-    T? t;
+  Future<T> sendRequest<T>(String method, [dynamic param]) async {
+    T t;
     if (debugFirebaseSimClient) {
       _log('request: $method $param');
     }
     try {
-      t = await rpcClient.sendRequest(method, param) as T?;
+      t = await rpcClient.sendRequest(method, param) as T;
       if (debugFirebaseSimClient) {
         _log('response $t');
       }
