@@ -10,6 +10,7 @@ import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
+import 'package:tekartik_rpc/rpc_client.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 import 'log_utils.dart';
 
@@ -19,27 +20,31 @@ void _log(Object? message) {
   log('firebase_sim_client', message);
 }
 
-class AppSim with FirebaseAppMixin {
+/// Compat
+typedef AppSim = FirebaseAppSim;
+
+/// We have one client per app
+class FirebaseAppSim with FirebaseAppMixin {
   final FirebaseSim admin;
   bool deleted = false;
   final String _name;
 
   @override
   Firebase get firebase => admin;
-  // when ready
-  WebSocketChannel<String>? webSocketChannel;
+
   Completer<FirebaseSimClient>? readyCompleter;
 
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
-      webSocketChannel = admin.clientFactory!.connect(admin.url);
-      var simClient = FirebaseSimClient(webSocketChannel);
+
+      var simClient = FirebaseSimClient.connect(admin.uri,
+          webSocketChannelClientFactory: admin.clientFactory);
       var adminInitializeAppData = AdminInitializeAppData()
         ..projectId = options.projectId
         ..name = name;
       try {
-        await simClient.sendRequest<void>(
+        await simClient.sendRequest<void>(FirebaseSimCoreService.serviceName,
             methodAdminInitializeApp, adminInitializeAppData.toMap());
         readyCompleter!.complete(simClient);
       } catch (e) {
@@ -49,7 +54,7 @@ class AppSim with FirebaseAppMixin {
     return readyCompleter!.future;
   }
 
-  AppSim(this.admin, this.options, this._name) {
+  FirebaseAppSim(this.admin, this.options, this._name) {
     //_name ??= firebaseAppNameDefault;
   }
 
@@ -70,33 +75,36 @@ class AppSim with FirebaseAppMixin {
   // basic ping feature with console display
   Future ping() async {
     var simClient = await this.simClient;
-    await simClient.sendRequest<void>(methodPing);
+    await simClient.sendRequest<void>(
+        FirebaseSimCoreService.serviceName, methodPing, null);
   }
 
   // use the rpc
   Future<String?> getAppName() async {
     var simClient = await this.simClient;
-    return await simClient.sendRequest(methodAdminGetAppName);
+    return await simClient.sendRequest(
+        FirebaseSimCoreService.serviceName, methodAdminGetAppName, null);
   }
 }
 
 String get _defaultAppName => firebaseAppNameDefault;
 String get _defaultProjectId => 'sim';
 
+/// Firebase sim
 class FirebaseSim with FirebaseMixin {
   final WebSocketChannelClientFactory? clientFactory;
-  final String url;
+  final Uri uri;
 
-  FirebaseSim({this.clientFactory, String? url})
-      : url = url ?? 'ws://localhost:$firebaseSimDefaultPort';
+  FirebaseSim({this.clientFactory, Uri? uri})
+      : uri = uri ?? Uri.parse('ws://localhost:$firebaseSimDefaultPort');
 
   final _apps = <String, AppSim>{};
 
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
-    var app =
-        AppSim(this, options ?? AppOptions(projectId: _defaultProjectId), name);
+    var app = FirebaseAppSim(
+        this, options ?? AppOptions(projectId: _defaultProjectId), name);
     _apps[name] = app;
     return app;
   }
@@ -110,36 +118,19 @@ class FirebaseSim with FirebaseMixin {
 
 const requestTimeoutDuration = Duration(seconds: 15);
 
-class FirebaseSimClient extends Object with FirebaseSimMixin {
-  @override
-  final WebSocketChannel<String>? webSocketChannel;
-  late json_rpc.Client rpcClient;
+class _FirebaseSimClient implements FirebaseSimClient {
+  final RpcClient rpcClient;
 
-  static FirebaseSimClient connect(String url,
-      {required WebSocketChannelClientFactory webSocketChannelClientFactory}) {
-    var client = webSocketChannelClientFactory.connect<String>(url);
-    return FirebaseSimClient(client);
-  }
-
-  FirebaseSimClient(this.webSocketChannel) {
-    rpcClient = json_rpc.Client(webSocketChannel!);
-    init();
-    // starting listening
-    rpcClient.listen();
-  }
+  _FirebaseSimClient({required this.rpcClient});
 
   @override
-  Future close() async {
-    await closeMixin();
-  }
-
-  Future<T> sendRequest<T>(String method, [dynamic param]) async {
+  Future<T> sendRequest<T>(String service, String method, Object? param) async {
     T t;
     if (debugFirebaseSimClient) {
       _log('request: $method $param');
     }
     try {
-      t = await rpcClient.sendRequest(method, param) as T;
+      t = await rpcClient.sendServiceRequest<T>(service, method, param);
       if (debugFirebaseSimClient) {
         _log('response $t');
       }
@@ -153,4 +144,25 @@ class FirebaseSimClient extends Object with FirebaseSimMixin {
     }
     return t;
   }
+
+  @override
+  Future close() async {
+    await rpcClient.close();
+  }
+}
+
+/// Firebase sim client
+abstract class FirebaseSimClient {
+  static FirebaseSimClient connect(Uri uri,
+      {WebSocketChannelClientFactory? webSocketChannelClientFactory}) {
+    var rpcClient = AutoConnectRpcClient.autoConnect(uri,
+        webSocketChannelClientFactory: webSocketChannelClientFactory);
+    return _FirebaseSimClient(rpcClient: rpcClient);
+  }
+
+  /// Send a request
+  Future<T> sendRequest<T>(String service, String method, Object? param);
+
+  /// Close
+  Future<void> close();
 }

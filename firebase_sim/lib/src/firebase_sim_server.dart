@@ -1,9 +1,10 @@
 import 'dart:core' hide Error;
 
-import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 import 'package:tekartik_common_utils/common_utils_import.dart' hide log;
+import 'package:tekartik_common_utils/map_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
+import 'package:tekartik_rpc/rpc_server.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
 import 'log_utils.dart';
@@ -13,11 +14,29 @@ void _log(Object? message) {
   log('firebase_sim_client', message);
 }
 
-Future<FirebaseSimServer> serve(
-    Firebase firebase, WebSocketChannelFactory channelFactory,
-    {int? port}) async {
-  var server = await channelFactory.server.serve<String>(port: port);
-  var simServer = FirebaseSimServer(firebase, server);
+Future<FirebaseSimServer> firebaseSimServe(
+  Firebase firebase, {
+  WebSocketChannelServerFactory? webSocketChannelServerFactory,
+  List<FirebaseSimPlugin>? plugins,
+  int? port,
+}) async {
+  var services = [
+    FirebaseSimCoreService(),
+    if (plugins != null) ...plugins.map((plugin) => plugin.simService)
+  ];
+  var rpcServer = await RpcServer.serve(
+      port: port,
+      webSocketChannelServerFactory: webSocketChannelServerFactory,
+      services: services);
+  var simServer = FirebaseSimServer(firebase, rpcServer);
+  for (var service in services) {
+    service.simServer = simServer;
+  }
+  if (plugins != null) {
+    for (var plugin in plugins) {
+      simServer.addPlugin(plugin);
+    }
+  }
   return simServer;
 }
 
@@ -26,64 +45,68 @@ class FirebaseSimServer {
   final Firebase? firebase;
 
   final List<FirebaseSimPlugin> _plugins = [];
-  final List<FirebaseSimServerChannel> _channels = [];
-  final WebSocketChannelServer<String> webSocketChannelServer;
+  final RpcServer rpcServer;
 
   void addPlugin(FirebaseSimPlugin plugin) {
     _plugins.add(plugin);
   }
 
-  String get url => webSocketChannelServer.url;
+  String get url => rpcServer.url;
+  Uri get uri => Uri.parse(url);
 
-  FirebaseSimServer(this.firebase, this.webSocketChannelServer) {
-    webSocketChannelServer.stream.listen((clientChannel) {
-      var channel = FirebaseSimServerChannel(this, clientChannel);
-      _channels.add(channel);
-    });
-  }
+  FirebaseSimServer(this.firebase, this.rpcServer);
 
   Future close() async {
-    // stop allowing clients
-    await webSocketChannelServer.close();
-    // Close existing clients
-    for (var channel in _channels) {
-      await channel.close();
+    await rpcServer.close();
+  }
+}
+
+abstract class FirebaseSimServiceBase extends RpcServiceBase {
+  late final FirebaseSimServer simServer;
+
+  FirebaseSimServiceBase(super.name);
+}
+
+var firebaseSimServerExpando = Expando<FirebaseSimServerChannel>();
+
+class FirebaseSimCoreService extends FirebaseSimServiceBase {
+  static const serviceName = 'firebase_core';
+
+  FirebaseSimCoreService() : super(serviceName);
+
+  @override
+  FutureOr<Object?> onCall(RpcServerChannel channel, RpcMethodCall methodCall) {
+    var simServerChannel = firebaseSimServerExpando[channel] ??=
+        FirebaseSimServerChannel(simServer);
+    switch (methodCall.method) {
+      case methodPing:
+        var params = methodCall.arguments;
+        if (debugFirebaseSimServer) {
+          _log('ping rcv: $params');
+        }
+        var result = params;
+        if (debugFirebaseSimServer) {
+          _log('ping snd: $params');
+        }
+        return result;
+
+      case methodAdminInitializeApp:
+        return simServerChannel
+            .handleAdminInitializeApp(anyAsMap(methodCall.arguments!));
+      case methodAdminGetAppName:
+        return simServerChannel.app!.name;
     }
+
+    return super.onCall(channel, methodCall);
   }
-}
-
-abstract mixin class FirebaseSimMixin {
-  WebSocketChannel<String>? get webSocketChannel;
-
-  // default
-  // check overrides if this changes
-  Future close() async {
-    await closeMixin();
-  }
-
-  Future closeMixin() async {
-    await webSocketChannel!.sink.close();
-  }
-
-  // called internally
-  @protected
-  void init() {
-    /*
-    webSocketChannel.stream.listen((String data) {
-      var message = Message.parseMap(json.decode(data) as Map<String, dynamic>);
-      handleMessage(message);
-    });
-    */
-  }
-}
-
-Map<String, dynamic>? _mapParams(json_rpc.Parameters parameters) {
-  return (parameters.value as Map?)?.cast<String, dynamic>();
 }
 
 class FirebaseSimServerChannel {
-  App? _app;
-  final List<FirebaseSimPluginClient> _pluginClients = [];
+  final FirebaseSimServer _simServer;
+  FirebaseApp? app;
+  FirebaseSimServerChannel(this._simServer);
+  /*
+  final List<FirebaseSimPluginServer> _pluginClients = [];
 
   FirebaseSimServerChannel(this._server, WebSocketChannel<String> channel)
       : _rpcServer = json_rpc.Server(channel) {
@@ -106,82 +129,28 @@ class FirebaseSimServerChannel {
       }
       return result;
     });
-    /*
-    // Specific method for deleting a database
-    _rpcServer.registerMethod(methodDeleteDatabase,
-            (json_rpc.Parameters parameters) async {
-          if (_notifyCallback != null) {
-            _notifyCallback(false, methodDeleteDatabase, parameters.value);
-          }
-          await databaseFactory
-              .deleteDatabase((parameters.value as Map)[keyPath] as String);
-          if (_notifyCallback != null) {
-            _notifyCallback(true, methodDeleteDatabase, null);
-          }
-          return null;
-        });
-    // Specific method for creating a directory
-    _rpcServer.registerMethod(methodCreateDirectory,
-            (json_rpc.Parameters parameters) async {
-          if (_notifyCallback != null) {
-            _notifyCallback(false, methodCreateDirectory, parameters.value);
-          }
-          var path = await sqfliteContext
-              .createDirectory((parameters.value as Map)[keyPath] as String);
-          if (_notifyCallback != null) {
-            _notifyCallback(true, methodCreateDirectory, path);
-          }
-          return path;
-        });
-    // Specific method for creating a directory
-    _rpcServer.registerMethod(methodDeleteDirectory,
-            (json_rpc.Parameters parameters) async {
-          if (_notifyCallback != null) {
-            _notifyCallback(false, methodDeleteDirectory, parameters.value);
-          }
-          var path = await sqfliteContext
-              .deleteDirectory((parameters.value as Map)[keyPath] as String);
-          if (_notifyCallback != null) {
-            _notifyCallback(true, methodDeleteDirectory, path);
-          }
-          return path;
-        });
-    // Generic method
-    _rpcServer.registerMethod(methodSqflite,
-            (json_rpc.Parameters parameters) async {
-          if (_notifyCallback != null) {
-            _notifyCallback(false, methodSqflite, parameters.value);
-          }
-          var map = parameters.value as Map;
-          dynamic result =
-          await invokeMethod<dynamic>(map[keyMethod] as String, map[keyParam]);
-          if (_notifyCallback != null) {
-            _notifyCallback(true, methodSqflite, result);
-          }
-          return result;
-        });
-        */
+
 
     _rpcServer.listen();
   }
-
+  */
   Map<String, dynamic>? handleAdminInitializeApp(Map<String, dynamic> param) {
     var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
     var options = AppOptions(
       projectId: adminInitializeAppData.projectId,
     );
-    _app = _server.firebase!
+    app = _simServer.firebase!
         .initializeApp(options: options, name: adminInitializeAppData.name);
     // app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
     // var snapshot = app.firestore().doc(firestoreSetData.path).get();
-
+    /*
     for (var plugin in _server._plugins) {
-      var client = plugin.register(_app, _rpcServer);
+      var client = plugin.register(_app!, _rpcServer);
       _pluginClients.add(client);
-    }
+    }*/
     return null;
   }
-
+/*
   final FirebaseSimServer _server;
   final json_rpc.Server _rpcServer;
 
@@ -189,13 +158,14 @@ class FirebaseSimServerChannel {
     for (var client in _pluginClients) {
       await client.close();
     }
-  }
+  }*/
 }
-
-abstract class FirebaseSimPluginClient {
+/*
+abstract class FirebaseSimPluginServer {
   Future close();
-}
+}*/
 
 abstract class FirebaseSimPlugin {
-  FirebaseSimPluginClient register(App? app, json_rpc.Server rpcServer);
+  FirebaseSimServiceBase get simService;
+  //FirebaseSimPluginServer register(App app, json_rpc.Server rpcServer);
 }

@@ -1,6 +1,7 @@
 @TestOn('vm')
 library;
 
+import 'package:tekartik_firebase_local/firebase_local.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
@@ -20,19 +21,18 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
     late FirebaseSimClient simClient;
 
     setUpAll(() async {
-      var server = await channelFactory.server.serve<String>();
-      simServer = FirebaseSimServer(null, server);
+      simServer = await firebaseSimServe(FirebaseLocal(),
+          webSocketChannelServerFactory: channelFactory.server);
     });
 
     tearDownAll(() async {});
 
     setUp(() {
-      var client = channelFactory.client
-          .connect<String>(simServer.webSocketChannelServer.url);
-      simClient = FirebaseSimClient(client);
+      simClient = FirebaseSimClient.connect(simServer.uri);
     });
     test('ping', () async {
-      await simClient.sendRequest<void>(methodPing);
+      await simClient.sendRequest<void>(
+          FirebaseSimCoreService.serviceName, methodPing, null);
     });
   });
 }
