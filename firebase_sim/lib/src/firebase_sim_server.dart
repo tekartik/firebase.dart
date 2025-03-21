@@ -5,7 +5,6 @@ import 'package:tekartik_common_utils/map_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_rpc/rpc_server.dart';
-import 'package:tekartik_web_socket/web_socket.dart';
 
 import 'log_utils.dart';
 

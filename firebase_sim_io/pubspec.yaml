@@ -48,15 +48,7 @@ dev_dependencies:
       url: https://github.com/tekartik/web_socket.dart
       ref: dart3a
       path: web_socket
-dependency_overrides:
-  tekartik_firebase_sim:
-    path: ../firebase_sim
-  tekartik_firebase_test:
-    path: ../firebase_test
-  tekartik_firebase:
-    path: ../firebase
-  tekartik_firebase_local:
-    path: ../firebase_local
+resolution: workspace
   # tmp
   # tekartik_web_socket_io:
   #  path: ../../web_socket.dart/web_socket_io

@@ -11,7 +11,6 @@ import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_rpc/rpc_client.dart';
-import 'package:tekartik_web_socket/web_socket.dart';
 import 'log_utils.dart';
 
 var debugFirebaseSimClient = false; // devWarning(true);

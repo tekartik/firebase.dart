@@ -44,8 +44,4 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/common_utils.dart
       ref: dart3a
-dependency_overrides:
-  tekartik_firebase:
-    path: ../firebase
-  tekartik_firebase_test:
-    path: ../firebase_test
+resolution: workspace

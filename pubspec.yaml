@@ -7,3 +7,7 @@ workspace:
   - firebase_test
   - firebase_sim
   - firebase
+  - firebase_browser
+  - firebase_sim_browser
+  - firebase_sim_io
+  - repo_support
