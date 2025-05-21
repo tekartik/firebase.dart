@@ -7,8 +7,10 @@ import 'package:tekartik_firebase/firebase.dart';
 mixin FirebaseMixin implements Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions? options, String? name}) async =>
-      latestFirebaseInstanceOrNull =
-          initializeApp(options: options, name: name);
+      latestFirebaseInstanceOrNull = initializeApp(
+        options: options,
+        name: name,
+      );
   @override
   Future<App> appAsync({String? name}) async =>
       latestFirebaseInstanceOrNull = app(name: name);

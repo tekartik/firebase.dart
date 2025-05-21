@@ -23,7 +23,8 @@ void main() {
     test('projectId', () async {
       var firebase = FirebaseLocal();
       var app = await firebase.initializeAppAsync(
-          options: AppOptions(projectId: 'test'));
+        options: AppOptions(projectId: 'test'),
+      );
       expect(app.options.projectId, 'test');
       await app.delete();
     });
@@ -36,7 +37,9 @@ void main() {
       await app.delete();
 
       app = newFirebaseAppLocal(
-          name: 'test_name', options: AppOptions(projectId: 'test_prj'));
+        name: 'test_name',
+        options: AppOptions(projectId: 'test_prj'),
+      );
       expect(app.options.projectId, 'test_prj');
       expect(app.name, 'test_name');
       await app.delete();

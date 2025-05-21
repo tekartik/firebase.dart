@@ -21,12 +21,13 @@ Future<FirebaseSimServer> firebaseSimServe(
 }) async {
   var services = [
     FirebaseSimCoreService(),
-    if (plugins != null) ...plugins.map((plugin) => plugin.simService)
+    if (plugins != null) ...plugins.map((plugin) => plugin.simService),
   ];
   var rpcServer = await RpcServer.serve(
-      port: port,
-      webSocketChannelServerFactory: webSocketChannelServerFactory,
-      services: services);
+    port: port,
+    webSocketChannelServerFactory: webSocketChannelServerFactory,
+    services: services,
+  );
   var simServer = FirebaseSimServer(firebase, rpcServer);
   for (var service in services) {
     service.simServer = simServer;
@@ -75,8 +76,10 @@ class FirebaseSimCoreService extends FirebaseSimServiceBase {
 
   @override
   FutureOr<Object?> onCall(RpcServerChannel channel, RpcMethodCall methodCall) {
-    var simServerChannel = firebaseSimServerExpando[channel] ??=
-        FirebaseSimServerChannel(simServer);
+    var simServerChannel =
+        firebaseSimServerExpando[channel] ??= FirebaseSimServerChannel(
+          simServer,
+        );
     switch (methodCall.method) {
       case methodPing:
         var params = methodCall.arguments;
@@ -90,8 +93,9 @@ class FirebaseSimCoreService extends FirebaseSimServiceBase {
         return result;
 
       case methodAdminInitializeApp:
-        return simServerChannel
-            .handleAdminInitializeApp(anyAsMap(methodCall.arguments!));
+        return simServerChannel.handleAdminInitializeApp(
+          anyAsMap(methodCall.arguments!),
+        );
       case methodAdminGetAppName:
         return simServerChannel.app!.name;
     }
@@ -135,11 +139,11 @@ class FirebaseSimServerChannel {
   */
   Map<String, dynamic>? handleAdminInitializeApp(Map<String, dynamic> param) {
     var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
-    var options = AppOptions(
-      projectId: adminInitializeAppData.projectId,
+    var options = AppOptions(projectId: adminInitializeAppData.projectId);
+    app = _simServer.firebase!.initializeApp(
+      options: options,
+      name: adminInitializeAppData.name,
     );
-    app = _simServer.firebase!
-        .initializeApp(options: options, name: adminInitializeAppData.name);
     // app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
     // var snapshot = app.firestore().doc(firestoreSetData.path).get();
     /*
@@ -149,7 +153,8 @@ class FirebaseSimServerChannel {
     }*/
     return null;
   }
-/*
+
+  /*
   final FirebaseSimServer _server;
   final json_rpc.Server _rpcServer;
 

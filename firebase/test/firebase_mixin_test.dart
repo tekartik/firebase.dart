@@ -25,8 +25,11 @@ class FirebaseAdminMock extends FirebaseMock {
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
-    var app =
-        FirebaseAdminAppMock(firebaseMock: this, options: options, name: name);
+    var app = FirebaseAdminAppMock(
+      firebaseMock: this,
+      options: options,
+      name: name,
+    );
     _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
     return app;
   }
@@ -34,10 +37,14 @@ class FirebaseAdminMock extends FirebaseMock {
 
 class FirebaseAppMock with FirebaseAppMixin {
   final FirebaseMock firebaseMock;
-  FirebaseAppMock(
-      {required this.firebaseMock, String? name, AppOptions? options}) {
-    this.options = options ?? AppOptions()
-      ..projectId = _defaultProjectId;
+  FirebaseAppMock({
+    required this.firebaseMock,
+    String? name,
+    AppOptions? options,
+  }) {
+    this.options =
+        options ?? AppOptions()
+          ..projectId = _defaultProjectId;
     this.name = name ?? _defaultAppName;
   }
 
@@ -56,8 +63,11 @@ class FirebaseAppMock with FirebaseAppMixin {
 }
 
 class FirebaseAdminAppMock extends FirebaseAppMock {
-  FirebaseAdminAppMock(
-      {required super.firebaseMock, super.options, super.name});
+  FirebaseAdminAppMock({
+    required super.firebaseMock,
+    super.options,
+    super.name,
+  });
 
   @override
   bool get hasAdminCredentials => true;
@@ -80,7 +90,9 @@ class FirebaseProductServiceMock
 
   FirebaseAppProductMock product(App app) =>
       getInstance<FirebaseAppProductMock>(
-          app, () => FirebaseAppProductMock(app));
+        app,
+        () => FirebaseAppProductMock(app),
+      );
 
   @override
   Future<void> close(App app) async {

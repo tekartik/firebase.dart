@@ -37,14 +37,20 @@ class FirebaseAppSim with FirebaseAppMixin {
     if (readyCompleter == null) {
       readyCompleter = Completer();
 
-      var simClient = FirebaseSimClient.connect(admin.uri,
-          webSocketChannelClientFactory: admin.clientFactory);
-      var adminInitializeAppData = AdminInitializeAppData()
-        ..projectId = options.projectId
-        ..name = name;
+      var simClient = FirebaseSimClient.connect(
+        admin.uri,
+        webSocketChannelClientFactory: admin.clientFactory,
+      );
+      var adminInitializeAppData =
+          AdminInitializeAppData()
+            ..projectId = options.projectId
+            ..name = name;
       try {
-        await simClient.sendRequest<void>(FirebaseSimCoreService.serviceName,
-            methodAdminInitializeApp, adminInitializeAppData.toMap());
+        await simClient.sendRequest<void>(
+          FirebaseSimCoreService.serviceName,
+          methodAdminInitializeApp,
+          adminInitializeAppData.toMap(),
+        );
         readyCompleter!.complete(simClient);
       } catch (e) {
         readyCompleter!.completeError(e);
@@ -75,14 +81,20 @@ class FirebaseAppSim with FirebaseAppMixin {
   Future ping() async {
     var simClient = await this.simClient;
     await simClient.sendRequest<void>(
-        FirebaseSimCoreService.serviceName, methodPing, null);
+      FirebaseSimCoreService.serviceName,
+      methodPing,
+      null,
+    );
   }
 
   // use the rpc
   Future<String?> getAppName() async {
     var simClient = await this.simClient;
     return await simClient.sendRequest(
-        FirebaseSimCoreService.serviceName, methodAdminGetAppName, null);
+      FirebaseSimCoreService.serviceName,
+      methodAdminGetAppName,
+      null,
+    );
   }
 }
 
@@ -95,7 +107,7 @@ class FirebaseSim with FirebaseMixin {
   final Uri uri;
 
   FirebaseSim({this.clientFactory, Uri? uri})
-      : uri = uri ?? Uri.parse('ws://localhost:$firebaseSimDefaultPort');
+    : uri = uri ?? Uri.parse('ws://localhost:$firebaseSimDefaultPort');
 
   final _apps = <String, AppSim>{};
 
@@ -103,7 +115,10 @@ class FirebaseSim with FirebaseMixin {
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
     var app = FirebaseAppSim(
-        this, options ?? AppOptions(projectId: _defaultProjectId), name);
+      this,
+      options ?? AppOptions(projectId: _defaultProjectId),
+      name,
+    );
     _apps[name] = app;
     return app;
   }
@@ -152,10 +167,14 @@ class _FirebaseSimClient implements FirebaseSimClient {
 
 /// Firebase sim client
 abstract class FirebaseSimClient {
-  static FirebaseSimClient connect(Uri uri,
-      {WebSocketChannelClientFactory? webSocketChannelClientFactory}) {
-    var rpcClient = AutoConnectRpcClient.autoConnect(uri,
-        webSocketChannelClientFactory: webSocketChannelClientFactory);
+  static FirebaseSimClient connect(
+    Uri uri, {
+    WebSocketChannelClientFactory? webSocketChannelClientFactory,
+  }) {
+    var rpcClient = AutoConnectRpcClient.autoConnect(
+      uri,
+      webSocketChannelClientFactory: webSocketChannelClientFactory,
+    );
     return _FirebaseSimClient(rpcClient: rpcClient);
   }
 

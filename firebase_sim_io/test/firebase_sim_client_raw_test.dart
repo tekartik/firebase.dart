@@ -21,17 +21,25 @@ Future main() async {
   group('firebase_sim_client', () {
     late FirebaseSimClient simClient;
     setUp(() {
-      simClient = FirebaseSimClient.connect(simServer.uri,
-          webSocketChannelClientFactory: webSocketChannelClientFactoryMemory);
+      simClient = FirebaseSimClient.connect(
+        simServer.uri,
+        webSocketChannelClientFactory: webSocketChannelClientFactoryMemory,
+      );
     });
     tearDown(() async {
       await simClient.close();
     });
     test('initializeApp', () async {
-      await simClient.sendRequest<void>(FirebaseSimCoreService.serviceName,
-          methodAdminInitializeApp, {'projectId': 'test', 'name': 'test_name'});
+      await simClient.sendRequest<void>(
+        FirebaseSimCoreService.serviceName,
+        methodAdminInitializeApp,
+        {'projectId': 'test', 'name': 'test_name'},
+      );
       var name = await simClient.sendRequest<String>(
-          FirebaseSimCoreService.serviceName, methodAdminGetAppName, null);
+        FirebaseSimCoreService.serviceName,
+        methodAdminGetAppName,
+        null,
+      );
       expect(name, 'test_name');
     });
   });

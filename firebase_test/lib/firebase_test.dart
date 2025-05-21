@@ -18,8 +18,11 @@ void run(FirebaseAsync firebase, {AppOptions options}) {
 @Deprecated('Preferred runFirebaseTests')
 void runApp(FirebaseAsync firebaseAsync, {AppOptions? options, String? name}) =>
     runFirebaseTests(firebaseAsync, options: options, name: name);
-void runFirebaseTests(FirebaseAsync firebaseAsync,
-    {AppOptions? options, String? name}) {
+void runFirebaseTests(
+  FirebaseAsync firebaseAsync, {
+  AppOptions? options,
+  String? name,
+}) {
   late FirebaseApp app;
   setUpAll(() async {
     app = await firebaseAsync.initializeAppAsync(options: options, name: name);
@@ -34,8 +37,10 @@ void runFirebaseTests(FirebaseAsync firebaseAsync,
       expect(app.name, name ?? '[DEFAULT]');
       expect(FirebaseApp.instance, app);
       expect((await firebaseAsync.appAsync(name: app.name)).name, app.name);
-      expect((await firebaseAsync.appAsync(name: app.name)).options.projectId,
-          app.options.projectId);
+      expect(
+        (await firebaseAsync.appAsync(name: app.name)).options.projectId,
+        app.options.projectId,
+      );
       /*
       expect(app.options.projectId, isNotEmpty);
       devPrint("projectId: ${app.options.projectId}");

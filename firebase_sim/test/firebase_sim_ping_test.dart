@@ -18,15 +18,19 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
     late FirebaseSimClient simClient;
 
     setUpAll(() async {
-      simServer = await firebaseSimServe(firebase,
-          webSocketChannelServerFactory: channelFactory.server);
+      simServer = await firebaseSimServe(
+        firebase,
+        webSocketChannelServerFactory: channelFactory.server,
+      );
     });
 
     tearDownAll(() async {});
 
     setUp(() {
-      simClient = FirebaseSimClient.connect(Uri.parse(simServer.url),
-          webSocketChannelClientFactory: channelFactory.client);
+      simClient = FirebaseSimClient.connect(
+        Uri.parse(simServer.url),
+        webSocketChannelClientFactory: channelFactory.client,
+      );
     });
     test('ping', () async {
       /*
@@ -35,7 +39,10 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
       expect(response.id, request.id);
       */
       await simClient.sendRequest<void>(
-          FirebaseSimCoreService.serviceName, methodPing, null);
+        FirebaseSimCoreService.serviceName,
+        methodPing,
+        null,
+      );
     });
   });
 }

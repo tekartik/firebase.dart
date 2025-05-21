@@ -99,8 +99,11 @@ class FirebaseAppLocal with FirebaseAppMixin {
 }
 
 /// Helper to create a new app for test
-FirebaseAppLocal newFirebaseAppLocal(
-    {FirebaseAppOptions? options, String? localPath, String? name}) {
+FirebaseAppLocal newFirebaseAppLocal({
+  FirebaseAppOptions? options,
+  String? localPath,
+  String? name,
+}) {
   var firebase = FirebaseLocal(localPath: localPath);
   var app =
       firebase.initializeApp(name: name, options: options) as FirebaseAppLocal;

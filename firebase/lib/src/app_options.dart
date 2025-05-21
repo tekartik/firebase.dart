@@ -30,15 +30,16 @@ class FirebaseAppOptions {
   String? appId;
 
   /// Constructor
-  FirebaseAppOptions(
-      {this.apiKey,
-      this.authDomain,
-      this.databaseURL,
-      this.projectId,
-      this.storageBucket,
-      this.messagingSenderId,
-      this.appId,
-      this.measurementId});
+  FirebaseAppOptions({
+    this.apiKey,
+    this.authDomain,
+    this.databaseURL,
+    this.projectId,
+    this.storageBucket,
+    this.messagingSenderId,
+    this.appId,
+    this.measurementId,
+  });
 
   /// Create from map
   factory FirebaseAppOptions.fromMap(Map<String, Object?> map) =>
@@ -48,7 +49,7 @@ class FirebaseAppOptions {
   Map<String, Object?> toDebugMap() {
     return {
       if (apiKey != null) 'apiKey': apiKey!.obfuscate(),
-      'projectId': projectId
+      'projectId': projectId,
     };
   }
 
@@ -96,7 +97,7 @@ mixin FirebaseAppOptionsMixin implements FirebaseAppOptions {
   Map<String, Object?> toDebugMap() {
     return {
       if (apiKey != null) 'apiKey': apiKey!.obfuscate(),
-      'projectId': projectId
+      'projectId': projectId,
     };
   }
 

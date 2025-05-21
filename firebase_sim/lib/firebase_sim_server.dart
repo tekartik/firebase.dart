@@ -10,7 +10,6 @@ export 'package:tekartik_firebase_sim/src/firebase_sim_server.dart'
         FirebaseSimCoreService,
         FirebaseSimServiceBase,
         firebaseSimServerExpando,
-
         //FirebaseSimPluginServer,
         FirebaseSimPlugin;
 export 'package:tekartik_rpc/rpc_server.dart';

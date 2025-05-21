@@ -17,11 +17,14 @@ class TestContext {
 Future<TestContext> initTestContextSim() async {
   var testContext = TestContext();
   // The server use firebase io
-  testContext.simServer = await firebaseSimServe(FirebaseLocal(),
-      webSocketChannelServerFactory: webSocketChannelFactoryMemory.server);
+  testContext.simServer = await firebaseSimServe(
+    FirebaseLocal(),
+    webSocketChannelServerFactory: webSocketChannelFactoryMemory.server,
+  );
   testContext.firebase = FirebaseSim(
-      clientFactory: webSocketChannelClientFactoryMemory,
-      uri: Uri.parse(testContext.simServer.url));
+    clientFactory: webSocketChannelClientFactoryMemory,
+    uri: Uri.parse(testContext.simServer.url),
+  );
   return testContext;
 }
 

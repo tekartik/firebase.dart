@@ -8,8 +8,10 @@ export 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 export 'package:tekartik_web_socket_browser/web_socket_browser.dart'
     show webSocketClientChannelFactoryBrowser;
 
-Firebase getFirebaseSimBrowser(
-    {WebSocketChannelClientFactory? clientFactory, Uri? uri}) {
+Firebase getFirebaseSimBrowser({
+  WebSocketChannelClientFactory? clientFactory,
+  Uri? uri,
+}) {
   clientFactory ??= webSocketClientChannelFactoryBrowser;
   Firebase firebase = FirebaseSim(clientFactory: clientFactory, uri: uri);
   return firebase;

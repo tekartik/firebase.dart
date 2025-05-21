@@ -21,8 +21,10 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
     late FirebaseSimClient simClient;
 
     setUpAll(() async {
-      simServer = await firebaseSimServe(FirebaseLocal(),
-          webSocketChannelServerFactory: channelFactory.server);
+      simServer = await firebaseSimServe(
+        FirebaseLocal(),
+        webSocketChannelServerFactory: channelFactory.server,
+      );
     });
 
     tearDownAll(() async {});
@@ -32,7 +34,10 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
     });
     test('ping', () async {
       await simClient.sendRequest<void>(
-          FirebaseSimCoreService.serviceName, methodPing, null);
+        FirebaseSimCoreService.serviceName,
+        methodPing,
+        null,
+      );
     });
   });
 }

@@ -9,7 +9,8 @@ import 'package:tekartik_firebase_browser/src/common/firebase_js_version.dart';
 
 // 2018-12-05 to deprecate
 JavascriptScriptLoader firebaseJsLoader = JavascriptScriptLoader(
-    'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js');
+  'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js',
+);
 
 String getJavascriptAppJsFile({String? version}) {
   version ??= firebaseJsVersion;
@@ -27,7 +28,8 @@ String getJavascriptAuthJsFile({String? version}) {
 }
 
 var _firebaseCoreJsLoader = JavascriptScriptLoader(
-    'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js');
+  'https://www.gstatic.com/firebasejs/$firebaseJsVersion/firebase-app.js',
+);
 
 /// does not work with build_runner
 Future loadFirebaseCoreJs() async {
@@ -49,15 +51,16 @@ class FirebaseBrowser with FirebaseMixin {
   App initializeApp({AppOptions? options, String? name}) {
     options ??= AppOptions();
     final nativeApp = native.initializeApp(
-        projectId: options.projectId,
-        storageBucket: options.storageBucket,
-        messagingSenderId: options.messagingSenderId,
-        databaseURL: options.databaseURL,
-        authDomain: options.authDomain,
-        apiKey: options.apiKey,
-        name: name,
-        appId: options.appId,
-        measurementId: options.measurementId);
+      projectId: options.projectId,
+      storageBucket: options.storageBucket,
+      messagingSenderId: options.messagingSenderId,
+      databaseURL: options.databaseURL,
+      authDomain: options.authDomain,
+      apiKey: options.apiKey,
+      name: name,
+      appId: options.appId,
+      measurementId: options.measurementId,
+    );
     return AppBrowser(nativeApp);
   }
 
@@ -86,12 +89,13 @@ class AppBrowser with FirebaseAppMixin {
   AppOptions get options {
     var nativeOptions = nativeApp.options;
     return AppOptions(
-        apiKey: nativeOptions.apiKey,
-        authDomain: nativeOptions.authDomain,
-        messagingSenderId: nativeOptions.messagingSenderId,
-        storageBucket: nativeOptions.storageBucket,
-        projectId: nativeOptions.projectId,
-        databaseURL: nativeOptions.databaseURL);
+      apiKey: nativeOptions.apiKey,
+      authDomain: nativeOptions.authDomain,
+      messagingSenderId: nativeOptions.messagingSenderId,
+      storageBucket: nativeOptions.storageBucket,
+      projectId: nativeOptions.projectId,
+      databaseURL: nativeOptions.databaseURL,
+    );
   }
 
   @override

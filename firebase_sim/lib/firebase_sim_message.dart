@@ -58,9 +58,7 @@ class FirebaseInitializeAppResponseData extends BaseData {
 
   @override
   Map<String, dynamic> toMap() {
-    var map = {
-      'appId': appId,
-    };
+    var map = {'appId': appId};
     return map;
   }
 }

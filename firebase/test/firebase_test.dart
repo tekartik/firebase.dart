@@ -29,7 +29,7 @@ void main() {
         'databaseURL': '3',
         'projectId': '4',
         'storageBucket': '5',
-        'messagingSenderId': '6'
+        'messagingSenderId': '6',
       });
       expect(options.apiKey, '1');
       expect(options.authDomain, '2');
