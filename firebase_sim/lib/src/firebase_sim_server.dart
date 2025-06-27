@@ -76,10 +76,8 @@ class FirebaseSimCoreService extends FirebaseSimServiceBase {
 
   @override
   FutureOr<Object?> onCall(RpcServerChannel channel, RpcMethodCall methodCall) {
-    var simServerChannel =
-        firebaseSimServerExpando[channel] ??= FirebaseSimServerChannel(
-          simServer,
-        );
+    var simServerChannel = firebaseSimServerExpando[channel] ??=
+        FirebaseSimServerChannel(simServer);
     switch (methodCall.method) {
       case methodPing:
         var params = methodCall.arguments;

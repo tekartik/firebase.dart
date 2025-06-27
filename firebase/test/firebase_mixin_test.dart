@@ -42,9 +42,8 @@ class FirebaseAppMock with FirebaseAppMixin {
     String? name,
     AppOptions? options,
   }) {
-    this.options =
-        options ?? AppOptions()
-          ..projectId = _defaultProjectId;
+    this.options = options ?? AppOptions()
+      ..projectId = _defaultProjectId;
     this.name = name ?? _defaultAppName;
   }
 

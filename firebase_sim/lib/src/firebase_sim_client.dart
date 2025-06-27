@@ -41,10 +41,9 @@ class FirebaseAppSim with FirebaseAppMixin {
         admin.uri,
         webSocketChannelClientFactory: admin.clientFactory,
       );
-      var adminInitializeAppData =
-          AdminInitializeAppData()
-            ..projectId = options.projectId
-            ..name = name;
+      var adminInitializeAppData = AdminInitializeAppData()
+        ..projectId = options.projectId
+        ..name = name;
       try {
         await simClient.sendRequest<void>(
           FirebaseSimCoreService.serviceName,
