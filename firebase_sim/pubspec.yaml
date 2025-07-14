@@ -9,7 +9,7 @@ environment:
   sdk: ^3.8.0
 
 dependencies:
-  cv:
+  cv: ">=1.1.0+4"
   tekartik_firebase:
     git:
       url: https://github.com/tekartik/firebase.dart
@@ -35,7 +35,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/common_utils.dart
       ref: dart3a
-  fs_shim:
+  fs_shim: ">=2.3.3+1"
   tekartik_app_web_socket:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
