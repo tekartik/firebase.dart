@@ -8,9 +8,10 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
-
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_rpc/rpc_client.dart';
+
+import 'firebase_sim.dart';
 import 'log_utils.dart';
 
 var debugFirebaseSimClient = false; // devWarning(true);
@@ -97,38 +98,6 @@ class FirebaseAppSim with FirebaseAppMixin {
   }
 }
 
-String get _defaultAppName => firebaseAppNameDefault;
-String get _defaultProjectId => 'sim';
-
-/// Firebase sim
-class FirebaseSim with FirebaseMixin {
-  final WebSocketChannelClientFactory? clientFactory;
-  final Uri uri;
-
-  FirebaseSim({this.clientFactory, Uri? uri})
-    : uri = uri ?? Uri.parse('ws://localhost:$firebaseSimDefaultPort');
-
-  final _apps = <String, AppSim>{};
-
-  @override
-  App initializeApp({AppOptions? options, String? name}) {
-    name ??= _defaultAppName;
-    var app = FirebaseAppSim(
-      this,
-      options ?? AppOptions(projectId: _defaultProjectId),
-      name,
-    );
-    _apps[name] = app;
-    return app;
-  }
-
-  @override
-  App app({String? name}) {
-    name ??= _defaultAppName;
-    return _apps[name]!;
-  }
-}
-
 const requestTimeoutDuration = Duration(seconds: 15);
 
 class _FirebaseSimClient implements FirebaseSimClient {
@@ -182,4 +151,33 @@ abstract class FirebaseSimClient {
 
   /// Close
   Future<void> close();
+}
+
+/// Server subscription
+class ServerSubscriptionSim<T> {
+  /// the streamId;
+  int? id;
+  final StreamController<T> _controller;
+
+  /// Constructor
+  ServerSubscriptionSim(this._controller);
+
+  /// Stream
+  Stream<T> get stream => _controller.stream;
+
+  /// Close
+  Future close() async {
+    await _controller.close();
+  }
+
+  /// add
+  void add(T snapshot) {
+    _controller.add(snapshot);
+  }
+
+  /// Done completer
+  Completer doneCompleter = Completer();
+
+  /// Done
+  Future get done => doneCompleter.future;
 }
