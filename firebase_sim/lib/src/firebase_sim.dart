@@ -1,11 +1,32 @@
 import 'package:fs_shim/fs_shim.dart';
+import 'package:tekartik_app_web_socket/web_socket.dart' as universal;
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase/firebase_mixin.dart';
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 
 String get _defaultAppName => firebaseAppNameDefault;
+
 String get _defaultProjectId => 'sim';
+
+/// The default port for the Firebase Simulator.
+final int firebaseSimDefaultPort = 4996;
+
+/// Get the default Firebase Simulator URL.
+String getFirebaseSimUrl({int? port}) {
+  port ??= firebaseSimDefaultPort;
+  return 'ws://localhost:$port';
+}
+
+/// Get firebase sim
+Firebase getFirebaseSim({
+  WebSocketChannelClientFactory? clientFactory,
+  Uri? uri,
+}) {
+  clientFactory ??= universal.webSocketChannelClientFactory;
+  Firebase firebase = FirebaseSim(clientFactory: clientFactory, uri: uri);
+  return firebase;
+}
 
 /// Firebase sim
 class FirebaseSim with FirebaseMixin {
