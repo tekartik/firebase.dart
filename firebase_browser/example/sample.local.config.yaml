@@ -1,7 +1,0 @@
-# Copy this file as "config.local.yaml" in the same folder (.gitignored)
-projectId: [YOUR-FIREBASE-PROJECT-ID]
-apiKey: [YOURS]
-authDomain: [YOURS]
-databaseURL: [YOURS]
-storageBucket: [YOURS]
-messagingSenderId: [YOURS]
