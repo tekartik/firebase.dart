@@ -47,7 +47,7 @@ class FirebaseAppSim with FirebaseAppMixin {
         ..name = name;
       try {
         await simClient.sendRequest<void>(
-          FirebaseSimCoreService.serviceName,
+          FirebaseSimServerCoreService.serviceName,
           methodAdminInitializeApp,
           adminInitializeAppData.toMap(),
         );
@@ -81,7 +81,7 @@ class FirebaseAppSim with FirebaseAppMixin {
   Future ping() async {
     var simClient = await this.simClient;
     await simClient.sendRequest<void>(
-      FirebaseSimCoreService.serviceName,
+      FirebaseSimServerCoreService.serviceName,
       methodPing,
       null,
     );
@@ -91,7 +91,7 @@ class FirebaseAppSim with FirebaseAppMixin {
   Future<String?> getAppName() async {
     var simClient = await this.simClient;
     return await simClient.sendRequest(
-      FirebaseSimCoreService.serviceName,
+      FirebaseSimServerCoreService.serviceName,
       methodAdminGetAppName,
       null,
     );

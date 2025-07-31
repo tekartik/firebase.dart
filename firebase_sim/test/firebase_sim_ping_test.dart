@@ -39,7 +39,7 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
       expect(response.id, request.id);
       */
       await simClient.sendRequest<void>(
-        FirebaseSimCoreService.serviceName,
+        FirebaseSimServerCoreService.serviceName,
         methodPing,
         null,
       );

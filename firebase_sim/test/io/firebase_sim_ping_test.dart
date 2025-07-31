@@ -34,7 +34,7 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
     });
     test('ping', () async {
       await simClient.sendRequest<void>(
-        FirebaseSimCoreService.serviceName,
+        FirebaseSimServerCoreService.serviceName,
         methodPing,
         null,
       );

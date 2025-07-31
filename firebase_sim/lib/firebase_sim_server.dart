@@ -7,8 +7,11 @@ export 'package:tekartik_firebase_sim/src/firebase_sim_server.dart'
         firebaseSimServe,
         FirebaseSimServer,
         debugFirebaseSimServer,
-        FirebaseSimCoreService,
+        FirebaseSimServerCoreService,
+        // ignore: deprecated_member_use_from_same_package
         FirebaseSimServiceBase,
+        FirebaseSimServerServiceBase,
+        FirebaseSimServerService,
         firebaseSimServerExpando,
         //FirebaseSimPluginServer,
         FirebaseSimPlugin;

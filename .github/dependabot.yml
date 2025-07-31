@@ -10,10 +10,6 @@ updates:
     schedule:
       interval: "monthly"
   - package-ecosystem: "pub"
-    directory: "firebase_browser"
-    schedule:
-      interval: "monthly"
-  - package-ecosystem: "pub"
     directory: "firebase_local"
     schedule:
       interval: "monthly"

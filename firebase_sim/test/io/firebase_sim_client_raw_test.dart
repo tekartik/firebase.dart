@@ -31,12 +31,12 @@ Future main() async {
     });
     test('initializeApp', () async {
       await simClient.sendRequest<void>(
-        FirebaseSimCoreService.serviceName,
+        FirebaseSimServerCoreService.serviceName,
         methodAdminInitializeApp,
         {'projectId': 'test', 'name': 'test_name'},
       );
       var name = await simClient.sendRequest<String>(
-        FirebaseSimCoreService.serviceName,
+        FirebaseSimServerCoreService.serviceName,
         methodAdminGetAppName,
         null,
       );

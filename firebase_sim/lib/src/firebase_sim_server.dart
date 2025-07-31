@@ -20,7 +20,7 @@ Future<FirebaseSimServer> firebaseSimServe(
   int? port,
 }) async {
   var services = [
-    FirebaseSimCoreService(),
+    FirebaseSimServerCoreService(),
     if (plugins != null) ...plugins.map((plugin) => plugin.simService),
   ];
   var rpcServer = await RpcServer.serve(
@@ -61,18 +61,33 @@ class FirebaseSimServer {
   }
 }
 
-abstract class FirebaseSimServiceBase extends RpcServiceBase {
+@Deprecated('use FirebaseSimServerServiceBase instead')
+typedef FirebaseSimServiceBase = FirebaseSimServerServiceBase;
+
+/// Sim server service definition
+abstract class FirebaseSimServerService implements RpcService {
+  /// Sim server, typically instantiated by server upon creation
+  FirebaseSimServer get simServer;
+
+  /// For late initialization
+  set simServer(FirebaseSimServer simServer);
+}
+
+/// Base server service
+abstract class FirebaseSimServerServiceBase extends RpcServiceBase
+    implements FirebaseSimServerService {
+  @override
   late final FirebaseSimServer simServer;
 
-  FirebaseSimServiceBase(super.name);
+  FirebaseSimServerServiceBase(super.name);
 }
 
 var firebaseSimServerExpando = Expando<FirebaseSimServerChannel>();
 
-class FirebaseSimCoreService extends FirebaseSimServiceBase {
+class FirebaseSimServerCoreService extends FirebaseSimServerServiceBase {
   static const serviceName = 'firebase_core';
 
-  FirebaseSimCoreService() : super(serviceName);
+  FirebaseSimServerCoreService() : super(serviceName);
 
   @override
   FutureOr<Object?> onCall(RpcServerChannel channel, RpcMethodCall methodCall) {
@@ -168,6 +183,6 @@ abstract class FirebaseSimPluginServer {
 }*/
 
 abstract class FirebaseSimPlugin {
-  FirebaseSimServiceBase get simService;
+  FirebaseSimServerService get simService;
   //FirebaseSimPluginServer register(App app, json_rpc.Server rpcServer);
 }
