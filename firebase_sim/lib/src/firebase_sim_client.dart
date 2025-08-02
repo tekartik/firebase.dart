@@ -1,6 +1,6 @@
 import 'package:json_rpc_2/json_rpc_2.dart' as json_rpc;
 // ignore: depend_on_referenced_packages
-import 'package:tekartik_common_utils/common_utils_import.dart' hide log;
+import 'package:tekartik_common_utils/common_utils_import.dart';
 // ignore: depend_on_referenced_packages
 import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';

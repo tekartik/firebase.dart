@@ -1,6 +1,6 @@
 import 'dart:core' hide Error;
 
-import 'package:tekartik_common_utils/common_utils_import.dart' hide log;
+import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_common_utils/map_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
