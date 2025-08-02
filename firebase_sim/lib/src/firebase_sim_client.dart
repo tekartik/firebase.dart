@@ -172,7 +172,9 @@ class ServerSubscriptionSim<T> {
 
   /// add
   void add(T snapshot) {
-    _controller.add(snapshot);
+    if (!_controller.isClosed) {
+      _controller.add(snapshot);
+    }
   }
 
   /// Done completer
