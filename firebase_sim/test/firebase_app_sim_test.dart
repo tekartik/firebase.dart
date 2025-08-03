@@ -25,6 +25,7 @@ void run(TestContext testContext) {
     late AppSim app;
     setUpAll(() {
       app = testContext.firebase.initializeApp(name: 'test_sim') as AppSim;
+      expect(FirebaseApp.instance, app);
     });
     tearDownAll(() async {
       await app.delete();

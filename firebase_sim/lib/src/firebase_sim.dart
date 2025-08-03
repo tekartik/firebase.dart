@@ -58,7 +58,7 @@ class FirebaseSim with FirebaseMixin {
       options ?? AppOptions(projectId: _defaultProjectId),
       name,
     );
-    _apps[name] = app;
+    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
     return app;
   }
 
