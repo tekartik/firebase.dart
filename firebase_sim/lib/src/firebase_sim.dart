@@ -22,9 +22,14 @@ String getFirebaseSimUrl({int? port}) {
 Firebase getFirebaseSim({
   WebSocketChannelClientFactory? clientFactory,
   Uri? uri,
+  String? localPath,
 }) {
   clientFactory ??= universal.webSocketChannelClientFactory;
-  Firebase firebase = FirebaseSim(clientFactory: clientFactory, uri: uri);
+  Firebase firebase = FirebaseSim(
+    clientFactory: clientFactory,
+    uri: uri,
+    localPath: localPath,
+  );
   return firebase;
 }
 
