@@ -14,6 +14,9 @@ const methodAdminInitializeApp = 'admin/initializeApp';
 /// GetAppName method
 const methodAdminGetAppName = 'admin/getAppName';
 
+/// GetServerHashCode method
+const methodAdminGetServerAppHashCode = 'admin/getServerHashCode';
+
 class BaseData {
   void fromMap(Map map) {}
 

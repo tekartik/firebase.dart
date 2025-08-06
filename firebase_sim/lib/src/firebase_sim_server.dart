@@ -3,7 +3,7 @@ import 'dart:core' hide Error;
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_common_utils/map_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
+import 'package:tekartik_firebase_sim/src/firebase_sim_message.dart';
 import 'package:tekartik_rpc/rpc_server.dart';
 
 import 'log_utils.dart';
@@ -44,6 +44,19 @@ class FirebaseSimServer {
   int lastAppId = 0;
   final Firebase? firebase;
 
+  FirebaseApp? getAppByProjectId(String projectId) {
+    var app = _appByProjectId[projectId];
+    // print('getAppByProjectId $projectId -> $app');
+    return app;
+  }
+
+  void setProjectIdApp(String projectId, FirebaseApp app) {
+    // print('setProjectIdApp $projectId -> $app');
+    _appByProjectId[projectId] = app;
+  }
+
+  /// Map of projectId to FirebaseApp
+  final _appByProjectId = <String, FirebaseApp>{};
   final List<FirebaseSimPlugin> _plugins = [];
   final RpcServer rpcServer;
 
@@ -109,6 +122,8 @@ class FirebaseSimServerCoreService extends FirebaseSimServerServiceBase {
         return simServerChannel.handleAdminInitializeApp(
           anyAsMap(methodCall.arguments!),
         );
+      case methodAdminGetServerAppHashCode:
+        return simServerChannel.handleAdminGetServerAppHashCode();
       case methodAdminGetAppName:
         return simServerChannel.app!.name;
     }
@@ -150,37 +165,29 @@ class FirebaseSimServerChannel {
     _rpcServer.listen();
   }
   */
-  Map<String, dynamic>? handleAdminInitializeApp(Map<String, dynamic> param) {
+  Map<String, Object?>? handleAdminInitializeApp(Map<String, dynamic> param) {
     var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
-    var options = AppOptions(projectId: adminInitializeAppData.projectId);
-    app = _simServer.firebase!.initializeApp(
-      options: options,
-      name: adminInitializeAppData.name,
-    );
-    // app.firestore().settings(FirestoreSettings(timestampsInSnapshots: true));
-    // var snapshot = app.firestore().doc(firestoreSetData.path).get();
-    /*
-    for (var plugin in _server._plugins) {
-      var client = plugin.register(_app!, _rpcServer);
-      _pluginClients.add(client);
-    }*/
+
+    var projectId = adminInitializeAppData.projectId!;
+
+    /// Share the app if possible
+    var options = AppOptions(projectId: projectId);
+    app = _simServer.getAppByProjectId(projectId);
+    if (app == null) {
+      app = _simServer.firebase!.initializeApp(
+        options: options,
+        name: adminInitializeAppData.name,
+      );
+      _simServer.setProjectIdApp(projectId, app!);
+    }
+
     return null;
   }
 
-  /*
-  final FirebaseSimServer _server;
-  final json_rpc.Server _rpcServer;
-
-  Future close() async {
-    for (var client in _pluginClients) {
-      await client.close();
-    }
-  }*/
+  Map<String, Object?>? handleAdminGetServerAppHashCode() {
+    return {'hashCode': app!.hashCode};
+  }
 }
-/*
-abstract class FirebaseSimPluginServer {
-  Future close();
-}*/
 
 abstract class FirebaseSimPlugin {
   FirebaseSimServerService get simService;

@@ -40,7 +40,10 @@ class FirebaseSim with FirebaseMixin {
   /// Local path
   String get localPath => _localPath!;
 
+  /// Client factory for WebSocket connections.
   final WebSocketChannelClientFactory? clientFactory;
+
+  /// The URI for the Firebase Simulator.
   final Uri uri;
 
   FirebaseSim({this.clientFactory, Uri? uri, String? localPath})

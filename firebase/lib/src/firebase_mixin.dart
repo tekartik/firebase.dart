@@ -69,6 +69,11 @@ mixin FirebaseAppMixin implements FirebaseApp {
 
   @override
   bool get hasAdminCredentials => false;
+
+  @override
+  String toString() {
+    return 'FirebaseApp(name: $name, options: $options, isLocal: $isLocal)';
+  }
 }
 
 /// Helper for any app produce (firestore, storage...)

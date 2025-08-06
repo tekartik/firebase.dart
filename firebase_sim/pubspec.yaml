@@ -48,6 +48,7 @@ dependencies:
       path: web_socket_browser
 
 dev_dependencies:
+  path:
   tekartik_app_dev_menu:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
