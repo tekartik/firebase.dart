@@ -9,6 +9,9 @@ String get _defaultAppName => firebaseAppNameDefault;
 
 String get _defaultProjectId => 'sim';
 
+/// Default project ID for the tekartik firebase Sim.
+String firebaseSimDefaultProjectId = _defaultProjectId;
+
 /// The default port for the Firebase Simulator.
 final int firebaseSimDefaultPort = 4996;
 

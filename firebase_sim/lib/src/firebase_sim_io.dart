@@ -1,6 +1,5 @@
 // ignore: depend_on_referenced_packages
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 
 // ignore: depend_on_referenced_packages
 import 'package:tekartik_web_socket_io/web_socket_io.dart';
