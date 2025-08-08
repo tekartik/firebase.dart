@@ -19,13 +19,14 @@ String getFirebaseSimUrl({int? port}) {
 }
 
 /// Get firebase sim
-Firebase getFirebaseSim({
+FirebaseSim getFirebaseSim({
+  Firebase? firebaseServer,
   WebSocketChannelClientFactory? clientFactory,
   Uri? uri,
   String? localPath,
 }) {
   clientFactory ??= universal.webSocketChannelClientFactory;
-  Firebase firebase = FirebaseSim(
+  var firebase = _FirebaseClientSim(
     clientFactory: clientFactory,
     uri: uri,
     localPath: localPath,
@@ -33,20 +34,37 @@ Firebase getFirebaseSim({
   return firebase;
 }
 
+abstract class FirebaseSim implements Firebase {
+  String get localPath;
+}
+
+/// Client sim
+abstract class FirebaseClientSim implements FirebaseSim {
+  /// Uri to connect to.
+  Uri get uri;
+
+  WebSocketChannelClientFactory? get clientFactory;
+}
+
 /// Firebase sim
-class FirebaseSim with FirebaseMixin {
+class _FirebaseClientSim with FirebaseMixin implements FirebaseClientSim {
+  /// The Firebase server when testing both locally.
+  Firebase? firebaseServer;
   String? _localPath;
 
   /// Local path
+  @override
   String get localPath => _localPath!;
 
   /// Client factory for WebSocket connections.
+  @override
   final WebSocketChannelClientFactory? clientFactory;
 
   /// The URI for the Firebase Simulator.
+  @override
   final Uri uri;
 
-  FirebaseSim({this.clientFactory, Uri? uri, String? localPath})
+  _FirebaseClientSim({this.clientFactory, Uri? uri, String? localPath})
     : uri = uri ?? Uri.parse('ws://localhost:$firebaseSimDefaultPort') {
     _localPath =
         localPath ??

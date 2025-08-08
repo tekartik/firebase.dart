@@ -6,7 +6,6 @@ import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
-import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
 import 'package:tekartik_rpc/rpc_client.dart';
@@ -37,10 +36,10 @@ class FirebaseAppSim with FirebaseAppMixin {
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
-
+      var clientSim = (admin as FirebaseClientSim);
       var simClient = FirebaseSimClient.connect(
-        admin.uri,
-        webSocketChannelClientFactory: admin.clientFactory,
+        clientSim.uri,
+        webSocketChannelClientFactory: clientSim.clientFactory,
       );
       var adminInitializeAppData = AdminInitializeAppData()
         ..projectId = options.projectId!

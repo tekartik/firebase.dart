@@ -1,3 +1,4 @@
+import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
@@ -12,7 +13,7 @@ void main() {
 
 void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
   debugFirebaseSimClient = false; // devWa
-  var firebase = FirebaseSim();
+  var firebase = getFirebaseSim(clientFactory: channelFactory.client);
   group('sim', () {
     late FirebaseSimServer simServer;
     late FirebaseSimClient simClient;

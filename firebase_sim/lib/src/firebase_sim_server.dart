@@ -136,35 +136,7 @@ class FirebaseSimServerChannel {
   final FirebaseSimServer _simServer;
   FirebaseApp? app;
   FirebaseSimServerChannel(this._simServer);
-  /*
-  final List<FirebaseSimPluginServer> _pluginClients = [];
 
-  FirebaseSimServerChannel(this._server, WebSocketChannel<String> channel)
-      : _rpcServer = json_rpc.Server(channel) {
-    // Specific method for getting server info upon start
-    _rpcServer.registerMethod(methodAdminInitializeApp,
-        (json_rpc.Parameters parameters) async {
-      return handleAdminInitializeApp(_mapParams(parameters)!);
-    });
-    _rpcServer.registerMethod(methodAdminGetAppName,
-        (json_rpc.Parameters parameters) async {
-      return _app!.name;
-    });
-    _rpcServer.registerMethod(methodPing, (json_rpc.Parameters parameters) {
-      if (debugFirebaseSimServer) {
-        _log('ping rcv: $parameters');
-      }
-      var result = _mapParams(parameters);
-      if (debugFirebaseSimServer) {
-        _log('ping snd: $result');
-      }
-      return result;
-    });
-
-
-    _rpcServer.listen();
-  }
-  */
   Map<String, Object?>? handleAdminInitializeApp(Map<String, dynamic> param) {
     var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
 
@@ -184,6 +156,7 @@ class FirebaseSimServerChannel {
     return null;
   }
 
+  // tmp
   Map<String, Object?>? handleAdminGetServerAppHashCode() {
     return {'hashCode': app!.hashCode};
   }
