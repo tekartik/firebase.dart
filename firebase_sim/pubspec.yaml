@@ -6,7 +6,7 @@ publish_to: none
 #author: alex <email@example.com>
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.9.0
 
 dependencies:
   cv: ">=1.1.0+4"
@@ -48,7 +48,7 @@ dependencies:
       path: web_socket_browser
 
 dev_dependencies:
-  path:
+  path: ">=1.9.0"
   tekartik_app_dev_menu:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
