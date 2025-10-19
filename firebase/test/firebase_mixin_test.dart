@@ -126,6 +126,7 @@ void main() {
     test('service', () async {
       var firebase = FirebaseMock();
       var app = firebase.initializeApp();
+      expect(app.projectId, _defaultProjectId);
       expect(app.hasAdminCredentials, isFalse);
       expect(FirebaseApp.instance, app);
 

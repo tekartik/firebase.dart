@@ -19,6 +19,8 @@ void main() {
       var firebase = FirebaseLocal();
       var app = firebase.initializeApp(options: AppOptions(projectId: 'test'));
       expect(FirebaseMixin.latestFirebaseInstanceOrNull, app);
+      expect(app.name, '[DEFAULT]');
+      expect(app.projectId, 'test');
     });
     test('projectId', () async {
       var firebase = FirebaseLocal();
