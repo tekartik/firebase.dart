@@ -24,10 +24,14 @@ void firebaseSimPingTestMain(WebSocketChannelFactory channelFactory) {
       simServer = await firebaseSimServe(
         FirebaseLocal(),
         webSocketChannelServerFactory: channelFactory.server,
+        port: 0,
       );
     });
 
-    tearDownAll(() async {});
+    tearDownAll(() async {
+      await simClient.close();
+      await simServer.close();
+    });
 
     setUp(() {
       simClient = FirebaseSimClient.connect(simServer.uri);

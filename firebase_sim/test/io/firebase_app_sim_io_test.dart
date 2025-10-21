@@ -9,7 +9,7 @@ import 'firebase_app_sim_test.dart';
 import 'test_common.dart';
 
 Future main() async {
-  var testContext = await initTestContextSimIo();
+  var testContext = await initTestContextSimIo(port: 0);
   run(testContext);
 
   tearDownAll(() async {

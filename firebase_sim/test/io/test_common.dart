@@ -11,14 +11,18 @@ import 'package:tekartik_web_socket_io/web_socket_io.dart';
 class TestContext {
   late FirebaseSimServer simServer;
   late Firebase firebase;
+  Future<void> close() async {
+    await simServer.close();
+  }
 }
 
 // using real websocker
-Future<TestContext> initTestContextSimIo() async {
+Future<TestContext> initTestContextSimIo({int? port}) async {
   var testContext = TestContext();
   testContext.simServer = await firebaseSimServe(
     FirebaseLocal(),
     webSocketChannelServerFactory: webSocketChannelServerFactoryIo,
+    port: port,
   );
   testContext.firebase = getFirebaseSim(
     clientFactory: webSocketChannelClientFactoryIo,
@@ -34,6 +38,7 @@ Future<TestContext> initTestContextSim() async {
   testContext.simServer = await firebaseSimServe(
     FirebaseLocal(),
     webSocketChannelServerFactory: webSocketChannelServerFactoryMemory,
+    port: 0,
   );
   testContext.firebase = getFirebaseSim(
     clientFactory: webSocketChannelClientFactoryMemory,
@@ -43,5 +48,5 @@ Future<TestContext> initTestContextSim() async {
 }
 
 Future close(TestContext testContext) async {
-  await testContext.simServer.close();
+  await testContext.close();
 }
