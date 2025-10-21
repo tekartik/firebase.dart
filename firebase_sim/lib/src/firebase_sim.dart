@@ -11,19 +11,32 @@ String get _defaultProjectId => 'sim';
 
 /// Default project ID for the tekartik firebase Sim.
 String firebaseSimDefaultProjectId = _defaultProjectId;
+const firebaseSimLocalhostBaseUrl = 'ws://localhost';
 
 /// The default port for the Firebase Simulator.
 final int firebaseSimDefaultPort = 4996;
 
 /// Get the default Firebase Simulator URL.
+// @deprecated
 String getFirebaseSimUrl({int? port}) {
+  return getFirebaseSimLocalhostUri(port: port).toString();
+}
+
+/// Get the default Firebase Simulator port.
+int getFirebaseSimPort([int? port]) {
   port ??= firebaseSimDefaultPort;
-  return 'ws://localhost:$port';
+  return port;
+}
+
+/// Get the default Firebase Simulator URL.
+Uri getFirebaseSimLocalhostUri({int? port}) {
+  var foundPort = getFirebaseSimPort(port);
+  return Uri.parse('$firebaseSimLocalhostBaseUrl:$foundPort');
 }
 
 /// Get firebase sim
 FirebaseSim getFirebaseSim({
-  Firebase? firebaseServer,
+  @Deprecated('Do no use') Firebase? firebaseServer,
   WebSocketChannelClientFactory? clientFactory,
   Uri? uri,
   String? localPath,

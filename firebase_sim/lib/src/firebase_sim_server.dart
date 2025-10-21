@@ -6,6 +6,7 @@ import 'package:tekartik_firebase/firebase.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_message.dart';
 import 'package:tekartik_rpc/rpc_server.dart';
 
+import '../firebase_sim.dart';
 import 'log_utils.dart';
 
 var debugFirebaseSimServer = false; // devWarning(true);
@@ -19,6 +20,7 @@ Future<FirebaseSimServer> firebaseSimServe(
   List<FirebaseSimPlugin>? plugins,
   int? port,
 }) async {
+  port ??= firebaseSimDefaultPort;
   var services = [
     FirebaseSimServerCoreService(),
     if (plugins != null) ...plugins.map((plugin) => plugin.simService),

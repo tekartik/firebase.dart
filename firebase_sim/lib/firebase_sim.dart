@@ -3,6 +3,8 @@ export 'src/firebase_sim.dart'
         FirebaseSim,
         getFirebaseSim,
         getFirebaseSimUrl,
+        getFirebaseSimPort,
+        getFirebaseSimLocalhostUri,
         firebaseSimDefaultPort,
         firebaseSimDefaultProjectId;
 export 'src/firebase_sim_client.dart' show FirebaseAppSim;
