@@ -92,8 +92,7 @@ class _FirebaseClientSim with FirebaseMixin implements FirebaseClientSim {
 
   final _apps = <String, FirebaseAppSim>{};
 
-  @override
-  FirebaseApp initializeApp({FirebaseAppOptions? options, String? name}) {
+  FirebaseAppSim _initializeApp({FirebaseAppOptions? options, String? name}) {
     name ??= _defaultAppName;
     var app = FirebaseAppSim(
       this,
@@ -101,6 +100,22 @@ class _FirebaseClientSim with FirebaseMixin implements FirebaseClientSim {
       name,
     );
     _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
+    return app;
+  }
+
+  @override
+  FirebaseAppSim initializeApp({FirebaseAppOptions? options, String? name}) {
+    var app = _initializeApp(options: options, name: name);
+    return app;
+  }
+
+  @override
+  Future<FirebaseAppSim> initializeAppAsync({
+    FirebaseAppOptions? options,
+    String? name,
+  }) async {
+    var app = _initializeApp(options: options, name: name);
+    await app.simClient;
     return app;
   }
 

@@ -1,17 +1,51 @@
 import 'dart:core' hide Error;
 
 import 'package:tekartik_common_utils/common_utils_import.dart';
-import 'package:tekartik_common_utils/map_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase_sim/src/firebase_sim_message.dart';
 import 'package:tekartik_rpc/rpc_server.dart';
 
-import '../firebase_sim.dart';
+import 'firebase_sim.dart';
+import 'firebase_sim_plugin.dart';
+import 'firebase_sim_server_app.dart';
+import 'firebase_sim_server_service.dart';
 import 'log_utils.dart';
 
 var debugFirebaseSimServer = false; // devWarning(true);
 void _log(Object? message) {
-  log('firebase_sim_client', message);
+  log('firebase_sim_server', message);
+}
+
+class _RpcServiceLogger implements RpcService {
+  final RpcService _service;
+
+  _RpcServiceLogger(this._service);
+
+  @override
+  String get name => _service.name;
+
+  static var _id = 0;
+  @override
+  Future<Object?> onCall(
+    RpcServerChannel channel,
+    RpcMethodCall methodCall,
+  ) async {
+    _id++;
+    var method = methodCall.method;
+    var params = methodCall.arguments;
+    if (debugFirebaseSimServer) {
+      _log('request[$_id]: $name:$method $params');
+    }
+    try {
+      var result = await _service.onCall(channel, methodCall);
+      if (debugFirebaseSimServer) {
+        _log('response[$_id]: $result');
+      }
+      return result;
+    } catch (e, s) {
+      _log('error[$_id]: $e\n$s');
+      rethrow;
+    }
+  }
 }
 
 Future<FirebaseSimServer> firebaseSimServe(
@@ -25,10 +59,15 @@ Future<FirebaseSimServer> firebaseSimServe(
     FirebaseSimServerCoreService(),
     if (plugins != null) ...plugins.map((plugin) => plugin.simService),
   ];
+  var rpcServices = debugFirebaseSimServer
+      ? services
+            .map((service) => _RpcServiceLogger(service))
+            .toList(growable: false)
+      : services;
   var rpcServer = await RpcServer.serve(
     port: port,
     webSocketChannelServerFactory: webSocketChannelServerFactory,
-    services: services,
+    services: rpcServices,
   );
   var simServer = FirebaseSimServer(firebase, rpcServer);
   for (var service in services) {
@@ -42,9 +81,35 @@ Future<FirebaseSimServer> firebaseSimServe(
   return simServer;
 }
 
-class FirebaseSimServer {
-  int lastAppId = 0;
-  final Firebase? firebase;
+/// Only for implementation
+extension FirebaseSimServerMixinExt on FirebaseSimServer {
+  FutureOr<void> initForApp(FirebaseApp app) {
+    if (!isPluginsInitialized(app)) {
+      return _initLock.synchronized(() async {
+        if (!isPluginsInitialized(app)) {
+          for (var plugin in _plugins) {
+            var result = plugin.initForApp(app);
+            if (result is Future) {
+              await result;
+            }
+          }
+        }
+        setPluginsInitialized(app, true);
+      });
+    }
+  }
+
+  bool isPluginsInitialized(FirebaseApp app) {
+    return _pluginsInitialized.contains(app);
+  }
+
+  void setPluginsInitialized(FirebaseApp app, bool initialized) {
+    if (!initialized) {
+      _pluginsInitialized.remove(app);
+      return;
+    }
+    _pluginsInitialized.add((app));
+  }
 
   FirebaseApp? getAppByProjectId(String projectId) {
     var app = _appByProjectId[projectId];
@@ -55,6 +120,46 @@ class FirebaseSimServer {
   void setProjectIdApp(String projectId, FirebaseApp app) {
     // print('setProjectIdApp $projectId -> $app');
     _appByProjectId[projectId] = app;
+  }
+}
+
+class _FirebaseSimServer extends FirebaseSimServer {
+  var firebaseSimServerExpando = Expando<FirebaseSimServerChannel>();
+  final projectsByProjectId = <String, FirebaseSimServerProject>{};
+  _FirebaseSimServer(super.firebase, super.rpcServer) : super._();
+
+  /// Get or create channel
+  @override
+  FirebaseSimServerChannel channel(RpcServerChannel channel) {
+    return firebaseSimServerExpando[channel] ??= FirebaseSimServerChannel(
+      this,
+      channel,
+    );
+  }
+}
+
+abstract class FirebaseSimServer {
+  final _initLock = Lock();
+  //int _lastAppId = 0;
+  final Firebase firebase;
+
+  /// Set of initialized plugins
+  final _pluginsInitialized = <FirebaseApp>{};
+
+  /// Initialize app from server side
+  /// This could trigger listening to http functions
+  Future<void> initializeAppAsync({FirebaseAppOptions? options}) async {
+    options ??= FirebaseAppOptions();
+    var projectId = options.projectId ?? firebaseSimDefaultProjectId;
+    if (options.projectId == null) {
+      options = FirebaseAppOptions(projectId: projectId);
+    }
+    var app = getAppByProjectId(projectId);
+    if (app == null) {
+      app = firebase.initializeApp(options: options);
+      setProjectIdApp(projectId, app);
+    }
+    await initForApp(app);
   }
 
   /// Map of projectId to FirebaseApp
@@ -67,104 +172,17 @@ class FirebaseSimServer {
   }
 
   String get url => rpcServer.url;
+
+  /// Client websocket uri
   Uri get uri => Uri.parse(url);
 
-  FirebaseSimServer(this.firebase, this.rpcServer);
+  FirebaseSimServer._(this.firebase, this.rpcServer);
+  factory FirebaseSimServer(Firebase firebase, RpcServer rpcServer) =>
+      _FirebaseSimServer(firebase, rpcServer);
 
   Future close() async {
     await rpcServer.close();
   }
-}
 
-@Deprecated('use FirebaseSimServerServiceBase instead')
-typedef FirebaseSimServiceBase = FirebaseSimServerServiceBase;
-
-/// Sim server service definition
-abstract class FirebaseSimServerService implements RpcService {
-  /// Sim server, typically instantiated by server upon creation
-  FirebaseSimServer get simServer;
-
-  /// For late initialization
-  set simServer(FirebaseSimServer simServer);
-}
-
-/// Base server service
-abstract class FirebaseSimServerServiceBase extends RpcServiceBase
-    implements FirebaseSimServerService {
-  @override
-  late final FirebaseSimServer simServer;
-
-  FirebaseSimServerServiceBase(super.name);
-}
-
-var firebaseSimServerExpando = Expando<FirebaseSimServerChannel>();
-
-class FirebaseSimServerCoreService extends FirebaseSimServerServiceBase {
-  static const serviceName = 'firebase_core';
-
-  FirebaseSimServerCoreService() : super(serviceName);
-
-  @override
-  FutureOr<Object?> onCall(RpcServerChannel channel, RpcMethodCall methodCall) {
-    var simServerChannel = firebaseSimServerExpando[channel] ??=
-        FirebaseSimServerChannel(simServer);
-    switch (methodCall.method) {
-      case methodPing:
-        var params = methodCall.arguments;
-        if (debugFirebaseSimServer) {
-          _log('ping rcv: $params');
-        }
-        var result = params;
-        if (debugFirebaseSimServer) {
-          _log('ping snd: $params');
-        }
-        return result;
-
-      case methodAdminInitializeApp:
-        return simServerChannel.handleAdminInitializeApp(
-          anyAsMap(methodCall.arguments!),
-        );
-      case methodAdminGetServerAppHashCode:
-        return simServerChannel.handleAdminGetServerAppHashCode();
-      case methodAdminGetAppName:
-        return simServerChannel.app!.name;
-    }
-
-    return super.onCall(channel, methodCall);
-  }
-}
-
-class FirebaseSimServerChannel {
-  final FirebaseSimServer _simServer;
-  FirebaseApp? app;
-  FirebaseSimServerChannel(this._simServer);
-
-  Map<String, Object?>? handleAdminInitializeApp(Map<String, dynamic> param) {
-    var adminInitializeAppData = AdminInitializeAppData()..fromMap(param);
-
-    var projectId = adminInitializeAppData.projectId!;
-
-    /// Share the app if possible
-    var options = AppOptions(projectId: projectId);
-    app = _simServer.getAppByProjectId(projectId);
-    if (app == null) {
-      app = _simServer.firebase!.initializeApp(
-        options: options,
-        name: adminInitializeAppData.name,
-      );
-      _simServer.setProjectIdApp(projectId, app!);
-    }
-
-    return null;
-  }
-
-  // tmp
-  Map<String, Object?>? handleAdminGetServerAppHashCode() {
-    return {'hashCode': app!.hashCode};
-  }
-}
-
-abstract class FirebaseSimPlugin {
-  FirebaseSimServerService get simService;
-  //FirebaseSimPluginServer register(App app, json_rpc.Server rpcServer);
+  FirebaseSimServerChannel channel(RpcServerChannel channel);
 }

@@ -1,3 +1,4 @@
+/*
 export 'src/firebase_sim_message.dart'
     show
         BaseData,
@@ -6,3 +7,4 @@ export 'src/firebase_sim_message.dart'
         methodAdminGetAppName,
         methodAdminInitializeApp,
         methodPing;
+*/

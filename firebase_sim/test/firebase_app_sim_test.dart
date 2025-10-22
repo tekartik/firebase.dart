@@ -36,7 +36,9 @@ void run(TestContext testContext) {
       await app.ping();
     });
     test('getAppName', () async {
-      expect(await app.getAppName(), 'test_sim');
+      expect(app.name, 'test_sim');
+      expect(await app.getAppName(), isNot('test_sim'));
+      expect(await app.getAppName(), startsWith('test_sim'));
     });
   });
 }

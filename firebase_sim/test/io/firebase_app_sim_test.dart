@@ -3,6 +3,9 @@ library;
 
 import 'dart:async';
 
+import 'package:tekartik_common_utils/common_utils_import.dart';
+// ignore: unused_import
+import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
 import 'package:tekartik_firebase_sim/src/firebase_sim_client.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:test/test.dart';
@@ -10,6 +13,8 @@ import 'package:test/test.dart';
 import 'test_common.dart';
 
 Future main() async {
+  // debugFirebaseSimClient = devTrue;
+  // debugFirebaseSimServer = devTrue;
   var testContext = await initTestContextSim();
   run(testContext);
 
@@ -33,7 +38,9 @@ void run(TestContext testContext) {
       await app.ping();
     });
     test('getAppName', () async {
-      expect(await app.getAppName(), 'test_sim');
+      expect(app.name, 'test_sim');
+      expect(await app.getAppName(), startsWith('test_sim'));
+      expect(await app.getAppName(), isNot('test_sim'));
     });
   });
 }

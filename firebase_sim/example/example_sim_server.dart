@@ -6,6 +6,7 @@ import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
 import 'vars_menu.dart';
 
 Future<void> main(List<String> args) async {
+  debugFirebaseSimServer = true;
   var firebaseSimServer = await firebaseSimServe(
     FirebaseLocal(),
     webSocketChannelServerFactory: webSocketChannelServerFactoryIo,

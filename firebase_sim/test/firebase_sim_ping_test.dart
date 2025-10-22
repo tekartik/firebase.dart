@@ -1,8 +1,9 @@
 import 'package:tekartik_firebase_sim/firebase_sim.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_client.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
 import 'package:tekartik_firebase_sim/firebase_sim_server.dart';
-import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
+import 'package:tekartik_firebase_sim/src/firebase_sim_client.dart';
+
+import 'package:tekartik_firebase_sim/src/firebase_sim_message.dart';
+import 'package:tekartik_firebase_sim/src/firebase_sim_server_service.dart';
 import 'package:tekartik_web_socket/web_socket.dart';
 import 'package:test/test.dart';
 

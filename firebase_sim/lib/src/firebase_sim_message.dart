@@ -11,6 +11,9 @@ const methodPing = 'ping'; // from client or server
 /// InitializeApp method
 const methodAdminInitializeApp = 'admin/initializeApp';
 
+/// Close method (unused for now)
+const methodAdminCloseApp = 'admin/closeApp';
+
 /// GetAppName method
 const methodAdminGetAppName = 'admin/getAppName';
 

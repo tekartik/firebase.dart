@@ -5,8 +5,9 @@ export 'package:tekartik_app_dev_menu/dev_menu.dart';
 
 /// Top doc context
 class FirebaseMainMenuContext {
+  final FirebaseAppOptions? options;
   final Firebase firebase;
-  FirebaseMainMenuContext({required this.firebase});
+  FirebaseMainMenuContext({required this.firebase, this.options});
 }
 
 void firebaseMainMenu({required FirebaseMainMenuContext context}) {
@@ -14,10 +15,13 @@ void firebaseMainMenu({required FirebaseMainMenuContext context}) {
   var firebase = context.firebase;
   menu('app', () {
     item('initializeAppAsync', () async {
-      app = await firebase.initializeAppAsync();
+      app = await firebase.initializeAppAsync(
+        name: 'async',
+        options: context.options,
+      );
     });
     item('initializeApp', () async {
-      app = firebase.initializeApp();
+      app = firebase.initializeApp(options: context.options);
     });
     item('delete', () async {
       await app?.delete();

@@ -6,11 +6,11 @@ import 'package:tekartik_common_utils/env_utils.dart';
 import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mixin.dart';
-import 'package:tekartik_firebase_sim/firebase_sim_message.dart';
-import 'package:tekartik_firebase_sim/src/firebase_sim_server.dart';
+import 'package:tekartik_firebase_sim/src/firebase_sim_server_service.dart';
 import 'package:tekartik_rpc/rpc_client.dart';
 
 import 'firebase_sim.dart';
+import 'firebase_sim_message.dart';
 import 'log_utils.dart';
 
 var debugFirebaseSimClient = false; // devWarning(true);
