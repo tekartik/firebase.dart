@@ -2,10 +2,9 @@ import 'dart:core' hide Error;
 
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_rpc/rpc_server.dart';
+import 'package:tekartik_firebase_sim/firebase_sim_server_mixin.dart';
 
 import 'firebase_sim.dart';
-import 'firebase_sim_plugin.dart';
 import 'firebase_sim_server_app.dart';
 import 'firebase_sim_server_service.dart';
 import 'log_utils.dart';
@@ -54,6 +53,7 @@ Future<FirebaseSimServer> firebaseSimServe(
   List<FirebaseSimPlugin>? plugins,
   int? port,
 }) async {
+  firebaseSimInitCvBuilders();
   port ??= firebaseSimDefaultPort;
   var services = [
     FirebaseSimServerCoreService(),
@@ -88,13 +88,17 @@ extension FirebaseSimServerMixinExt on FirebaseSimServer {
       return _initLock.synchronized(() async {
         if (!isPluginsInitialized(app)) {
           for (var plugin in _plugins) {
+            if (debugFirebaseSimServer) {
+              _log('Initializing plugin ${plugin.runtimeType} for app $app');
+            }
             var result = plugin.initForApp(app);
             if (result is Future) {
               await result;
             }
           }
+
+          setPluginsInitialized(app, true);
         }
-        setPluginsInitialized(app, true);
       });
     }
   }

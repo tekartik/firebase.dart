@@ -30,16 +30,20 @@ Future main() async {
       await simClient.close();
     });
     test('initializeApp', () async {
-      await simClient.sendRequest<void>(
-        FirebaseSimServerCoreService.serviceName,
-        methodAdminInitializeApp,
-        {'projectId': 'test', 'name': 'test_name'},
-      );
-      var name = await simClient.sendRequest<String>(
-        FirebaseSimServerCoreService.serviceName,
-        methodAdminGetAppName,
-        null,
-      );
+      var appId =
+          (await simClient.sendRequest<Map>(
+                FirebaseSimServerCoreService.serviceName,
+                methodAdminInitializeApp,
+                {'projectId': 'test', 'name': 'test_name'},
+              ))['appId']
+              as int;
+      var name =
+          (await simClient.sendRequest<Map>(
+                FirebaseSimServerCoreService.serviceName,
+                methodAdminGetAppName,
+                {'appId': appId},
+              ))['name']
+              as String;
       expect(name, isNot('test_name'));
       expect(name, startsWith('test_name'));
     });

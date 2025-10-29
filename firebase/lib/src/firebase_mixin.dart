@@ -20,6 +20,9 @@ mixin FirebaseMixin implements Firebase {
 
   @override
   bool get isLocal => false;
+
+  /// Close firebase
+  Future<void> close() async {}
 }
 
 /// Firebase app mixin

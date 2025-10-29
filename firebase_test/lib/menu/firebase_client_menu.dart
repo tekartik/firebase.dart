@@ -19,9 +19,11 @@ void firebaseMainMenu({required FirebaseMainMenuContext context}) {
         name: 'async',
         options: context.options,
       );
+      write('app: $app ${app?.name} ${app?.hashCode}');
     });
     item('initializeApp', () async {
       app = firebase.initializeApp(options: context.options);
+      write('app: $app ${app?.name} ${app.hashCode}');
     });
     item('delete', () async {
       await app?.delete();

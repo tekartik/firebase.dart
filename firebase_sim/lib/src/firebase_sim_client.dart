@@ -27,11 +27,21 @@ class FirebaseAppSim with FirebaseAppMixin {
   final FirebaseSim admin;
   bool deleted = false;
   final String _name;
+  int? _appId;
+
+  /// Internal app id
+  int get appServerId => _appId!;
 
   @override
   Firebase get firebase => admin;
 
   Completer<FirebaseSimClient>? readyCompleter;
+  FirebaseSimAppClient? _simAppClient;
+
+  Future<FirebaseSimAppClient> get simAppClient async {
+    await simClient;
+    return _simAppClient ??= FirebaseSimAppClient(this, await simClient);
+  }
 
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
@@ -45,11 +55,15 @@ class FirebaseAppSim with FirebaseAppMixin {
         ..projectId = options.projectId!
         ..name = name;
       try {
-        await simClient.sendRequest<void>(
-          FirebaseSimServerCoreService.serviceName,
-          methodAdminInitializeApp,
-          adminInitializeAppData.toMap(),
-        );
+        var result = AdminInitializeAppResponseData()
+          ..fromMap(
+            await simClient.sendRequest<Map>(
+              FirebaseSimServerCoreService.serviceName,
+              methodAdminInitializeApp,
+              adminInitializeAppData.toMap(),
+            ),
+          );
+        _appId = result.appId;
         readyCompleter!.complete(simClient);
       } catch (e) {
         readyCompleter!.completeError(e);
@@ -66,7 +80,20 @@ class FirebaseAppSim with FirebaseAppMixin {
   Future delete() async {
     if (!deleted) {
       deleted = true;
+
       await closeServices();
+      var simClient = simAppClient;
+      try {
+        await (await simClient)
+            .sendRequest<void>(
+              FirebaseSimServerCoreService.serviceName,
+              methodAdminCloseApp,
+              AdminAppCloseRequestData().toMap(),
+            )
+            .timeout(const Duration(seconds: 5));
+      } catch (e) {
+        _log('Error closing app $e');
+      }
     }
   }
 
@@ -86,14 +113,31 @@ class FirebaseAppSim with FirebaseAppMixin {
     );
   }
 
-  // use the rpc
-  Future<String?> getAppName() async {
+  /// use the rpc, throw if not found
+  Future<String> getAppName() async {
+    var simClient = await simAppClient;
+    var result = AdminAppGetNameResponseData()
+      ..fromMap(
+        await simClient.sendRequest(
+          FirebaseSimServerCoreService.serviceName,
+          methodAdminGetAppName,
+          AdminAppGetNameRequestData().toMap(),
+        ),
+      );
+    return result.name ?? '???';
+  }
+
+  Future<String> getAppDelegateName() async {
     var simClient = await this.simClient;
-    return await simClient.sendRequest(
-      FirebaseSimServerCoreService.serviceName,
-      methodAdminGetAppName,
-      null,
-    );
+    var result = AdminAppGetNameResponseData()
+      ..fromMap(
+        await simClient.sendRequest(
+          FirebaseSimServerCoreService.serviceName,
+          methodAdminGetAppDelegateName,
+          (AdminAppGetNameRequestData()..appId = _appId).toMap(),
+        ),
+      );
+    return result.name ?? '???';
   }
 }
 
@@ -129,6 +173,18 @@ class _FirebaseSimClient implements FirebaseSimClient {
   @override
   Future close() async {
     await rpcClient.close();
+  }
+}
+
+class FirebaseSimAppClient {
+  final FirebaseAppSim app;
+  final FirebaseSimClient simClient;
+
+  FirebaseSimAppClient(this.app, this.simClient);
+
+  Future<T> sendRequest<T>(String service, String method, Map param) {
+    param[paramAppId] = app.appServerId;
+    return simClient.sendRequest<T>(service, method, param);
   }
 }
 

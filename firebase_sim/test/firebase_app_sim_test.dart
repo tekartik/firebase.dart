@@ -1,8 +1,6 @@
 @TestOn('vm')
 library;
 
-import 'dart:async';
-
 import 'package:tekartik_firebase_sim/src/firebase_sim_client.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:test/test.dart';
@@ -10,6 +8,7 @@ import 'package:test/test.dart';
 import 'test_common.dart';
 
 Future main() async {
+  // debugFirebaseSimClient = debugFirebaseSimServer = devTrue;
   var testContext = await initTestContextSim();
   run(testContext);
 

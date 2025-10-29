@@ -10,9 +10,10 @@ import 'package:tekartik_web_socket_io/web_socket_io.dart';
 
 class TestContext {
   late FirebaseSimServer simServer;
-  late Firebase firebase;
+  late FirebaseSim firebase;
   Future<void> close() async {
     await simServer.close();
+    await firebase.close();
   }
 }
 

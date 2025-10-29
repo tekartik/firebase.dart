@@ -52,6 +52,7 @@ FirebaseSim getFirebaseSim({
 
 abstract class FirebaseSim implements Firebase {
   String get localPath;
+  Future<void> close();
 }
 
 /// Client sim
