@@ -50,6 +50,11 @@ FirebaseSim getFirebaseSim({
   return firebase;
 }
 
+mixin FirebaseSimMixin on FirebaseMixin {
+  /// Close firebase
+  Future<void> close() async {}
+}
+
 abstract class FirebaseSim implements Firebase {
   String get localPath;
   Future<void> close();
@@ -64,7 +69,9 @@ abstract class FirebaseClientSim implements FirebaseSim {
 }
 
 /// Firebase sim
-class _FirebaseClientSim with FirebaseMixin implements FirebaseClientSim {
+class _FirebaseClientSim
+    with FirebaseMixin, FirebaseSimMixin
+    implements FirebaseClientSim {
   /// The Firebase server when testing both locally.
   Firebase? firebaseServer;
   String? _localPath;
