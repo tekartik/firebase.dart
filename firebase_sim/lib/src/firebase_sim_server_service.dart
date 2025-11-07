@@ -172,7 +172,7 @@ class FirebaseSimServerChannel {
     if (projectApp != null) {
       return (AdminAppGetNameResponseData()..name = projectApp.appName).toMap();
     }
-    throw StateError('App with id $appId not found');
+    throw StateError('GetName App with id $appId not found');
   }
 
   Future<Map<String, Object?>?> handleAppGetDelegateName(

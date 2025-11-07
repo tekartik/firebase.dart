@@ -42,7 +42,7 @@ class FirebaseAppSim with FirebaseAppMixin {
     await simClient;
     return _simAppClient ??= FirebaseSimAppClient(this, await simClient);
   }
-
+@deprecated
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
