@@ -41,27 +41,14 @@ void runFirebaseTests(
         (await firebaseAsync.appAsync(name: app.name)).options.projectId,
         app.options.projectId,
       );
-      /*
-      expect(app.options.projectId, isNotEmpty);
-      devPrint("projectId: ${app.options.projectId}");
-      devPrint("projectId: ${app.options.storageBucket}");
-      */
     });
 
-    /*
-    test('app name', () async {
-      App app = firebase.initializeApp(name: "test");
-      // expect(app.name, 'test');
+    test('reinit', () async {
       await app.delete();
+      app = await firebaseAsync.initializeAppAsync(
+        options: options,
+        name: name,
+      );
     });
-
-    test('app options', () async {
-      App app = firebase.initializeApp(
-          options: new AppOptions(projectId: "testProjectId"), name: "test");
-      expect(app.name, 'test');
-      expect(app.options.projectId, 'testProjectId');
-      await app.delete();
-    });
-    */
   });
 }
