@@ -1,5 +1,6 @@
-import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/src/firebase_mixin.dart';
+import 'package:tekartik_firebase/firebase_admin.dart';
+import 'package:tekartik_firebase/firebase_mixin.dart';
+
 import 'package:test/test.dart';
 
 String get _defaultAppName => firebaseAppNameDefault;
@@ -21,7 +22,9 @@ class FirebaseMock with FirebaseMixin {
   }
 }
 
-class FirebaseAdminMock extends FirebaseMock {
+class FirebaseAdminMock extends FirebaseMock
+    with FirebaseAdminMixin
+    implements FirebaseAdmin {
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
@@ -125,7 +128,7 @@ class FirebaseAppProductMock
 void main() {
   group('firebase', () {
     test('service', () async {
-      var firebase = FirebaseMock();
+      var firebase = FirebaseMock() as Firebase;
       var app = firebase.initializeApp();
       expect(app.projectId, _defaultProjectId);
       expect(app.hasAdminCredentials, isFalse);
@@ -138,7 +141,7 @@ void main() {
       expect(service.initCount, 0);
     });
     test('product service', () {
-      var firebase = FirebaseMock();
+      var firebase = FirebaseMock() as Firebase;
       var app1 = firebase.initializeApp(name: 'app1');
       var app2 = firebase.initializeApp(name: 'app2');
       expect(app1, isNot(app2));
@@ -150,7 +153,7 @@ void main() {
       expect(product1, product1bis);
     });
     test('product', () async {
-      var firebase = FirebaseMock();
+      var firebase = FirebaseMock() as Firebase;
       var app = firebase.initializeApp() as FirebaseAppMock;
       var service = FirebaseProductServiceMock();
       expect(app.getProduct<FirebaseAppProductMockBase>(), isNull);
@@ -159,7 +162,7 @@ void main() {
       await app.delete();
     });
     test('dispose', () async {
-      var firebase = FirebaseMock();
+      var firebase = FirebaseMock() as Firebase;
       var app = firebase.initializeApp();
       var service = FirebaseProductServiceMock();
 
@@ -170,7 +173,7 @@ void main() {
     });
 
     test('admin', () async {
-      var firebase = FirebaseAdminMock();
+      var firebase = FirebaseAdminMock() as FirebaseAdmin;
       var app = firebase.initializeApp();
       expect(app.hasAdminCredentials, isTrue);
     });

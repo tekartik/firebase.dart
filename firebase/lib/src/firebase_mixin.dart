@@ -2,6 +2,7 @@
 // although not exposed.
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firebase.dart';
+import 'firebase_admin.dart';
 
 /// Firebase mixin
 mixin FirebaseMixin implements Firebase {
@@ -22,6 +23,12 @@ mixin FirebaseMixin implements Firebase {
   bool get isLocal => false;
 }
 
+/// Admin mixin
+mixin FirebaseAdminMixin implements FirebaseAdmin {
+  @override
+  FirebaseAdminCredentialService get credential => throw UnimplementedError();
+}
+
 /// Firebase app mixin
 mixin FirebaseAppMixin implements FirebaseApp {
   final _servicesLock = Lock();
@@ -34,7 +41,8 @@ mixin FirebaseAppMixin implements FirebaseApp {
   }
 
   /// Get the product for the type
-  T? getProduct<T>() {
+  @override
+  T? getProduct<T extends FirebaseAppProduct>() {
     var product = _product[T];
     return product as T?;
   }

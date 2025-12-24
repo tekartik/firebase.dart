@@ -1,5 +1,6 @@
 import 'app_options.dart';
 import 'firebase.dart';
+import 'firebase_app_product.dart';
 import 'firebase_mixin.dart';
 import 'firebase_product_service.dart';
 
@@ -29,6 +30,9 @@ abstract class FirebaseApp {
   ///
   /// Upon delete, close will be called
   Future<void> addService(FirebaseProductService service);
+
+  /// Get the product for the type
+  T? getProduct<T extends FirebaseAppProduct>();
 
   /// Get firebase
   Firebase get firebase;

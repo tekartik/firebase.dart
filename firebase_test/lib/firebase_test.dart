@@ -2,18 +2,9 @@ library;
 
 import 'package:tekartik_firebase_test/firebase_app_test.dart';
 import 'package:test/test.dart';
+
+import 'firebase_product_test.dart';
 export 'package:tekartik_firebase/firebase.dart';
-/*
-void run(FirebaseAsync firebase, {AppOptions options}) {
-  App app = firebase.initializeApp(options: options);
-
-  tearDownAll(() {
-    return app.delete();
-  });
-
-  runApp(firebase, app);
-}
-*/
 
 @Deprecated('Preferred runFirebaseTests')
 void runApp(FirebaseAsync firebaseAsync, {AppOptions? options, String? name}) =>
@@ -32,6 +23,7 @@ void runFirebaseTests(
   });
 
   runFirebaseAppTests(firebaseAsync, () => app);
+  runFirebaseAppProductTests(firebaseAsync, () => app);
   group('Firebase', () {
     test('default app name', () async {
       expect(app.name, name ?? '[DEFAULT]');
