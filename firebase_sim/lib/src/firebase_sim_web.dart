@@ -8,6 +8,7 @@ import 'package:tekartik_web_socket/web_socket.dart';
 export 'package:tekartik_web_socket_browser/web_socket_browser.dart'
     show webSocketClientChannelFactoryBrowser;
 
+/// Get Firebase for web.
 Firebase getFirebaseSimWeb({
   WebSocketChannelClientFactory? clientFactory,
   Uri? uri,

@@ -9,6 +9,7 @@ import 'firebase_sim_server_app.dart';
 import 'firebase_sim_server_service.dart';
 import 'log_utils.dart';
 
+/// Debug flag for Firebase Sim Server.
 var debugFirebaseSimServer = false; // devWarning(true);
 void _log(Object? message) {
   log('firebase_sim_server', message);
@@ -47,6 +48,7 @@ class _RpcServiceLogger implements RpcService {
   }
 }
 
+/// Start Firebase sim server.
 Future<FirebaseSimServer> firebaseSimServe(
   Firebase firebase, {
   WebSocketChannelServerFactory? webSocketChannelServerFactory,
@@ -83,6 +85,7 @@ Future<FirebaseSimServer> firebaseSimServe(
 
 /// Only for implementation
 extension FirebaseSimServerMixinExt on FirebaseSimServer {
+  /// Init for app.
   FutureOr<void> initForApp(FirebaseApp app) {
     if (!isPluginsInitialized(app)) {
       return _initLock.synchronized(() async {
@@ -103,10 +106,12 @@ extension FirebaseSimServerMixinExt on FirebaseSimServer {
     }
   }
 
+  /// Whether plugins are initialized for app.
   bool isPluginsInitialized(FirebaseApp app) {
     return _pluginsInitialized.contains(app);
   }
 
+  /// Set plugins initialized for app.
   void setPluginsInitialized(FirebaseApp app, bool initialized) {
     if (!initialized) {
       _pluginsInitialized.remove(app);
@@ -115,12 +120,14 @@ extension FirebaseSimServerMixinExt on FirebaseSimServer {
     _pluginsInitialized.add((app));
   }
 
+  /// Get app by project ID.
   FirebaseApp? getAppByProjectId(String projectId) {
     var app = _appByProjectId[projectId];
     // print('getAppByProjectId $projectId -> $app');
     return app;
   }
 
+  /// Set project ID app.
   void setProjectIdApp(String projectId, FirebaseApp app) {
     // print('setProjectIdApp $projectId -> $app');
     _appByProjectId[projectId] = app;
@@ -142,9 +149,11 @@ class _FirebaseSimServer extends FirebaseSimServer {
   }
 }
 
+/// Firebase Sim Server.
 abstract class FirebaseSimServer {
   final _initLock = Lock();
   //int _lastAppId = 0;
+  /// Firebase instance.
   final Firebase firebase;
 
   /// Set of initialized plugins
@@ -169,24 +178,32 @@ abstract class FirebaseSimServer {
   /// Map of projectId to FirebaseApp
   final _appByProjectId = <String, FirebaseApp>{};
   final List<FirebaseSimPlugin> _plugins = [];
+
+  /// RPC server instance.
   final RpcServer rpcServer;
 
+  /// Add plugin.
   void addPlugin(FirebaseSimPlugin plugin) {
     _plugins.add(plugin);
   }
 
+  /// Server URL.
   String get url => rpcServer.url;
 
   /// Client websocket uri
   Uri get uri => Uri.parse(url);
 
   FirebaseSimServer._(this.firebase, this.rpcServer);
+
+  /// Constructor.
   factory FirebaseSimServer(Firebase firebase, RpcServer rpcServer) =>
       _FirebaseSimServer(firebase, rpcServer);
 
+  /// Close server.
   Future close() async {
     await rpcServer.close();
   }
 
+  /// Get channel.
   FirebaseSimServerChannel channel(RpcServerChannel channel);
 }

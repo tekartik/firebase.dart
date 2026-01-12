@@ -11,6 +11,8 @@ String get _defaultProjectId => 'sim';
 
 /// Default project ID for the tekartik firebase Sim.
 String firebaseSimDefaultProjectId = _defaultProjectId;
+
+/// Localhost base URL.
 const firebaseSimLocalhostBaseUrl = 'ws://localhost';
 
 /// The default port for the Firebase Simulator.
@@ -50,13 +52,18 @@ FirebaseSim getFirebaseSim({
   return firebase;
 }
 
+/// Mixin for Firebase Sim.
 mixin FirebaseSimMixin on FirebaseMixin {
   /// Close firebase
   Future<void> close() async {}
 }
 
+/// Firebase Sim interface.
 abstract class FirebaseSim implements Firebase {
+  /// Local path.
   String get localPath;
+
+  /// Close firebase.
   Future<void> close();
 }
 
@@ -65,6 +72,7 @@ abstract class FirebaseClientSim implements FirebaseSim {
   /// Uri to connect to.
   Uri get uri;
 
+  /// Client factory.
   WebSocketChannelClientFactory? get clientFactory;
 }
 

@@ -9,6 +9,7 @@ import 'package:tekartik_firebase_sim/src/firebase_sim_server_app.dart';
 import 'package:tekartik_rpc/rpc_server.dart';
 import 'firebase_sim_server.dart';
 
+/// Deprecated: use FirebaseSimServerServiceBase instead.
 @Deprecated('use FirebaseSimServerServiceBase instead')
 typedef FirebaseSimServiceBase = FirebaseSimServerServiceBase;
 
@@ -27,6 +28,7 @@ abstract class FirebaseSimServerServiceBase extends RpcServiceBase
   @override
   late final FirebaseSimServer simServer;
 
+  /// Handle service call.
   FutureOr<Object?> onServiceCall(
     RpcServerChannel channel,
     RpcMethodCall methodCall,
@@ -55,6 +57,7 @@ abstract class FirebaseSimServerServiceBase extends RpcServiceBase
     return onServiceCall(channel, methodCall);
   }
 
+  /// Handle app call.
   FutureOr<Object?> onAppCall(
     FirebaseSimServerProjectApp projectApp,
     RpcServerChannel channel,
@@ -66,14 +69,18 @@ abstract class FirebaseSimServerServiceBase extends RpcServiceBase
     );
   }
 
+  /// Constructor.
   FirebaseSimServerServiceBase(super.name);
 }
 
 //var firebaseSimServerExpando = Expando<FirebaseSimServerChannel>();
 
+/// Core service.
 class FirebaseSimServerCoreService extends FirebaseSimServerServiceBase {
+  /// Service name.
   static const serviceName = 'firebase_core';
 
+  /// Constructor.
   FirebaseSimServerCoreService() : super(serviceName);
 
   @override
@@ -132,11 +139,13 @@ class FirebaseSimServerCoreService extends FirebaseSimServerServiceBase {
   }
 }
 
+/// Server channel.
 class FirebaseSimServerChannel {
   // ignore: unused_field
   final RpcServerChannel _channel;
   final FirebaseSimServer _simServer;
 
+  /// Get app by ID.
   FirebaseSimServerProjectApp appById(int appId) {
     var app = _appsByAppId[appId];
     if (app == null) {
@@ -160,9 +169,13 @@ class FirebaseSimServerChannel {
     return _appsByAppId.values.firstOrNull?.app;
   }
 
+  /// Projects by project ID.
   final projectsByProjectId = <String, FirebaseSimServerProject>{};
+
+  /// Constructor.
   FirebaseSimServerChannel(this._simServer, this._channel);
 
+  /// Handle get app name.
   Future<Map<String, Object?>?> handleAppGetName(
     Map<String, dynamic> param,
   ) async {
@@ -175,6 +188,7 @@ class FirebaseSimServerChannel {
     throw StateError('GetName App with id $appId not found');
   }
 
+  /// Handle get app delegate name.
   Future<Map<String, Object?>?> handleAppGetDelegateName(
     Map<String, dynamic> param,
   ) async {
@@ -189,6 +203,7 @@ class FirebaseSimServerChannel {
     return null;
   }
 
+  /// Handle app close.
   Future<void> handleAppClose(Map<String, dynamic> param) async {
     var getNameData = AdminAppCloseRequestData()..fromMap(param);
     var appId = getNameData.appId!;
@@ -199,6 +214,7 @@ class FirebaseSimServerChannel {
     await projectApp?.firebaseDeleteApp();
   }
 
+  /// Handle admin initialize app.
   Future<FirebaseSimServerProjectApp> handleAdminInitializeApp(
     Map<String, dynamic> param,
   ) async {

@@ -5,6 +5,7 @@ import 'package:tekartik_firebase_sim/firebase_sim.dart';
 import 'package:tekartik_web_socket_io/web_socket_io.dart';
 export 'package:tekartik_firebase_sim/firebase_sim.dart';
 
+/// Get FirebaseSim for IO.
 FirebaseSim getFirebaseSimIo({
   WebSocketChannelClientFactory? clientFactory,
   Uri? uri,

@@ -13,6 +13,7 @@ import 'firebase_sim.dart';
 import 'firebase_sim_message.dart';
 import 'log_utils.dart';
 
+/// Debug flag for Firebase Sim Client.
 var debugFirebaseSimClient = false; // devWarning(true);
 
 void _log(Object? message) {
@@ -24,7 +25,10 @@ typedef AppSim = FirebaseAppSim;
 
 /// We have one client per app
 class FirebaseAppSim with FirebaseAppMixin {
+  /// The admin instance.
   final FirebaseSim admin;
+
+  /// Whether the app is deleted.
   bool deleted = false;
   final String _name;
   int? _appId;
@@ -35,14 +39,17 @@ class FirebaseAppSim with FirebaseAppMixin {
   @override
   Firebase get firebase => admin;
 
+  /// Ready completer.
   Completer<FirebaseSimClient>? readyCompleter;
   FirebaseSimAppClient? _simAppClient;
 
+  /// Get the sim app client.
   Future<FirebaseSimAppClient> get simAppClient async {
     await simClient;
     return _simAppClient ??= FirebaseSimAppClient(this, await simClient);
   }
 
+  /// Get the sim client.
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
@@ -72,6 +79,7 @@ class FirebaseAppSim with FirebaseAppMixin {
     return readyCompleter!.future;
   }
 
+  /// Constructor.
   FirebaseAppSim(this.admin, this.options, this._name) {
     //_name ??= firebaseAppNameDefault;
   }
@@ -104,6 +112,7 @@ class FirebaseAppSim with FirebaseAppMixin {
   final AppOptions options;
 
   // basic ping feature with console display
+  /// Ping.
   Future ping() async {
     var simClient = await this.simClient;
     await simClient.sendRequest<void>(
@@ -127,6 +136,7 @@ class FirebaseAppSim with FirebaseAppMixin {
     return result.name ?? '???';
   }
 
+  /// Get the app delegate name.
   Future<String> getAppDelegateName() async {
     var simClient = await this.simClient;
     var result = AdminAppGetNameResponseData()
@@ -141,6 +151,7 @@ class FirebaseAppSim with FirebaseAppMixin {
   }
 }
 
+/// Request timeout duration.
 const requestTimeoutDuration = Duration(seconds: 15);
 
 class _FirebaseSimClient implements FirebaseSimClient {
@@ -176,12 +187,18 @@ class _FirebaseSimClient implements FirebaseSimClient {
   }
 }
 
+/// Firebase Sim App Client.
 class FirebaseSimAppClient {
+  /// The app instance.
   final FirebaseAppSim app;
+
+  /// The sim client instance.
   final FirebaseSimClient simClient;
 
+  /// Constructor.
   FirebaseSimAppClient(this.app, this.simClient);
 
+  /// Send a request.
   Future<T> sendRequest<T>(String service, String method, Map param) {
     param[paramAppId] = app.appServerId;
     return simClient.sendRequest<T>(service, method, param);
@@ -190,6 +207,7 @@ class FirebaseSimAppClient {
 
 /// Firebase sim client
 abstract class FirebaseSimClient {
+  /// Connect to the specified URI.
   static FirebaseSimClient connect(
     Uri uri, {
     WebSocketChannelClientFactory? webSocketChannelClientFactory,

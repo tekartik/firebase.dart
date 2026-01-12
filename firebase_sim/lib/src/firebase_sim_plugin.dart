@@ -14,8 +14,12 @@ mixin FirebaseSimPluginDefaultMixin implements FirebaseSimPlugin {
   }
 }
 
+/// Firebase sim plugin.
 abstract class FirebaseSimPlugin {
+  /// Sim service instance.
   FirebaseSimServerService get simService;
+
+  /// Init for app.
   FutureOr<void> initForApp(FirebaseApp app);
   //FirebaseSimPluginServer register(App app, json_rpc.Server rpcServer);
 }
