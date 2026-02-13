@@ -1,10 +1,12 @@
-// This file is use by the implementation, should be considerd like a public api
-// although not exposed.
+/// Internal implementation mixins.
+library;
+
 import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'firebase_admin.dart';
 
-/// Firebase mixin
+/// Firebase mixin.
+/// @internal
 mixin FirebaseMixin implements Firebase {
   @override
   Future<App> initializeAppAsync({AppOptions? options, String? name}) async =>
@@ -23,19 +25,21 @@ mixin FirebaseMixin implements Firebase {
   bool get isLocal => false;
 }
 
-/// Admin mixin
+/// Admin mixin.
+/// @internal
 mixin FirebaseAdminMixin implements FirebaseAdmin {
   @override
   FirebaseAdminCredentialService get credential => throw UnimplementedError();
 }
 
-/// Firebase app mixin
+/// Firebase app mixin.
+/// @internal
 mixin FirebaseAppMixin implements FirebaseApp {
   final _servicesLock = Lock();
   final _services = <FirebaseProductService>{};
   final _product = <Type, FirebaseAppProduct>{};
 
-  /// add the product to the app
+  /// Add a product to the app for later retrieval.
   void addProduct(FirebaseAppProduct product) {
     _product[product.type] = product;
   }
@@ -84,7 +88,8 @@ mixin FirebaseAppMixin implements FirebaseApp {
   }
 }
 
-/// Helper for any app produce (firestore, storage...)
+/// Helper for any app product (firestore, storage...).
+/// @internal
 mixin FirebaseAppProductMixin<T> implements FirebaseAppProduct<T> {
   var _disposed = false;
 
@@ -101,7 +106,8 @@ mixin FirebaseAppProductMixin<T> implements FirebaseAppProduct<T> {
   }
 }
 
-/// Compat Helper for any app service (firestore, storage...)
+/// Compat Helper for any app service (firestore, storage...).
+/// @internal
 mixin FirebaseProductServiceMixin<T> implements FirebaseProductService {
   /// Most implementation need a single instance, keep it in memory!
   final _instances = <App, T>{};
@@ -136,7 +142,8 @@ mixin FirebaseProductServiceMixin<T> implements FirebaseProductService {
   Future<void> init(App app) async {}
 }
 
-/// Test extension
+/// Test extension.
+/// @internal
 extension FirebaseProductServiceMixinExt<T> on FirebaseProductService {
   /// Get the existing instance for the app, if any
   @visibleForTesting

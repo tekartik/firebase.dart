@@ -4,52 +4,68 @@ import 'firebase_app_product.dart';
 import 'firebase_mixin.dart';
 import 'firebase_product_service.dart';
 
-/// The default [FirebaseApp] name.
+/// The default name for a [FirebaseApp], used when no name is provided.
 const firebaseAppNameDefault = '[DEFAULT]';
 
-/// This is the new type, App will be deprecated in the future
+/// A typedef for [FirebaseApp] for backward compatibility.
+///
+/// This will be deprecated in the future. Use [FirebaseApp] instead.
 typedef App = FirebaseApp;
 
-/// Firebase app.
+/// A Firebase App holds the common configuration for a given Firebase project
+/// and is the entry point for all Firebase services.
 abstract class FirebaseApp {
-  /// The app name
+  /// The name of this app.
   String get name;
 
-  /// The app options
+  /// The options that this app was initialized with.
   FirebaseAppOptions get options;
 
-  /// Deletes this app and frees up system resources.
+  /// Deletes this app and frees up system resources, including closing any
+  /// services associated with it.
   ///
   /// Once deleted, any plugin functionality using this app instance will throw
   /// an error.
   ///
-  /// Deleting the default app is not possible and throws an exception.
+  /// Deleting the default app is not possible and will throw an exception.
   Future<void> delete();
 
-  /// Add a service and calls its init method.
+  /// Adds a [FirebaseProductService] to this app and calls its `init` method.
   ///
-  /// Upon delete, close will be called
+  /// This is typically used by the service implementation itself to register
+  /// for lifecycle events (e.g., being closed when the app is deleted).
+  ///
+  /// Upon [delete], the service's `close` method will be called.
   Future<void> addService(FirebaseProductService service);
 
-  /// Get the product for the type
+  /// Retrieves a product (service instance) that has been initialized for this app.
+  ///
+  /// Returns `null` if the product of type [T] is not found.
   T? getProduct<T extends FirebaseAppProduct>();
 
-  /// Get firebase
+  /// The [Firebase] instance that this app belongs to.
   Firebase get firebase;
 
-  /// True if local (nor node, nor rest, nor flutter)
+  /// Returns `true` if the app is running in a local environment (e.g.,
+  /// `FirebaseLocal`), not using real backend services (REST, Node.js, Flutter).
   bool get isLocal;
 
-  /// True if it has admin credentials
+  /// Returns `true` if the app has been initialized with admin credentials.
   bool get hasAdminCredentials;
 
-  /// The latest initialized firebase app instance.
+  /// The most recently initialized [FirebaseApp] instance.
+  ///
+  /// This is often the default app, but in a multi-app environment, it could be
+  /// the last app that was initialized.
   static FirebaseApp get instance =>
       FirebaseMixin.latestFirebaseInstanceOrNull!;
 }
 
-/// Firebase app extensions
+/// Useful extensions on the [FirebaseApp] class.
 extension TekartikFirebaseAppExt on FirebaseApp {
-  /// Project id should never be null!
+  /// The project ID from the app's options.
+  ///
+  /// This is a convenience getter that assumes the project ID is never null,
+  /// as it is a fundamental part of a valid Firebase configuration.
   String get projectId => options.projectId!;
 }

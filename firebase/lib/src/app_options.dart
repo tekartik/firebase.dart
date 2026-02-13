@@ -57,7 +57,8 @@ class FirebaseAppOptions {
   String toString() => toDebugMap().toString();
 }
 
-/// Firebase app options from map
+/// Firebase app options from map.
+/// @internal
 class FirebaseAppOptionsFromMap
     with FirebaseAppOptionsMixin
     implements FirebaseAppOptions {
@@ -91,7 +92,7 @@ class FirebaseAppOptionsFromMap
   }
 }
 
-/// Firebase app options mixin
+/// Firebase app options mixin.
 mixin FirebaseAppOptionsMixin implements FirebaseAppOptions {
   @override
   Map<String, Object?> toDebugMap() {

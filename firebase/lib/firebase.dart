@@ -1,3 +1,6 @@
+/// Main firebase export file.
+library;
+
 export 'package:tekartik_firebase/src/app_options.dart'
     show AppOptions, FirebaseAppOptions, FirebaseAppOptionsMixin;
 export 'package:tekartik_firebase/src/firebase_app_product.dart'

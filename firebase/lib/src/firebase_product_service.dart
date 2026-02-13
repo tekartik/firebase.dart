@@ -4,9 +4,9 @@ import 'package:tekartik_firebase/firebase.dart';
 ///
 /// Init is called
 abstract class FirebaseProductService {
-  /// Called when [App.addService] is called
+  /// Called when [App.addService] is called.
   Future<void> init(App app);
 
-  /// Called when [App.delete] is called
+  /// Called when [App.delete] is called.
   Future<void> close(App app);
 }
