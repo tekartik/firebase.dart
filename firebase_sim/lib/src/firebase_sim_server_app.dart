@@ -23,7 +23,7 @@ class FirebaseSimServerProject {
   /// This is the only one used for initialization, named projectId_DEFAULT
   late final appDelegate = FirebaseSimServerProjectAppDelegate(project: this);
 
-  String _mapKey(String appName) => '$appName$_id';
+  String _mapKey(String appName) => '${appName}_sim_$_id';
 
   /// Get or create app.
   FirebaseSimServerProjectApp app(String appName) {
@@ -55,9 +55,12 @@ class FirebaseSimServerProjectAppDelegate {
   FirebaseApp? app;
 
   /// App name.
-  late final String appName = '${projectId}_DEFAULT';
+  // late final String appName = '${projectId}_DEFAULT';
 
   final _lock = Lock();
+
+  /// App name.
+  late String appName;
 
   /// Constructor.
   FirebaseSimServerProjectAppDelegate({required this.project});
@@ -66,8 +69,10 @@ class FirebaseSimServerProjectAppDelegate {
   Future<FirebaseApp?> firebaseInitializeApp(
     Firebase firebase,
     AppOptions options,
+    String appName,
   ) {
     return _lock.synchronized(() async {
+      this.appName = appName;
       app ??= await firebase.initializeAppAsync(
         options: options,
         name: appName,
@@ -112,7 +117,7 @@ class FirebaseSimServerProjectApp {
     Firebase firebase,
     AppOptions options,
   ) async {
-    await project.appDelegate.firebaseInitializeApp(firebase, options);
+    await project.appDelegate.firebaseInitializeApp(firebase, options, appName);
   }
 
   /// Delete Firebase app.

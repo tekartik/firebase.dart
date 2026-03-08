@@ -1,79 +1,8 @@
 import 'package:tekartik_firebase/firebase_admin.dart';
-import 'package:tekartik_firebase/firebase_mixin.dart';
+import 'package:tekartik_firebase/src/firebase_mixin.dart';
+import 'package:tekartik_firebase/src/firebase_mock.dart';
 
 import 'package:test/test.dart';
-
-String get _defaultAppName => firebaseAppNameDefault;
-String get _defaultProjectId => 'mock';
-
-class FirebaseMock with FirebaseMixin {
-  final _apps = <String, App?>{};
-  @override
-  App initializeApp({AppOptions? options, String? name}) {
-    name ??= _defaultAppName;
-    var app = FirebaseAppMock(firebaseMock: this, options: options, name: name);
-    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
-    return app;
-  }
-
-  @override
-  App app({String? name}) {
-    return _apps[name ?? _defaultAppName]!;
-  }
-}
-
-class FirebaseAdminMock extends FirebaseMock
-    with FirebaseAdminMixin
-    implements FirebaseAdmin {
-  @override
-  App initializeApp({AppOptions? options, String? name}) {
-    name ??= _defaultAppName;
-    var app = FirebaseAdminAppMock(
-      firebaseMock: this,
-      options: options,
-      name: name,
-    );
-    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
-    return app;
-  }
-}
-
-class FirebaseAppMock with FirebaseAppMixin {
-  final FirebaseMock firebaseMock;
-  FirebaseAppMock({
-    required this.firebaseMock,
-    String? name,
-    AppOptions? options,
-  }) {
-    this.options = options ?? AppOptions()
-      ..projectId = _defaultProjectId;
-    this.name = name ?? _defaultAppName;
-  }
-
-  @override
-  Firebase get firebase => firebaseMock;
-  @override
-  Future<void> delete() async {
-    await closeServices();
-  }
-
-  @override
-  late final String name;
-
-  @override
-  late final AppOptions options;
-}
-
-class FirebaseAdminAppMock extends FirebaseAppMock {
-  FirebaseAdminAppMock({
-    required super.firebaseMock,
-    super.options,
-    super.name,
-  });
-
-  @override
-  bool get hasAdminCredentials => true;
-}
 
 // ignore: unused_element
 class _FirebaseAppProductTest with FirebaseAppProductMixin {
@@ -86,51 +15,13 @@ class _FirebaseAppProductTest with FirebaseAppProductMixin {
 // ignore: unused_element
 class _FirebaseProductServiceTest with FirebaseProductServiceMixin {}
 
-class FirebaseProductServiceMock
-    with FirebaseProductServiceMixin<FirebaseAppProductMockBase> {
-  int initCount = 0;
-
-  FirebaseAppProductMock product(App app) =>
-      getInstance<FirebaseAppProductMock>(
-        app,
-        () => FirebaseAppProductMock(app),
-      );
-
-  @override
-  Future<void> close(App app) async {
-    initCount--;
-    await super.close(app);
-  }
-
-  @override
-  Future<void> init(App app) async {
-    initCount++;
-    await super.init(app);
-  }
-}
-
-// ignore: unreachable_from_main
-class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
-
-/// test base definition
-abstract class FirebaseAppProductMockBase
-    implements FirebaseAppProduct<FirebaseAppProductMockBase> {}
-
-class FirebaseAppProductMock
-    with FirebaseAppProductMixin<FirebaseAppProductMockBase>
-    implements FirebaseAppProductMockBase {
-  @override
-  final FirebaseApp app;
-
-  FirebaseAppProductMock(this.app);
-}
-
 void main() {
   group('firebase', () {
     test('service', () async {
       var firebase = FirebaseMock() as Firebase;
       var app = firebase.initializeApp();
-      expect(app.projectId, _defaultProjectId);
+      expect(Firebase.apps, contains(app));
+      expect(app.projectId, 'mock');
       expect(app.hasAdminCredentials, isFalse);
       expect(FirebaseApp.instance, app);
 
@@ -139,6 +30,7 @@ void main() {
       expect(service.initCount, 1);
       await app.delete();
       expect(service.initCount, 0);
+      expect(Firebase.apps, isNot(contains(app)));
     });
     test('product service', () {
       var firebase = FirebaseMock() as Firebase;

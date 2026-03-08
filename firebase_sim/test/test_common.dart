@@ -20,12 +20,13 @@ class TestContext {
   }
 }
 
+final _serverFirebaseLocal = FirebaseLocal();
 // memory only
 Future<TestContext> initTestContextSim({String? localPath}) async {
   var testContext = TestContext();
   // The server use firebase io
   testContext.simServer = await firebaseSimServe(
-    FirebaseLocal(),
+    _serverFirebaseLocal,
     webSocketChannelServerFactory: webSocketChannelFactoryMemory.server,
   );
   testContext.firebase = getFirebaseSim(

@@ -17,14 +17,19 @@ void runFirebaseTests(
   late FirebaseApp app;
   setUpAll(() async {
     app = await firebaseAsync.initializeAppAsync(options: options, name: name);
+    expect(Firebase.apps, contains(app));
   });
   tearDownAll(() async {
-    return app.delete();
+    await app.delete();
+    expect(Firebase.apps, isNot(contains(app)));
   });
 
   runFirebaseAppTests(firebaseAsync, () => app);
   runFirebaseAppProductTests(firebaseAsync, () => app);
   group('Firebase', () {
+    test('apps', () {
+      expect(Firebase.apps, contains(app));
+    });
     test('default app name', () async {
       expect(app.name, name ?? '[DEFAULT]');
       //expect(FirebaseApp.instance, app);
@@ -36,7 +41,9 @@ void runFirebaseTests(
     });
 
     test('reinit', () async {
+      expect(Firebase.apps, contains(app));
       await app.delete();
+      expect(Firebase.apps, isNot(contains(app)));
       app = await firebaseAsync.initializeAppAsync(
         options: options,
         name: name,

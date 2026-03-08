@@ -29,7 +29,7 @@ Future main() async {
     var code1 = await app1.getAppDelegateName();
 
     var code2 = await app2.getAppDelegateName();
-    expect(code1, code2);
+    expect(code1, isNot(code2));
     var appName1 = await app1.getAppName();
 
     var appName2 = await app2.getAppName();

@@ -25,9 +25,9 @@ void run(TestContext testContext) {
     expect(app.name, 'test_sim');
     expect(app.projectId, 'sim');
     var name = await app.getAppName();
-    expect(name, equals('test_sim1'));
+    expect(name, equals('test_sim_sim_1'));
     var delegateName = await app.getAppDelegateName();
-    expect(delegateName, equals('sim_DEFAULT'));
+    expect(delegateName, equals('test_sim_sim_1'));
     await app.delete();
   });
 }

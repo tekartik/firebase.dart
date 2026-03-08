@@ -26,7 +26,7 @@ typedef AppSim = FirebaseAppSim;
 /// We have one client per app
 class FirebaseAppSim with FirebaseAppMixin {
   /// The admin instance.
-  final FirebaseSim admin;
+  final FirebaseClientSim admin;
 
   /// Whether the app is deleted.
   bool deleted = false;
@@ -53,7 +53,7 @@ class FirebaseAppSim with FirebaseAppMixin {
   Future<FirebaseSimClient> get simClient async {
     if (readyCompleter == null) {
       readyCompleter = Completer();
-      var clientSim = (admin as FirebaseClientSim);
+      var clientSim = admin;
       var simClient = FirebaseSimClient.connect(
         clientSim.uri,
         webSocketChannelClientFactory: clientSim.clientFactory,
@@ -102,6 +102,7 @@ class FirebaseAppSim with FirebaseAppMixin {
       } catch (e) {
         _log('Error closing app $e');
       }
+      (admin as FirebaseWithAppsMixin).uninitializeApp(this);
     }
   }
 

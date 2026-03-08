@@ -5,19 +5,12 @@ import 'package:test/test.dart';
 String get _defaultAppName => firebaseAppNameDefault;
 String get _defaultProjectId => 'mock';
 
-class FirebaseMock with FirebaseMixin {
-  final _apps = <String, App?>{};
+class FirebaseMock with FirebaseWithAppsMixin, FirebaseMixin {
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
     var app = FirebaseAppMock(firebaseMock: this, options: options, name: name);
-    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
-    return app;
-  }
-
-  @override
-  App app({String? name}) {
-    return _apps[name ?? _defaultAppName]!;
+    return addApp(app);
   }
 }
 
@@ -30,8 +23,7 @@ class FirebaseAdminMock extends FirebaseMock {
       options: options,
       name: name,
     );
-    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
-    return app;
+    return addApp(app);
   }
 }
 
@@ -52,6 +44,7 @@ class FirebaseAppMock with FirebaseAppMixin {
   @override
   Future<void> delete() async {
     await closeServices();
+    firebaseMock.uninitializeApp(this);
   }
 
   @override

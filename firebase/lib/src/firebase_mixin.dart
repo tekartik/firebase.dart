@@ -5,20 +5,64 @@ import 'package:tekartik_common_utils/common_utils_import.dart';
 import 'package:tekartik_firebase/firebase.dart';
 import 'firebase_admin.dart';
 
+/// Firebase app list, for all implementation
+final firebaseApps = <FirebaseApp>{};
+
+/// Firebase mixin.
+mixin FirebaseWithAppsMixin implements Firebase {
+  final _apps = <String, FirebaseApp?>{};
+
+  /// Add the app
+  T addApp<T extends FirebaseApp>(T app) {
+    _apps[app.name] = FirebaseMixin.addApp(app);
+    return app;
+  }
+
+  /// Check if the app name is already used
+  void checkAppNameUninitialized(String name) {
+    if (_apps.containsKey(name)) {
+      throw StateError('Firebase app named "$name" already exists');
+    }
+  }
+
+  /// Uninitialize the app
+  void uninitializeApp(FirebaseApp app) {
+    FirebaseMixin.removeApp(app);
+    _apps.remove(app.name);
+  }
+
+  @override
+  App app({String? name}) {
+    return FirebaseMixin.addApp(_apps[name ?? firebaseAppNameDefault]!);
+  }
+}
+
 /// Firebase mixin.
 /// @internal
 mixin FirebaseMixin implements Firebase {
+  /// Global to all firebase implementation
+  static T addApp<T extends FirebaseApp>(T app) {
+    firebaseApps.add(app);
+    latestFirebaseInstanceOrNull = app;
+    return app;
+  }
+
+  /// Global to all firebase implementation
+  static void removeApp(FirebaseApp app) {
+    firebaseApps.remove(app);
+    if (latestFirebaseInstanceOrNull == app) {
+      latestFirebaseInstanceOrNull = firebaseApps.lastOrNull;
+    }
+  }
+
   @override
   Future<App> initializeAppAsync({AppOptions? options, String? name}) async =>
-      latestFirebaseInstanceOrNull = initializeApp(
-        options: options,
-        name: name,
-      );
+      initializeApp(options: options, name: name);
   @override
-  Future<App> appAsync({String? name}) async =>
-      latestFirebaseInstanceOrNull = app(name: name);
+  Future<App> appAsync({String? name}) async => app(name: name);
 
   /// The latest initialized firebase app instance.
+  /// Prefer using addApp/removeApp
   static FirebaseApp? latestFirebaseInstanceOrNull;
 
   @override

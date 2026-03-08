@@ -8,7 +8,7 @@ String get _defaultAppName => firebaseAppNameDefault;
 String get _defaultProjectId => 'local';
 
 /// Local firebase implementation
-class FirebaseLocal with FirebaseMixin {
+class FirebaseLocal with FirebaseWithAppsMixin, FirebaseMixin {
   String? _localPath;
 
   /// Local path
@@ -25,26 +25,13 @@ class FirebaseLocal with FirebaseMixin {
   @override
   App initializeApp({FirebaseAppOptions? options, String? name}) {
     name ??= _defaultAppName;
+    // Not valid for local...
+    checkAppNameUninitialized(name);
     options ??= AppOptions(projectId: _defaultProjectId);
 
     var app = AppLocal(this, options, name);
-    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
-    return app;
+    return addApp(app);
   }
-
-  @override
-  App app({String? name}) {
-    name ??= _defaultAppName;
-    for (var appName in _apps.keys) {
-      if (appName == name) {
-        return _apps[appName]!;
-      }
-    }
-    return initializeApp(name: name);
-  }
-
-  /// List of apps
-  final Map<String, AppLocal> _apps = {};
 }
 
 /// To deprecate
@@ -95,6 +82,7 @@ class FirebaseAppLocal with FirebaseAppMixin {
   Future<void> delete() async {
     deleted = true;
     await closeServices();
+    firebaseLocal.uninitializeApp(this);
   }
 }
 

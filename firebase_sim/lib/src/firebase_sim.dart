@@ -78,7 +78,7 @@ abstract class FirebaseClientSim implements FirebaseSim {
 
 /// Firebase sim
 class _FirebaseClientSim
-    with FirebaseMixin, FirebaseSimMixin
+    with FirebaseWithAppsMixin, FirebaseMixin, FirebaseSimMixin
     implements FirebaseClientSim {
   /// The Firebase server when testing both locally.
   Firebase? firebaseServer;
@@ -106,23 +106,20 @@ class _FirebaseClientSim
         );
   }
 
-  final _apps = <String, FirebaseAppSim>{};
-
   FirebaseAppSim _initializeApp({FirebaseAppOptions? options, String? name}) {
     name ??= _defaultAppName;
+    checkAppNameUninitialized(name);
     var app = FirebaseAppSim(
       this,
       options ?? AppOptions(projectId: _defaultProjectId),
       name,
     );
-    _apps[name] = FirebaseMixin.latestFirebaseInstanceOrNull = app;
-    return app;
+    return addApp(app);
   }
 
   @override
   FirebaseAppSim initializeApp({FirebaseAppOptions? options, String? name}) {
-    var app = _initializeApp(options: options, name: name);
-    return app;
+    return _initializeApp(options: options, name: name);
   }
 
   @override
@@ -133,11 +130,5 @@ class _FirebaseClientSim
     var app = _initializeApp(options: options, name: name);
     await app.simClient;
     return app;
-  }
-
-  @override
-  App app({String? name}) {
-    name ??= _defaultAppName;
-    return _apps[name]!;
   }
 }
