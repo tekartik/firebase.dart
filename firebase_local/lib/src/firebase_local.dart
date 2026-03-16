@@ -23,13 +23,13 @@ class FirebaseLocal with FirebaseWithAppsMixin, FirebaseMixin {
   bool get isLocal => true;
 
   @override
-  App initializeApp({FirebaseAppOptions? options, String? name}) {
+  FirebaseAppLocal initializeApp({FirebaseAppOptions? options, String? name}) {
     name ??= _defaultAppName;
     // Not valid for local...
     checkAppNameUninitialized(name);
     options ??= AppOptions(projectId: _defaultProjectId);
 
-    var app = AppLocal(this, options, name);
+    var app = FirebaseAppLocal(this, options, name);
     return addApp(app);
   }
 }
@@ -40,6 +40,7 @@ typedef AppLocal = FirebaseAppLocal;
 /// Local app
 class FirebaseAppLocal with FirebaseAppMixin {
   /// App path part
+  @Deprecated('do not use')
   static String appPathPart(String name) {
     return (name == _defaultAppName || name == '') ? '_default' : name;
   }
@@ -52,17 +53,12 @@ class FirebaseAppLocal with FirebaseAppMixin {
 
   /// Local path
   String get localPath {
-    var partPath = appPathPart(name);
-    // If the name has more than 1 part, it is a path
-    if (split(partPath).length == 1) {
-      return join(firebaseLocal.localPath!, partPath);
-    } else {
-      return name;
-    }
+    return join(firebaseLocal.localPath!, options.projectId!);
   }
 
-  /// Path part
-  String get pathPart => appPathPart(name);
+  /// Path part, using the projectId
+  @Deprecated('do not use')
+  String get pathPart => options.projectId!;
 
   // Updated on init
   final AppOptions _options;
@@ -93,7 +89,6 @@ FirebaseAppLocal newFirebaseAppLocal({
   String? name,
 }) {
   var firebase = FirebaseLocal(localPath: localPath);
-  var app =
-      firebase.initializeApp(name: name, options: options) as FirebaseAppLocal;
+  var app = firebase.initializeApp(name: name, options: options);
   return app;
 }

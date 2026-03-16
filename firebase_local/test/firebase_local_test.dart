@@ -1,5 +1,6 @@
 library;
 
+import 'package:path/path.dart';
 import 'package:tekartik_firebase/firebase_mixin.dart';
 import 'package:tekartik_firebase_local/firebase_local.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
@@ -14,6 +15,7 @@ void main() {
       var firebase = FirebaseLocal();
       expect(firebase.isLocal, isTrue);
     });
+
     test('initialize sync and latest', () {
       FirebaseMixin.latestFirebaseInstanceOrNull = null;
       var firebase = FirebaseLocal();
@@ -21,6 +23,7 @@ void main() {
       expect(FirebaseMixin.latestFirebaseInstanceOrNull, app);
       expect(app.name, '[DEFAULT]');
       expect(app.projectId, 'test');
+      expect(app.localPath, join(firebase.localPath!, 'test'));
     });
     test('projectId', () async {
       var firebase = FirebaseLocal();
