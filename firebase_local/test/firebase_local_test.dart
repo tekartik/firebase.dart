@@ -10,6 +10,7 @@ void main() {
   group('local', () {
     // there is no name on node
     runFirebaseTests(FirebaseLocal(localPath: '.'), options: null);
+    runFirebaseTests(newFirebaseMemory(), options: null);
 
     test('isLocal', () {
       var firebase = FirebaseLocal();
@@ -48,6 +49,21 @@ void main() {
       expect(app.options.projectId, 'test_prj');
       expect(app.name, 'test_name');
       await app.delete();
+    });
+    test('memory', () async {
+      var firebase = newFirebaseMemory();
+      var app = firebase.initializeApp();
+      expect(() => firebase.initializeApp(), throwsStateError);
+      await expectLater(() => firebase.initializeAppAsync(), throwsStateError);
+      await app.delete();
+      var app1 = newFirebaseAppMemory();
+      var app2 = newFirebaseAppMemory();
+      expect(
+        (app1.firebase as FirebaseLocal).localPath,
+        isNot((app2.firebase as FirebaseLocal).localPath),
+      );
+      await app1.delete();
+      await app2.delete();
     });
   });
 }

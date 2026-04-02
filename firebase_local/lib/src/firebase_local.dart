@@ -92,3 +92,15 @@ FirebaseAppLocal newFirebaseAppLocal({
   var app = firebase.initializeApp(name: name, options: options);
   return app;
 }
+
+int _lastMemoryId = 0;
+
+/// New firebase memory
+FirebaseLocal newFirebaseMemory() {
+  return FirebaseLocal(localPath: '_memory${++_lastMemoryId}');
+}
+
+/// New firebase app memory
+FirebaseAppLocal newFirebaseAppMemory() {
+  return newFirebaseMemory().initializeApp();
+}
