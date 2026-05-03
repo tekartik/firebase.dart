@@ -116,6 +116,19 @@ mixin FirebaseAppMixin implements FirebaseApp {
     });
   }
 
+  /// Base delete implementation
+  /// Can be overriden
+  @override
+  Future delete() async {
+    await closeServices();
+    Firebase? firebase = this.firebase;
+    if (firebase is FirebaseWithAppsMixin) {
+      firebase.uninitializeApp(this);
+    } else {
+      FirebaseMixin.removeApp(this);
+    }
+  }
+
   /// Get firebase, new as of 2024-07-31
   @override
   Firebase get firebase => throw UnimplementedError('FirebaseApp.firebase');

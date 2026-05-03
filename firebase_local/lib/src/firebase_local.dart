@@ -77,8 +77,7 @@ class FirebaseAppLocal with FirebaseAppMixin {
   @override
   Future<void> delete() async {
     deleted = true;
-    await closeServices();
-    firebaseLocal.uninitializeApp(this);
+    await super.delete();
   }
 }
 

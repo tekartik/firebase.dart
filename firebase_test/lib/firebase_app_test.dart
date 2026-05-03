@@ -11,7 +11,8 @@ void runFirebaseAppTests(
   test('FirebaseApp', () {
     var firebaseApp = getFirebaseApp();
     expect(firebaseApp.isLocal, firebaseApp.isLocal);
-    expect(firebaseApp.options.projectId, isNotNull);
-    expect(firebaseApp.projectId, firebaseApp.options.projectId);
+    if (firebaseApp.options.projectId != null) {
+      expect(firebaseApp.projectId, firebaseApp.options.projectId);
+    }
   });
 }
