@@ -177,7 +177,7 @@ class _FirebaseSimClient implements FirebaseSimClient {
         _log(e);
         _log('sending $method $param');
       }
-      throw e.message;
+      rethrow;
     }
     return t;
   }
