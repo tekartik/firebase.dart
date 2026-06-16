@@ -65,5 +65,20 @@ void main() {
       await app1.delete();
       await app2.delete();
     });
+
+    test('memory', () async {
+      var app = newFirebaseAppMemory(
+        options: FirebaseAppOptions(projectId: 'test_memory1'),
+      );
+      expect(app.options.projectId, 'test_memory1');
+      await app.delete();
+      app = newFirebaseAppMemory(
+        options: FirebaseAppOptions(projectId: 'test_memory1'),
+        name: 'test_memory1_name',
+      );
+      expect(app.options.projectId, 'test_memory1');
+      expect(app.name, 'test_memory1_name');
+      await app.delete();
+    });
   });
 }

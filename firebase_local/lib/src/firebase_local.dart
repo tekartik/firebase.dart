@@ -100,6 +100,9 @@ FirebaseLocal newFirebaseMemory() {
 }
 
 /// New firebase app memory
-FirebaseAppLocal newFirebaseAppMemory() {
-  return newFirebaseMemory().initializeApp();
+FirebaseAppLocal newFirebaseAppMemory({
+  FirebaseAppOptions? options,
+  String? name,
+}) {
+  return newFirebaseMemory().initializeApp(options: options, name: name);
 }
