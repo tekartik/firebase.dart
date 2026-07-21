@@ -32,6 +32,9 @@ class FirebaseLocal with FirebaseWithAppsMixin, FirebaseMixin {
     var app = FirebaseAppLocal(this, options, name);
     return addApp(app);
   }
+
+  @override
+  String toString() => 'FirebaseLocal($localPath)';
 }
 
 /// To deprecate
