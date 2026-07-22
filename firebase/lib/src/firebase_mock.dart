@@ -9,8 +9,10 @@ class FirebaseMock with FirebaseWithAppsMixin, FirebaseMixin {
   @override
   FirebaseApp initializeApp({FirebaseAppOptions? options, String? name}) {
     name ??= _defaultAppName;
+
     checkAppNameUninitialized(name);
     var app = FirebaseAppMock(firebaseMock: this, options: options, name: name);
+
     return addApp(app);
   }
 }
@@ -27,6 +29,7 @@ class FirebaseAdminMock extends FirebaseMock
       options: options,
       name: name,
     );
+
     return addApp(app);
   }
 }
@@ -78,6 +81,7 @@ class FirebaseAdminAppMock extends FirebaseAppMock {
 
 /// Mock app options.
 // ignore: unreachable_from_main
+/// Class representing [FirebaseAppOptionsMock].
 class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
 
 /// Test base definition for mock products.

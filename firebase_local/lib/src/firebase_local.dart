@@ -30,6 +30,7 @@ class FirebaseLocal with FirebaseWithAppsMixin, FirebaseMixin {
     options ??= AppOptions(projectId: _defaultProjectId);
 
     var app = FirebaseAppLocal(this, options, name);
+
     return addApp(app);
   }
 
