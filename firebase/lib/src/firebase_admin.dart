@@ -37,16 +37,29 @@ abstract class FirebaseAccessCredential {
   Future<FirebaseAccessToken> getAccessToken();
 }
 
-/// Credential service.
+/// Provides access to the application-default admin credential.
 abstract class FirebaseAdminCredentialService
     implements FirebaseCredentialService {
-  /// Default accessible in node in firebase functions or with
-  /// GOOGLE_APPLICATION_CREDENTIALS env variable.
+  /// The application-default credential, if one is available.
+  ///
+  /// On Node.js and in Cloud Functions this is usually populated
+  /// automatically, either from the runtime environment or from the
+  /// `GOOGLE_APPLICATION_CREDENTIALS` environment variable. Other platforms
+  /// (e.g. REST) require [setApplicationDefault] to be called explicitly.
+  ///
+  /// Returns `null` if no application-default credential is available.
   FirebaseAdminCredential? applicationDefault();
 
-  /// To set on setup if needed (needed for rest).
+  /// Sets the application-default [credential] later returned by
+  /// [applicationDefault].
+  ///
+  /// [credential] is the credential to use; pass `null` to clear a
+  /// previously set credential. Required on platforms (e.g. REST) that
+  /// cannot resolve an application-default credential automatically.
   void setApplicationDefault(FirebaseAdminCredential? credential);
 }
 
-/// Credential service.
+/// Marker base interface for credential services.
+///
+/// See [FirebaseAdminCredentialService] for the admin implementation.
 abstract class FirebaseCredentialService {}
