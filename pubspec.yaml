@@ -4,6 +4,7 @@ environment:
   sdk: ^3.12.0
 workspace:
   - firebase_local
+  - firebase_persistence
   - firebase_test
   - firebase_sim
   - firebase

@@ -1,0 +1,2 @@
+# tekartik analysis_options for package
+include: package:tekartik_lints/package.yaml

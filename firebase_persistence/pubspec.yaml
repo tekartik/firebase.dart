@@ -1,0 +1,20 @@
+name: tekartik_firebase_persistence
+description: Generic string key/value persistence (memory, file, web local storage, sdb).
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  path: ">=1.9.1"
+  fs_shim: ">=2.5.2"
+  idb_shim: ">=2.9.7-2"
+  tekartik_browser_utils:
+    git: https://github.com/tekartik/browser_utils.dart
+
+dev_dependencies:
+  test: ">=1.31.0"
+  web: ">=0.5.0"
+
+resolution: workspace
