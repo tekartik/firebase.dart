@@ -3,42 +3,43 @@ import 'package:fs_shim/utils/read_write.dart';
 import 'package:idb_shim/sdb/sdb.dart';
 import 'package:path/path.dart';
 import 'package:tekartik_browser_utils/storage_utils.dart';
+import 'package:tekartik_prefs/kv_store.dart';
 
 /// Generic string key/value persistence.
-abstract class TekartikFirebasePersistence {
+///
+/// Alias of [KvStore] from `package:tekartik_prefs/kv_store.dart`, which any
+/// prefs implementation (memory, sembast, sdb, browser, flutter) also
+/// implements.
+@Deprecated('Use KvStore from package:tekartik_prefs/kv_store.dart')
+typedef TekartikFirebasePersistence = KvStore;
+
+/// Compat extension, on the former `get`/`set` api.
+extension TekartikFirebasePersistenceExt on KvStore {
   /// Get the value associated to [key], null if not found.
-  Future<String?> get(String key);
+  @Deprecated('Use getString')
+  Future<String?> get(String key) => getString(key);
 
   /// Set the value associated to [key]. Set to null to remove it.
-  Future<void> set(String key, String? value);
-}
-
-/// Persistence extension
-extension TekartikFirebasePersistenceExt on TekartikFirebasePersistence {
-  /// Remove the value associated to [key].
-  Future<void> remove(String key) => set(key, null);
+  @Deprecated('Use setString, remove, or setStringOrNull')
+  Future<void> set(String key, String? value) => setStringOrNull(key, value);
 }
 
 /// In memory implementation.
-class TekartikFirebasePersistenceMemory implements TekartikFirebasePersistence {
+class TekartikFirebasePersistenceMemory implements KvStore {
   final _map = <String, String>{};
 
   @override
-  Future<String?> get(String key) async => _map[key];
+  Future<String?> getString(String key) async => _map[key];
 
   @override
-  Future<void> set(String key, String? value) async {
-    if (value == null) {
-      _map.remove(key);
-    } else {
-      _map[key] = value;
-    }
-  }
+  Future<void> setString(String key, String value) async => _map[key] = value;
+
+  @override
+  Future<void> remove(String key) async => _map.remove(key);
 }
 
 /// Web local storage implementation.
-class TekartikFirebasePersistenceWebLocalStorage
-    implements TekartikFirebasePersistence {
+class TekartikFirebasePersistenceWebLocalStorage implements KvStore {
   /// Prefix prepended to every key before hitting local storage.
   final String keyPrefix;
 
@@ -48,7 +49,7 @@ class TekartikFirebasePersistenceWebLocalStorage
   String _key(String key) => '$keyPrefix$key';
 
   @override
-  Future<String?> get(String key) async {
+  Future<String?> getString(String key) async {
     try {
       return webLocalStorageGet(_key(key));
     } catch (e) {
@@ -59,18 +60,28 @@ class TekartikFirebasePersistenceWebLocalStorage
   }
 
   @override
-  Future<void> set(String key, String? value) async {
-    var storageKey = _key(key);
-    if (value == null) {
-      webLocalStorageRemove(storageKey);
-    } else {
-      webLocalStorageSet(storageKey, value);
+  Future<void> setString(String key, String value) async {
+    try {
+      webLocalStorageSet(_key(key), value);
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error writing $key to web storage: $e');
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    try {
+      webLocalStorageRemove(_key(key));
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error deleting $key from web storage: $e');
     }
   }
 }
 
 /// File implementation (cross platform through fs_shim).
-class TekartikFirebasePersistenceFile implements TekartikFirebasePersistence {
+class TekartikFirebasePersistenceFile implements KvStore {
   /// The file system to use.
   final FileSystem fs;
 
@@ -90,7 +101,7 @@ class TekartikFirebasePersistenceFile implements TekartikFirebasePersistence {
       fs.file(join(directoryPath, Uri.encodeComponent(key)));
 
   @override
-  Future<String?> get(String key) async {
+  Future<String?> getString(String key) async {
     var file = _file(key);
     try {
       if (await file.exists()) {
@@ -104,31 +115,33 @@ class TekartikFirebasePersistenceFile implements TekartikFirebasePersistence {
   }
 
   @override
-  Future<void> set(String key, String? value) async {
+  Future<void> setString(String key, String value) async {
     var file = _file(key);
-    if (value == null) {
-      try {
-        if (await file.exists()) {
-          await file.delete();
-        }
-      } catch (e) {
-        // ignore: avoid_print
-        print('Error deleting $key from file storage: $e');
+    try {
+      await writeString(file, value);
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error writing $key to file storage: $e');
+    }
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    var file = _file(key);
+    try {
+      if (await file.exists()) {
+        await file.delete();
       }
-    } else {
-      try {
-        await writeString(file, value);
-      } catch (e) {
-        // ignore: avoid_print
-        print('Error writing $key to file storage: $e');
-      }
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error deleting $key from file storage: $e');
     }
   }
 }
 
 /// Sdb (idb_shim) implementation, works both on io and web depending on the
 /// [SdbFactory] used (for example `sdbFactoryIo` or `sdbFactoryWeb`).
-class TekartikFirebasePersistenceSdb implements TekartikFirebasePersistence {
+class TekartikFirebasePersistenceSdb implements KvStore {
   /// The sdb factory used to open the database.
   final SdbFactory sdbFactory;
 
@@ -153,20 +166,21 @@ class TekartikFirebasePersistenceSdb implements TekartikFirebasePersistence {
   );
 
   @override
-  Future<String?> get(String key) async {
+  Future<String?> getString(String key) async {
     var db = await _openDb();
     return await _store.record(key).getValue(db);
   }
 
   @override
-  Future<void> set(String key, String? value) async {
+  Future<void> setString(String key, String value) async {
     var db = await _openDb();
-    var record = _store.record(key);
-    if (value == null) {
-      await record.delete(db);
-    } else {
-      await record.put(db, value);
-    }
+    await _store.record(key).put(db, value);
+  }
+
+  @override
+  Future<void> remove(String key) async {
+    var db = await _openDb();
+    await _store.record(key).delete(db);
   }
 
   /// Close the underlying database.

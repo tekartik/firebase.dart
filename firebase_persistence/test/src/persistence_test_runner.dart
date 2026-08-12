@@ -1,42 +1,44 @@
-import 'package:tekartik_firebase_persistence/firebase_persistence.dart';
+import 'package:tekartik_prefs_test/kv_store_test_runner.dart';
 import 'package:test/test.dart';
 
 /// Shared contract tests, reused across implementations.
-void runTekartikFirebasePersistenceTests(
-  TekartikFirebasePersistence Function() factory,
-) {
-  late TekartikFirebasePersistence persistence;
+void runTekartikFirebasePersistenceTests(KvStore Function() factory) {
+  late KvStore persistence;
   setUp(() {
     persistence = factory();
   });
   test('missing key', () async {
-    expect(await persistence.get('missing'), isNull);
+    expect(await persistence.getString('missing'), isNull);
   });
   test('set/get/remove', () async {
-    expect(await persistence.get('key1'), isNull);
-    await persistence.set('key1', 'value1');
-    expect(await persistence.get('key1'), 'value1');
-    await persistence.set('key1', 'value2');
-    expect(await persistence.get('key1'), 'value2');
+    expect(await persistence.getString('key1'), isNull);
+    await persistence.setString('key1', 'value1');
+    expect(await persistence.getString('key1'), 'value1');
+    await persistence.setString('key1', 'value2');
+    expect(await persistence.getString('key1'), 'value2');
     await persistence.remove('key1');
-    expect(await persistence.get('key1'), isNull);
+    expect(await persistence.getString('key1'), isNull);
   });
-  test('set null removes', () async {
-    await persistence.set('key1', 'value1');
-    await persistence.set('key1', null);
-    expect(await persistence.get('key1'), isNull);
+  test('setStringOrNull null removes', () async {
+    await persistence.setString('key1', 'value1');
+    await persistence.setStringOrNull('key1', null);
+    expect(await persistence.getString('key1'), isNull);
   });
   test('multiple keys', () async {
-    await persistence.set('key1', 'value1');
-    await persistence.set('key2', 'value2');
-    expect(await persistence.get('key1'), 'value1');
-    expect(await persistence.get('key2'), 'value2');
+    await persistence.setString('key1', 'value1');
+    await persistence.setString('key2', 'value2');
+    expect(await persistence.getString('key1'), 'value1');
+    expect(await persistence.getString('key2'), 'value2');
     await persistence.remove('key1');
-    expect(await persistence.get('key1'), isNull);
-    expect(await persistence.get('key2'), 'value2');
+    expect(await persistence.getString('key1'), isNull);
+    expect(await persistence.getString('key2'), 'value2');
   });
   test('empty string value', () async {
-    await persistence.set('key1', '');
-    expect(await persistence.get('key1'), '');
+    await persistence.setString('key1', '');
+    expect(await persistence.getString('key1'), '');
+  });
+
+  group('kv_store', () {
+    runKvStoreTests(factory());
   });
 }

@@ -26,8 +26,8 @@ void main() {
         fs: fileSystemMemory,
         directoryPath: 'test_persistence_special',
       );
-      await persistence.set('a/b c', 'value');
-      expect(await persistence.get('a/b c'), 'value');
+      await persistence.setString('a/b c', 'value');
+      expect(await persistence.getString('a/b c'), 'value');
     });
   });
 
