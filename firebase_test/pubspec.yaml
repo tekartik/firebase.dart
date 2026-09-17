@@ -20,8 +20,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/app_common_utils.dart
       path: app_dev_menu
-
-dev_dependencies:
+  # For `ci_shell_io.dart`
   process_run: ">=1.2.1+1"
 
 resolution: workspace
