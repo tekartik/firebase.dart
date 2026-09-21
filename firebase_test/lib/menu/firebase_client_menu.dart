@@ -14,6 +14,13 @@ void firebaseMainMenu({required FirebaseMainMenuContext context}) {
   FirebaseApp? app;
   var firebase = context.firebase;
   menu('app', () {
+    item('Firebase.apps', () async {
+      var apps = Firebase.apps;
+      write('apps: ${apps.length}');
+      for (var app in apps) {
+        write('app: $app ${app.name} ${app.projectId} ${app.hashCode}');
+      }
+    });
     item('initializeAppAsync', () async {
       app = await firebase.initializeAppAsync(
         name: 'async',
