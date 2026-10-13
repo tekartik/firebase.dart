@@ -24,6 +24,8 @@ class FirebaseAdminMock extends FirebaseMock
   @override
   App initializeApp({AppOptions? options, String? name}) {
     name ??= _defaultAppName;
+
+    checkAppNameUninitialized(name);
     var app = FirebaseAdminAppMock(
       firebaseMock: this,
       options: options,
@@ -45,8 +47,7 @@ class FirebaseAppMock with FirebaseAppMixin {
     String? name,
     AppOptions? options,
   }) {
-    this.options = options ?? AppOptions()
-      ..projectId = _defaultProjectId;
+    this.options = options ?? AppOptions(projectId: _defaultProjectId);
     this.name = name ?? _defaultAppName;
   }
 

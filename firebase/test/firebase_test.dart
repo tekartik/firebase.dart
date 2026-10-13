@@ -1,7 +1,6 @@
+import 'package:tekartik_firebase/src/firebase_mock.dart';
 import 'package:tekartik_firebase_test/firebase_test.dart';
 import 'package:test/test.dart';
-
-import 'firebase_mixin_test.dart';
 
 void main() {
   group('firebase', () {

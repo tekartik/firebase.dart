@@ -54,7 +54,7 @@ class AdminInitializeAppData extends BaseData {
 
   @override
   Map<String, dynamic> toMap() {
-    var map = {'projectId': projectId, 'name': name};
+    var map = <String, Object?>{'projectId': projectId, 'name': name};
     return map;
   }
 }
@@ -71,7 +71,7 @@ class AdminInitializeAppResponseData extends BaseData {
 
   @override
   Map<String, dynamic> toMap() {
-    var map = {'appId': appId};
+    var map = <String, Object?>{'appId': appId};
     return map;
   }
 }
@@ -94,7 +94,7 @@ class AdminAppGetNameResponseData extends BaseData {
 
   @override
   Map<String, dynamic> toMap() {
-    var map = {'name': name};
+    var map = <String, Object?>{'name': name};
     return map;
   }
 }
@@ -124,7 +124,7 @@ class AdminAppBaseData extends BaseData {
 
   @override
   Map<String, dynamic> toMap() {
-    var map = {'appId': appId};
+    var map = <String, Object?>{'appId': appId};
     return map;
   }
 }

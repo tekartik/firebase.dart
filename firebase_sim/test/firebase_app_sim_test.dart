@@ -10,11 +10,11 @@ import 'test_common.dart';
 Future main() async {
   // debugFirebaseSimClient = debugFirebaseSimServer = devTrue;
   var testContext = await initTestContextSim();
-  run(testContext);
-
+  // Declared first so that it runs last, after the app teardowns.
   tearDownAll(() async {
     await close(testContext);
   });
+  run(testContext);
 }
 
 void run(TestContext testContext) {

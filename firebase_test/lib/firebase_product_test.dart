@@ -1,8 +1,16 @@
 import 'package:tekartik_firebase/firebase.dart';
-import 'package:tekartik_firebase/firebase_admin.dart';
-import 'package:tekartik_firebase/firebase_mixin.dart';
-
+// ignore: implementation_imports
+import 'package:tekartik_firebase/src/firebase_mock.dart';
 import 'package:test/test.dart';
+
+// The mocks of tekartik_firebase, kept exported from here.
+// ignore: implementation_imports
+export 'package:tekartik_firebase/src/firebase_mock.dart'
+    show
+        FirebaseProductServiceMock,
+        FirebaseAppOptionsMock,
+        FirebaseAppProductMockBase,
+        FirebaseAppProductMock;
 
 void runFirebaseAppProductTests(
   FirebaseAsync firebaseAsync,
@@ -15,6 +23,8 @@ void runFirebaseAppProductTests(
       var service = FirebaseProductServiceMock();
       await app.addService(service);
       expect(service.initCount, 1);
+      await service.close(app);
+      expect(service.initCount, 0);
     });
 
     test('product', () async {
@@ -30,56 +40,8 @@ void runFirebaseAppProductTests(
 
       var productMock = service.product(app);
       expect(productMock.disposed, isFalse);
+      await service.close(app);
+      expect(productMock.disposed, isTrue);
     });
   });
-}
-
-// ignore: unused_element
-class _FirebaseAppProductTest with FirebaseAppProductMixin {
-  @override
-  final FirebaseApp app;
-
-  _FirebaseAppProductTest(this.app);
-}
-
-// ignore: unused_element
-class _FirebaseProductServiceTest with FirebaseProductServiceMixin {}
-
-class FirebaseProductServiceMock
-    with FirebaseProductServiceMixin<FirebaseAppProductMockBase> {
-  int initCount = 0;
-
-  FirebaseAppProductMock product(App app) =>
-      getInstance<FirebaseAppProductMock>(
-        app,
-        () => FirebaseAppProductMock(app),
-      );
-
-  @override
-  Future<void> close(App app) async {
-    initCount--;
-    await super.close(app);
-  }
-
-  @override
-  Future<void> init(App app) async {
-    initCount++;
-    await super.init(app);
-  }
-}
-
-// ignore: unreachable_from_main
-class FirebaseAppOptionsMock with FirebaseAppOptionsMixin {}
-
-/// test base definition
-abstract class FirebaseAppProductMockBase
-    implements FirebaseAppProduct<FirebaseAppProductMockBase> {}
-
-class FirebaseAppProductMock
-    with FirebaseAppProductMixin<FirebaseAppProductMockBase>
-    implements FirebaseAppProductMockBase {
-  @override
-  final FirebaseApp app;
-
-  FirebaseAppProductMock(this.app);
 }

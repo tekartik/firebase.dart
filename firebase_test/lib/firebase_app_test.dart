@@ -10,7 +10,9 @@ void runFirebaseAppTests(
 ) {
   test('FirebaseApp', () {
     var firebaseApp = getFirebaseApp();
-    expect(firebaseApp.isLocal, firebaseApp.isLocal);
+    if (firebaseAsync is Firebase) {
+      expect(firebaseApp.isLocal, firebaseAsync.isLocal);
+    }
     if (firebaseApp.options.projectId != null) {
       expect(firebaseApp.projectId, firebaseApp.options.projectId);
     }

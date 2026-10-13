@@ -1,19 +1,7 @@
 import 'package:tekartik_firebase/firebase_admin.dart';
-import 'package:tekartik_firebase/src/firebase_mixin.dart';
 import 'package:tekartik_firebase/src/firebase_mock.dart';
 
 import 'package:test/test.dart';
-
-// ignore: unused_element
-class _FirebaseAppProductTest with FirebaseAppProductMixin {
-  @override
-  final FirebaseApp app;
-
-  _FirebaseAppProductTest(this.app);
-}
-
-// ignore: unused_element
-class _FirebaseProductServiceTest with FirebaseProductServiceMixin {}
 
 void main() {
   group('firebase', () {
@@ -68,6 +56,27 @@ void main() {
       var firebase = FirebaseAdminMock() as FirebaseAdmin;
       var app = firebase.initializeApp();
       expect(app.hasAdminCredentials, isTrue);
+    });
+
+    test('options', () async {
+      var firebase = FirebaseMock() as Firebase;
+      var options = AppOptions(projectId: 'p1');
+      var app = firebase.initializeApp(options: options, name: 'options');
+      expect(app.projectId, 'p1');
+      expect(app.options, options);
+      expect(options.projectId, 'p1');
+      await app.delete();
+    });
+
+    test('admin name already initialized', () async {
+      var firebase = FirebaseAdminMock() as FirebaseAdmin;
+      var app = firebase.initializeApp(name: 'dup');
+      expect(
+        () => firebase.initializeApp(name: 'dup'),
+        throwsA(isA<StateError>()),
+      );
+      expect(firebase.app(name: 'dup'), app);
+      await app.delete();
     });
   });
 }

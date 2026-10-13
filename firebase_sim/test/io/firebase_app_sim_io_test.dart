@@ -10,9 +10,9 @@ import 'test_common.dart';
 
 Future main() async {
   var testContext = await initTestContextSimIo(port: 0);
-  run(testContext);
-
+  // Declared first so that it runs last, after the app teardowns.
   tearDownAll(() async {
     await close(testContext);
   });
+  run(testContext);
 }
