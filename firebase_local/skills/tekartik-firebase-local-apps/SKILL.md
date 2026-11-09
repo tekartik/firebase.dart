@@ -38,20 +38,22 @@ are `FirebaseAppLocal`, the type the local product backends cast to and whose
 * Initializing the same name twice on one `FirebaseLocal` throws a
   `StateError`. Use a distinct `name:` for a second app, or
   `await app.delete()` first. Look up an existing app with
-  `firebase.app(name: ...)`.
+  `firebase.app(name: ...)` (an unknown name throws).
 * Two apps of the same `FirebaseLocal` with the same projectId share
   `localPath`, hence the same databases: this is the way to get an "admin"
   view on the data of the default app.
 * Always `await app.delete()` in `tearDown`/`tearDownAll`: it closes the
   services registered with `addService` and removes the app from the global
-  registry (`FirebaseApp.instance` is the latest initialized app).
+  registry (`FirebaseApp.instance` is the latest initialized app). Nothing
+  blocks a deleted app or its products: do not use them afterwards.
 * `app.localPath` is `join(firebase.localPath, projectId)`. Local services
   store under it: auth sdb/sembast `auth.db`, firestore sembast
   `firestore.db`, firestore sdb `firestore/firestore.sdb`, storage fs
   `storage/<bucket>` (unless the storage service has a `basePath`). With a
   memory factory the path is only a namespace; with an io factory it is a
   real directory, so choose `localPath` and `projectId` deliberately for
-  persistent offline apps.
+  persistent offline apps. Options without a projectId make `localPath`
+  throw (a null check), and with it every io product.
 * Attach products through their service `auth(app)`, `firestore(app)` and
   `storage(app)` methods with the same `FirebaseAppLocal`:
   `FirebaseAuthServiceSdb(sdbFactory:)` (`tekartik_firebase_auth_sdb`),
