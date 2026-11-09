@@ -42,7 +42,7 @@ Platform-neutral Firebase core: `Firebase`/`FirebaseAsync` create and look up
 * Create an app once with `initializeApp(options:, name:)`; omit `name` for
   the default app (`firebaseAppNameDefault`, `'[DEFAULT]'`). Initializing the
   same name twice throws a `StateError` on most backends: retrieve it with
-  `app(name:)` instead. `Firebase.apps` lists every live app of every backend
+  `app(name:)` instead (which throws for a name never initialized). `Firebase.apps` lists every live app of every backend
   in the process.
 * Prefer `initializeAppAsync` / `appAsync` (the `FirebaseAsync` interface) in
   code that must also run on Flutter, where initialization is asynchronous.
@@ -52,9 +52,10 @@ Platform-neutral Firebase core: `Firebase`/`FirebaseAsync` create and look up
   `measurementId`) are mutable and nullable. Build it with the named
   constructor or `FirebaseAppOptions.fromMap` from decoded JSON and do not
   mutate it after `initializeApp`. Options can be omitted where the backend
-  has defaults (Flutter, Node). Only log `toDebugMap()` / `toString()`: they
-  keep `projectId` and an obfuscated `apiKey`. `app.projectId` (extension
-  `TekartikFirebaseAppExt`) assumes the project id is set.
+  has defaults (Flutter, Node). Only log `toDebugMap()`: it keeps `projectId`
+  and an obfuscated `apiKey` (`toString()` prints the same for options built
+  with the constructor, nothing useful for `fromMap` ones). `app.projectId`
+  (extension `TekartikFirebaseAppExt`) assumes the project id is set.
 * Products are never created from the app: ask the product service of the
   chosen backend, e.g. `firestoreService.firestore(app)`,
   `authService.auth(app)`, `storageService.storage(app)`. The service caches
@@ -66,8 +67,10 @@ Platform-neutral Firebase core: `Firebase`/`FirebaseAsync` create and look up
   (`tekartik_firebase_storage_fs`).
 * Always `await app.delete()` when done (tests: `tearDown`): it closes every
   registered service, disposes the products (`FirebaseAppProduct.dispose`)
-  and removes the app from `Firebase.apps`. Do not keep products in globals
-  across a `delete()`. Deleting the default app is refused by some backends.
+  and removes the app from `Firebase.apps`. Do not use the app or keep its
+  products after a `delete()`: nothing throws, but they are closed (and a
+  service asked again for a deleted app creates a new product). Deleting the
+  default app is refused by some backends.
 * `app.isLocal` / `firebase.isLocal` tell whether the backend is in-memory
   (use it to skip tests that need a real project); `app.hasAdminCredentials`
   tells whether server-side (admin) operations are available.

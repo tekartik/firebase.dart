@@ -22,12 +22,12 @@ abstract class FirebaseApp {
   FirebaseAppOptions get options;
 
   /// Deletes this app and frees up system resources, including closing any
-  /// services associated with it.
+  /// services associated with it (their products are disposed).
   ///
-  /// Once deleted, any plugin functionality using this app instance will throw
-  /// an error.
+  /// Do not use the app or its products afterwards: most implementations do
+  /// not check it.
   ///
-  /// Deleting the default app is not possible and will throw an exception.
+  /// Some backends refuse to delete the default app and throw.
   Future<void> delete();
 
   /// Adds a [FirebaseProductService] to this app and calls its `init` method.
