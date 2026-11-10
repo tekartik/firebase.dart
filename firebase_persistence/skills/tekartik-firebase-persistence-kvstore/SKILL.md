@@ -12,7 +12,8 @@ description: >-
 
 # tekartik_firebase_persistence key/value stores
 
-Ready-made implementations of `KvStore` (`getString`, `setString`, `remove`),
+Ready-made implementations of `KvStore` (`getString`, and `setString` where a
+null value removes the key),
 the minimal async string key/value interface of `tekartik_prefs`. Despite the
 name the package does not depend on `tekartik_firebase`: it is the storage
 building block used by the REST auth packages to cache credentials.
@@ -26,7 +27,7 @@ building block used by the REST auth packages to cache credentials.
       git:
         url: https://github.com/tekartik/firebase.dart
         path: firebase_persistence
-      version: '>=0.2.0'
+      version: '>=0.3.0'
   ```
 * Import only `package:tekartik_firebase_persistence/firebase_persistence.dart`.
   It re-exports `KvStore`, `KvStoreRead`, `KvStoreWrite`, `KvStoreExt` and the
@@ -34,11 +35,12 @@ building block used by the REST auth packages to cache credentials.
 * Depend on `KvStore` in your APIs and constructors, never on a concrete
   `TekartikFirebasePersistence*` class. Callers then choose the backend, and any
   `PrefsLight` (`tekartik_prefs_sembast`, `tekartik_prefs_sdb`,
-  `tekartik_prefs_browser`, `tekartik_prefs_flutter`) can be passed directly
-  since `PrefsLight implements KvStore`.
-* Use `getString`/`setString`/`remove` and `setStringOrNull` (from
-  `KvStoreExt`). Do not use the deprecated `TekartikFirebasePersistence` alias
-  nor the deprecated `get`/`set` methods of `TekartikFirebasePersistenceExt`.
+  `tekartik_prefs_browser`, `tekartik_prefs_flutter`) can be passed as
+  `prefs.kvStore` (a `PrefsLight` is not a `KvStore` but gives one).
+* Use `getString` and `setString`, where a null value removes the key
+  (`remove(key)`, from `KvStoreExt`, does the same). Do not use the deprecated
+  `setStringOrNull`, the deprecated `TekartikFirebasePersistence` alias nor
+  the deprecated `get`/`set` methods of `TekartikFirebasePersistenceExt`.
 * Values are strings only: serialize with `jsonEncode`/`jsonDecode` (or
   `cvToJson`/`jsonToMap` from `cv`) and keep it to small payloads such as
   credentials or settings. Application data belongs in sembast/sdb.
@@ -65,7 +67,8 @@ building block used by the REST auth packages to cache credentials.
 * Error handling differs: the file and web local storage stores catch and
   `print` errors (`getString` returns null), the sdb store lets them throw.
 * To adapt an existing storage without a class, use the `KvStore` factory
-  constructor: `KvStore(getString: ..., setString: ..., remove: ...)`.
+  constructor: `KvStore(getString: ..., setString: ...)`, where `setString`
+  removes the key when its value is null.
 * Prefer these stores over hand-written credential files in the consumers:
   `FirebaseRestAuthPersistenceOnPersistence(KvStore)` and
   `GoogleAuthProviderRestIo(credentialsPersistence:, credentialsKey:)` in
@@ -99,8 +102,9 @@ class TokenCache {
     return raw == null ? null : (jsonDecode(raw) as Map).cast<String, Object?>();
   }
 
+  /// A null token removes the key.
   Future<void> write(String account, Map<String, Object?>? token) =>
-      store.setStringOrNull(
+      store.setString(
         '$_tokenKeyPrefix$account',
         token == null ? null : jsonEncode(token),
       );

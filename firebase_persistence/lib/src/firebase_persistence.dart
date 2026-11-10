@@ -8,8 +8,8 @@ import 'package:tekartik_prefs/kv_store.dart';
 /// Generic string key/value persistence.
 ///
 /// Alias of [KvStore] from `package:tekartik_prefs/kv_store.dart`, which any
-/// prefs implementation (memory, sembast, sdb, browser, flutter) also
-/// implements.
+/// prefs implementation (memory, sembast, sdb, browser, flutter) also gives
+/// (`prefs.kvStore`).
 @Deprecated('Use KvStore from package:tekartik_prefs/kv_store.dart')
 typedef TekartikFirebasePersistence = KvStore;
 
@@ -20,8 +20,8 @@ extension TekartikFirebasePersistenceExt on KvStore {
   Future<String?> get(String key) => getString(key);
 
   /// Set the value associated to [key]. Set to null to remove it.
-  @Deprecated('Use setString, remove, or setStringOrNull')
-  Future<void> set(String key, String? value) => setStringOrNull(key, value);
+  @Deprecated('Use setString')
+  Future<void> set(String key, String? value) => setString(key, value);
 }
 
 /// In memory implementation.
@@ -32,10 +32,13 @@ class TekartikFirebasePersistenceMemory implements KvStore {
   Future<String?> getString(String key) async => _map[key];
 
   @override
-  Future<void> setString(String key, String value) async => _map[key] = value;
-
-  @override
-  Future<void> remove(String key) async => _map.remove(key);
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      _map.remove(key);
+    } else {
+      _map[key] = value;
+    }
+  }
 }
 
 /// Web local storage implementation (browser only).
@@ -63,22 +66,21 @@ class TekartikFirebasePersistenceWebLocalStorage implements KvStore {
   }
 
   @override
-  Future<void> setString(String key, String value) async {
+  Future<void> setString(String key, String? value) async {
+    if (value == null) {
+      try {
+        webLocalStorageRemove(_key(key));
+      } catch (e) {
+        // ignore: avoid_print
+        print('Error deleting $key from web storage: $e');
+      }
+      return;
+    }
     try {
       webLocalStorageSet(_key(key), value);
     } catch (e) {
       // ignore: avoid_print
       print('Error writing $key to web storage: $e');
-    }
-  }
-
-  @override
-  Future<void> remove(String key) async {
-    try {
-      webLocalStorageRemove(_key(key));
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error deleting $key from web storage: $e');
     }
   }
 }
@@ -135,26 +137,24 @@ class TekartikFirebasePersistenceFile implements KvStore {
   }
 
   @override
-  Future<void> setString(String key, String value) async {
+  Future<void> setString(String key, String? value) async {
     var file = _file(key);
+    if (value == null) {
+      try {
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } catch (e) {
+        // ignore: avoid_print
+        print('Error deleting $key from file storage: $e');
+      }
+      return;
+    }
     try {
       await writeString(file, value);
     } catch (e) {
       // ignore: avoid_print
       print('Error writing $key to file storage: $e');
-    }
-  }
-
-  @override
-  Future<void> remove(String key) async {
-    var file = _file(key);
-    try {
-      if (await file.exists()) {
-        await file.delete();
-      }
-    } catch (e) {
-      // ignore: avoid_print
-      print('Error deleting $key from file storage: $e');
     }
   }
 }
@@ -211,15 +211,13 @@ class TekartikFirebasePersistenceSdb implements KvStore {
   }
 
   @override
-  Future<void> setString(String key, String value) async {
+  Future<void> setString(String key, String? value) async {
     var db = await _openDb();
-    await _store.record(key).put(db, value);
-  }
-
-  @override
-  Future<void> remove(String key) async {
-    var db = await _openDb();
-    await _store.record(key).delete(db);
+    if (value == null) {
+      await _store.record(key).delete(db);
+    } else {
+      await _store.record(key).put(db, value);
+    }
   }
 
   /// Close the underlying database.

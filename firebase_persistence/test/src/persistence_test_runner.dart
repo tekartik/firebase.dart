@@ -19,9 +19,12 @@ void runTekartikFirebasePersistenceTests(KvStore Function() factory) {
     await persistence.remove('key1');
     expect(await persistence.getString('key1'), isNull);
   });
-  test('setStringOrNull null removes', () async {
+  test('set null removes', () async {
     await persistence.setString('key1', 'value1');
-    await persistence.setStringOrNull('key1', null);
+    await persistence.setString('key1', null);
+    expect(await persistence.getString('key1'), isNull);
+    // Again, on a missing key.
+    await persistence.setString('key1', null);
     expect(await persistence.getString('key1'), isNull);
   });
   test('multiple keys', () async {

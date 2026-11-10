@@ -7,8 +7,7 @@ export 'package:tekartik_prefs/kv_store.dart'
         KvStoreRead,
         KvStoreWrite,
         KvStoreGetStringFunction,
-        KvStoreSetStringFunction,
-        KvStoreRemoveFunction;
+        KvStoreSetStringFunction;
 
 export 'src/firebase_persistence.dart'
     show

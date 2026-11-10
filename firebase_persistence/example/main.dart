@@ -7,8 +7,8 @@ import 'package:tekartik_firebase_persistence/firebase_persistence.dart';
 Future<void> saveAndRead(String name, KvStore store) async {
   await store.setString('theme', 'dark');
   print('$name: ${await store.getString('theme')}');
-  // setStringOrNull(key, null) removes the key.
-  await store.setStringOrNull('theme', null);
+  // A null value removes the key, as remove(key) does.
+  await store.setString('theme', null);
   print('$name after remove: ${await store.getString('theme')}');
 }
 

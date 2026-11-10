@@ -1,7 +1,8 @@
 # tekartik_firebase_persistence
 
-Small async string key/value stores (`KvStore`: `getString`, `setString`,
-`remove`) in memory, in files, in web local storage or in an sdb database. The
+Small async string key/value stores (`KvStore`: `getString`, `setString`, a
+null value removing the key) in memory, in files, in web local storage or in
+an sdb database. The
 REST auth packages use them to cache credentials. Despite its name the package
 does not depend on Firebase.
 
@@ -15,7 +16,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/firebase.dart
       path: firebase_persistence
-    version: '>=0.2.0'
+    version: '>=0.3.0'
 ```
 
 ```dart
@@ -42,7 +43,7 @@ Runnable: [example/main.dart](example/main.dart).
 | `TekartikFirebasePersistenceSdb({sdbFactory, dbName})` | web (`sdbFactoryWeb`), Dart VM (`sdbFactoryIo`), tests (`sdbFactoryMemory`) | one store `persistence` in the sdb database `dbName` (default `tekartik_firebase_persistence`) |
 
 Write your APIs against `KvStore` (re-exported here from `tekartik_prefs`): any
-`PrefsLight` of `tekartik_prefs_*` is a `KvStore` too.
+`PrefsLight` of `tekartik_prefs_*` gives a `KvStore` too (`prefs.kvStore`).
 
 ## Common pitfalls
 
@@ -56,6 +57,7 @@ Write your APIs against `KvStore` (re-exported here from `tekartik_prefs`): any
 * Sdb store: the database opens on first use (a failed open is tried again at
   the next call); `close()` it when done, the next call reopens it.
 * `TekartikFirebasePersistence` and its `get` / `set` are deprecated: use
-  `KvStore` and `getString` / `setString` / `remove` / `setStringOrNull`.
+  `KvStore` and `getString` / `setString` (a null value removes the key) /
+  `remove`.
 
 Agent skill: [skills/tekartik-firebase-persistence-kvstore](skills/tekartik-firebase-persistence-kvstore/SKILL.md).

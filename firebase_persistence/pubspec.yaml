@@ -1,6 +1,6 @@
 name: tekartik_firebase_persistence
 description: Generic string key/value persistence (memory, file, web local storage, sdb).
-version: 0.2.0
+version: 0.3.0
 publish_to: none
 
 environment:
@@ -16,7 +16,7 @@ dependencies:
     git:
       url: https://github.com/tekartik/prefs.dart
       path: prefs
-    version: '>=1.1.0'
+    version: '>=2.0.0'
 
 dev_dependencies:
   test: ">=1.31.0"
@@ -25,6 +25,6 @@ dev_dependencies:
     git:
       url: https://github.com/tekartik/prefs.dart
       path: prefs_test
-    version: '>=0.3.0'
+    version: '>=0.4.0'
 
 resolution: workspace
