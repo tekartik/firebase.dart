@@ -19,6 +19,15 @@ building block used by the REST auth packages to cache credentials.
 
 ## Guidelines
 
+* Git dependency (not on pub.dev), `version` next to `git`, not inside it:
+  ```yaml
+  dependencies:
+    tekartik_firebase_persistence:
+      git:
+        url: https://github.com/tekartik/firebase.dart
+        path: firebase_persistence
+      version: '>=0.2.0'
+  ```
 * Import only `package:tekartik_firebase_persistence/firebase_persistence.dart`.
   It re-exports `KvStore`, `KvStoreRead`, `KvStoreWrite`, `KvStoreExt` and the
   function typedefs from `package:tekartik_prefs/kv_store.dart`.
@@ -42,15 +51,17 @@ building block used by the REST auth packages to cache credentials.
   * `TekartikFirebasePersistenceFile({fs, directoryPath})`: CLI/desktop, one
     file per key (`Uri.encodeComponent(key)`) in `directoryPath`, default
     `.local` relative to the current directory (gitignore it). `fs` defaults to
-    `fileSystemDefault`; pass `fileSystemMemory` (`fs_shim`) in tests.
+    `fileSystemDefault`; pass `fileSystemMemory` (`fs_shim`) in tests. On a
+    case insensitive file system (macOS, Windows) keys differing only by case
+    share one file; avoid `*` and a trailing `.` in keys on Windows.
   * `TekartikFirebasePersistenceWebLocalStorage({keyPrefix})`: browser only;
     set `keyPrefix` to isolate apps sharing an origin.
   * `TekartikFirebasePersistenceSdb({sdbFactory, dbName})`: same code on io
     and web, choose `sdbFactoryIo`, `sdbFactoryWeb` or `sdbFactoryMemory` from
     `package:idb_shim/sdb/sdb.dart` (`sdbFactoryIo.sandbox(path:)` in tests).
     The database (default name `tekartik_firebase_persistence`, one store
-    `persistence`) opens lazily on first use; call `close()` when done, the
-    next call reopens it.
+    `persistence`) opens lazily on first use (a failed open is tried again at
+    the next call); call `close()` when done, the next call reopens it.
 * Error handling differs: the file and web local storage stores catch and
   `print` errors (`getString` returns null), the sdb store lets them throw.
 * To adapt an existing storage without a class, use the `KvStore` factory
@@ -121,7 +132,7 @@ Future<void> demo(SdbFactory sdbFactory) async {
 ### Credential cache for a Google/Firebase REST sign-in
 
 ```dart
-import 'package:tekartik_firebase_persistence/firebase_persistence.dart';
+// google_auth_io re-exports the KvStore implementations.
 import 'package:tekartik_google_auth_io/google_auth_io.dart';
 
 /// Mutable so tests can swap in a [TekartikFirebasePersistenceMemory].

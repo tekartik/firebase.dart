@@ -38,7 +38,10 @@ class TekartikFirebasePersistenceMemory implements KvStore {
   Future<void> remove(String key) async => _map.remove(key);
 }
 
-/// Web local storage implementation.
+/// Web local storage implementation (browser only).
+///
+/// Errors (no local storage, quota) are printed, not thrown: a failed write is
+/// lost and [getString] returns null.
 class TekartikFirebasePersistenceWebLocalStorage implements KvStore {
   /// Prefix prepended to every key before hitting local storage.
   final String keyPrefix;
@@ -81,6 +84,11 @@ class TekartikFirebasePersistenceWebLocalStorage implements KvStore {
 }
 
 /// File implementation (cross platform through fs_shim).
+///
+/// One file per key in [directoryPath], named `Uri.encodeComponent(key)`.
+/// Errors are printed, not thrown: a failed write is lost and [getString]
+/// returns null. On a case insensitive file system (macOS, Windows) two keys
+/// differing only by case share one file.
 class TekartikFirebasePersistenceFile implements KvStore {
   /// The file system to use.
   final FileSystem fs;
@@ -97,8 +105,20 @@ class TekartikFirebasePersistenceFile implements KvStore {
   }) : fs = fs ?? fileSystemDefault,
        directoryPath = directoryPath ?? _directoryPathDefault;
 
-  File _file(String key) =>
-      fs.file(join(directoryPath, Uri.encodeComponent(key)));
+  File _file(String key) => fs.file(join(directoryPath, _fileName(key)));
+
+  /// One file name per key.
+  ///
+  /// `Uri.encodeComponent` keeps `.` and gives an empty name for an empty
+  /// key: `''`, `.` and `..` would be the directory itself or its parent.
+  /// They get names `Uri.encodeComponent` never produces (`%` is always
+  /// encoded, `.` never), so no other key changes file.
+  static String _fileName(String key) => switch (key) {
+    '' => '%',
+    '.' => '%2E',
+    '..' => '%2E%2E',
+    _ => Uri.encodeComponent(key),
+  };
 
   @override
   Future<String?> getString(String key) async {
@@ -141,6 +161,9 @@ class TekartikFirebasePersistenceFile implements KvStore {
 
 /// Sdb (idb_shim) implementation, works both on io and web depending on the
 /// [SdbFactory] used (for example `sdbFactoryIo` or `sdbFactoryWeb`).
+///
+/// The database opens on first use (a failed open is tried again at the next
+/// call); errors are thrown. Call [close] when done, the next call reopens it.
 class TekartikFirebasePersistenceSdb implements KvStore {
   /// The sdb factory used to open the database.
   final SdbFactory sdbFactory;
@@ -157,13 +180,29 @@ class TekartikFirebasePersistenceSdb implements KvStore {
   TekartikFirebasePersistenceSdb({required this.sdbFactory, String? dbName})
     : dbName = dbName ?? _dbNameDefault;
 
-  Future<SdbDatabase> _openDb() => _dbFuture ??= sdbFactory.openDatabase(
-    dbName,
-    options: SdbOpenDatabaseOptions(
-      version: 1,
-      schema: SdbDatabaseSchema(stores: [_store.schema()]),
-    ),
-  );
+  Future<SdbDatabase> _openDb() {
+    var dbFuture = _dbFuture;
+    if (dbFuture == null) {
+      _dbFuture = dbFuture = sdbFactory.openDatabase(
+        dbName,
+        options: SdbOpenDatabaseOptions(
+          version: 1,
+          schema: SdbDatabaseSchema(stores: [_store.schema()]),
+        ),
+      );
+      // A failed open is not kept: the next call opens again (the callers
+      // of this one still get the error).
+      dbFuture.then<void>(
+        (_) {},
+        onError: (Object _) {
+          if (identical(_dbFuture, dbFuture)) {
+            _dbFuture = null;
+          }
+        },
+      );
+    }
+    return dbFuture;
+  }
 
   @override
   Future<String?> getString(String key) async {

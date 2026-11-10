@@ -37,6 +37,20 @@ void runTekartikFirebasePersistenceTests(KvStore Function() factory) {
     await persistence.setString('key1', '');
     expect(await persistence.getString('key1'), '');
   });
+  test('empty and dot keys', () async {
+    // The empty key first: as a file name it was the directory itself.
+    var keys = ['', '.', '..', 'key1'];
+    for (var key in keys) {
+      await persistence.setString(key, 'value of "$key"');
+    }
+    for (var key in keys) {
+      expect(await persistence.getString(key), 'value of "$key"');
+    }
+    for (var key in keys) {
+      await persistence.remove(key);
+      expect(await persistence.getString(key), isNull);
+    }
+  });
 
   group('kv_store', () {
     runKvStoreTests(factory());
