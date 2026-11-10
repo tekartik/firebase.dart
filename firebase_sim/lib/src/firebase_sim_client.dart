@@ -104,6 +104,13 @@ class FirebaseAppSim with FirebaseAppMixin {
       } catch (e) {
         _log('Error closing app $e');
       }
+      // The connection of the app (one per app) is closed too, otherwise it
+      // stays open (a program would never exit).
+      try {
+        await (await this.simClient).close();
+      } catch (e) {
+        _log('Error closing client $e');
+      }
       (admin as FirebaseWithAppsMixin).uninitializeApp(this);
     }
   }
