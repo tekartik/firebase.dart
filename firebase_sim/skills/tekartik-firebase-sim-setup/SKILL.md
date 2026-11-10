@@ -64,13 +64,15 @@ in-memory Firebase with no cloud credentials.
   project ids map to distinct server-side apps; the server-side app name is
   not the client one (`app.getAppName()` returns the real remote name,
   `app.getAppDelegateName()` the shared delegate). `await app.delete()` frees
-  the server app; calls on a deleted app throw.
+  the server app; product calls on a deleted app throw. Each app has its own
+  connection and `delete()` leaves it open (a client program would never
+  exit): keep `await app.simClient` and `close()` it after the delete.
 * `initializeApp` / `initializeAppAsync` are statically typed `FirebaseApp` on
   the `Firebase` interface: cast the result `as FirebaseAppSim` to reach the
   sim-specific members.
 * `FirebaseAppSim` extras: `ping()` (round trip), `appServerId`, `simClient` /
   `simAppClient` (raw RPC senders used by product plugins), `options`, `name`.
-  `FirebaseSim.close()` closes the client connection.
+  `FirebaseSim.close()` does nothing (no connection at that level).
 * Server: `await firebaseSimServe(firebase, {webSocketChannelServerFactory,
   plugins, port})` returns a `FirebaseSimServer` with `url`, `uri`, `close()`,
   `addPlugin()` and `initializeAppAsync(options:)` (pre-creates the server-side
@@ -146,8 +148,11 @@ Future<void> main() async {
           as FirebaseAppSim;
   await app.ping();
   print('server app name: ${await app.getAppName()}');
+  // delete() leaves the connection of the app open: close it, or the
+  // program does not exit.
+  var simClient = await app.simClient;
   await app.delete();
-  await firebase.close();
+  await simClient.close();
 }
 ```
 
@@ -249,5 +254,8 @@ Future<int> increment(FirebaseAppSim app) async {
   `initializeAppAsync` (or the first `await`ed call) reports a dead server.
 * Reusing `firebaseSimDefaultPort` for parallel test runs: use `port: 0` and
   `simServer.url`.
+* Expecting `app.delete()` (or `FirebaseSim.close()`) to close the
+  connection: close `await app.simClient` yourself. The server keeps the apps
+  of a client that disconnects without deleting them.
 * Leaving `debugFirebaseSimServer`/`debugFirebaseSimClient` on, which prints
   every RPC payload (truncated at 1000 chars).

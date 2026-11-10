@@ -1,3 +1,9 @@
+/// Client of the Firebase simulator: [getFirebaseSim] connects to a
+/// `firebaseSimServe` server (`firebase_sim_server.dart`) and gives a
+/// `Firebase` whose apps forward their calls to it. Runs on the Dart VM, the
+/// web and Flutter.
+library;
+
 export 'src/firebase_sim.dart'
     show
         FirebaseSim,

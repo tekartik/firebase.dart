@@ -84,6 +84,8 @@ class FirebaseAppSim with FirebaseAppMixin {
     //_name ??= firebaseAppNameDefault;
   }
 
+  /// Releases the app on the server. The connection of the app
+  /// ([simClient]) stays open: close it to let a program exit.
   @override
   Future delete() async {
     if (!deleted) {

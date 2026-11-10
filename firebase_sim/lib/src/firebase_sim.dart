@@ -54,7 +54,8 @@ FirebaseSim getFirebaseSim({
 
 /// Mixin for Firebase Sim.
 mixin FirebaseSimMixin on FirebaseMixin {
-  /// Close firebase
+  /// Does nothing: each app has its own connection
+  /// ([FirebaseAppSim.simClient]), closed by its owner.
   Future<void> close() async {}
 }
 
@@ -63,7 +64,8 @@ abstract class FirebaseSim implements Firebase {
   /// Local path.
   String get localPath;
 
-  /// Close firebase.
+  /// Does nothing: each app has its own connection
+  /// ([FirebaseAppSim.simClient]), closed by its owner.
   Future<void> close();
 }
 
