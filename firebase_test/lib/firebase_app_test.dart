@@ -1,3 +1,4 @@
+/// [runFirebaseAppTests]: the app level checks, on an app you own.
 library;
 
 import 'package:tekartik_firebase/firebase.dart';

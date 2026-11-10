@@ -1,3 +1,5 @@
+/// The shared Firebase tests: [runFirebaseTests] on a new app of an
+/// implementation.
 library;
 
 import 'package:tekartik_firebase_test/firebase_app_test.dart';
@@ -9,6 +11,9 @@ export 'package:tekartik_firebase/firebase.dart';
 @Deprecated('Preferred runFirebaseTests')
 void runApp(FirebaseAsync firebaseAsync, {AppOptions? options, String? name}) =>
     runFirebaseTests(firebaseAsync, options: options, name: name);
+
+/// Declares the tests on a new app of [firebaseAsync] (named [name], with
+/// [options]), deleted in `tearDownAll`. Call it in its own `group()`.
 void runFirebaseTests(
   FirebaseAsync firebaseAsync, {
   AppOptions? options,
@@ -38,6 +43,14 @@ void runFirebaseTests(
         (await firebaseAsync.appAsync(name: app.name)).options.projectId,
         app.options.projectId,
       );
+    });
+
+    test('app returns the same app', () async {
+      // The same instance, with its products and services, not a new one.
+      expect(await firebaseAsync.appAsync(name: app.name), same(app));
+      if (firebaseAsync is Firebase) {
+        expect(firebaseAsync.app(name: app.name), same(app));
+      }
     });
 
     test('reinit', () async {

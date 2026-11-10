@@ -30,7 +30,7 @@ options, products and deletion through the public interface only.
         url: https://github.com/tekartik/firebase.dart
         path: firebase_test
   ```
-* Four public libraries: `package:tekartik_firebase_test/firebase_test.dart`
+* Five public libraries: `package:tekartik_firebase_test/firebase_test.dart`
   (`runFirebaseTests`, and it re-exports
   `package:tekartik_firebase/firebase.dart`, so `Firebase`, `FirebaseApp`,
   `AppOptions` need no second import), `firebase_app_test.dart`
@@ -42,13 +42,16 @@ options, products and deletion through the public interface only.
   (every `Firebase` is one) and registers, in the current group:
   a `setUpAll` doing `initializeAppAsync(options: options, name: name)` and
   asserting the app is in `Firebase.apps`, `runFirebaseAppTests`,
-  `runFirebaseAppProductTests`, an `apps` / `default app name` /`reinit` group
-  and a `tearDownAll` deleting the app.
+  `runFirebaseAppProductTests`, an `apps` / `default app name` /
+  `app returns the same app` / `reinit` group and a `tearDownAll` deleting
+  the app.
 * Consequences to check before calling it on a new backend: the implementation
   must support `initializeAppAsync`, `appAsync(name:)`, registering in
   `Firebase.apps`, `app.delete()` **and re-initializing the same name after a
   delete** (the `reinit` test), plus `app.addService` / `getProduct` (the
-  product group). `app.name` must be `name` or `'[DEFAULT]'` when `name` is
+  product group). `appAsync(name:)` (and `app(name:)` on a `Firebase`) must
+  return the *same* app instance, not a new wrapper that would lose the
+  products registered on the first one. `app.name` must be `name` or `'[DEFAULT]'` when `name` is
   null, and `app.options.projectId` must survive a lookup.
 * Pass `options: null` explicitly for backends that get their options from the
   environment (node, admin sdk, Flutter); pass
@@ -161,8 +164,10 @@ void main() {
     var service = FirebaseProductServiceMock();
     await app.addService(service);
     expect(service.initCount, 1);
-    expect(app.getProduct<FirebaseAppProductMockBase>(), isNull);
-    expect(service.product(app), isNotNull);
+    // The product suite above already registered mock products on this app:
+    // the last one created is the app product.
+    var product = service.product(app);
+    expect(app.getProduct<FirebaseAppProductMockBase>(), product);
   });
 }
 ```

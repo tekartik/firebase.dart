@@ -1,3 +1,7 @@
+/// [runFirebaseAppProductTests]: the product registration checks, on an app
+/// you own, and the mock product fixtures.
+library;
+
 import 'package:tekartik_firebase/firebase.dart';
 // ignore: implementation_imports
 import 'package:tekartik_firebase/src/firebase_mock.dart';
